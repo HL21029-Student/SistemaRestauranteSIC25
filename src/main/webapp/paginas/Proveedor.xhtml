@@ -1,0 +1,86 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
+        template="../WEB-INF/plantilla/default.xhtml"
+        xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="header">
+        <h1>#{defaultfrm['page.proveedor']}</h1>
+    </ui:define>
+
+    <ui:define name="contenido-tabla">
+        <h:panelGrid>
+            <h:form id="frmTop">
+                <p:dataTable id="tabla-top"
+                             lazy="true"
+                             rendered="#{proveedorFrm.estado == 'NADA'}"
+                             styleClass="tabla-crud"
+                             rows="#{proveedorFrm.pageSize}"
+                             paginator="true"
+                             paginatorPosition="bottom"
+                             value="#{proveedorFrm.modelo}" var="reg"
+                             selectionMode="single"
+                             selection="#{proveedorFrm.registro}">
+                    <p:ajax event="rowSelect" listener="#{proveedorFrm.selectionHandler}"
+                            update=":pnlDetalle :pnlTabla"/>
+
+                    <p:column headerText="ID">
+                        <h:outputText value="#{reg.id}"/>
+                    </p:column>
+
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{reg.nombre}"/>
+                    </p:column>
+
+                    <p:column headerText="Razón Social">
+                        <h:outputText value="#{reg.razonSocial}"/>
+                    </p:column>
+
+                    <p:column headerText="NIT">
+                        <h:outputText value="#{reg.nit}"/>
+                    </p:column>
+
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{reg.activo ? 'Activo' : 'Inactivo'}"/>
+                    </p:column>
+
+                    <p:column headerText="Observaciones">
+                        <h:outputText value="#{reg.observaciones}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <ues:botones-top formulario="#{proveedorFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+            </h:form>
+        </h:panelGrid>
+    </ui:define>
+
+    <ui:define name="contenido-detalle">
+        <h:form id="frmCrear" rendered="#{proveedorFrm.estado != 'NADA'}">
+            <h:panelGrid columns="2">
+                <p:outputLabel for="txtId" value="ID:"/>
+                <p:inputText id="txtId" value="#{proveedorFrm.registro.id}" readonly="true" disabled="true"/>
+
+                <p:outputLabel for="txtNombre" value="Nombre:"/>
+                <p:inputText id="txtNombre" value="#{proveedorFrm.registro.nombre}" />
+
+                <p:outputLabel for="txtRazonSocial" value="Razón Social:"/>
+                <p:inputText id="txtRazonSocial" value="#{proveedorFrm.registro.razonSocial}" maxlength="155"/>
+
+                <p:outputLabel for="txtNit" value="NIT:"/>
+                <p:inputText id="txtNit" value="#{proveedorFrm.registro.nit}" maxlength="14"/>
+
+                <p:outputLabel for="chkActivo" value="Activo:"/>
+                <h:selectBooleanCheckbox id="chkActivo" value="#{proveedorFrm.registro.activo}"/>
+
+                <p:outputLabel for="txtObservacion" value="Observaciones:"/>
+                <p:inputTextarea id="txtObservacion" value="#{proveedorFrm.registro.observaciones}" rows="4" cols="50"/>
+            </h:panelGrid>
+
+            <ues:botones-crud formulario="#{proveedorFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

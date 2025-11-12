@@ -1,0 +1,73 @@
+package sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
+import java.util.UUID;
+
+@Entity
+@Table(name = "cliente", schema = "public")
+@NamedQueries({
+        @NamedQuery(name="Cliente.buscarClientePorNombre", query = "SELECT c FROM Cliente c WHERE upper(c.nombre) LIKE :nombre")
+})
+public class Cliente {
+    @Id
+    @Column(name = "id_cliente", nullable = false)
+    private UUID id;
+
+    @Size(max = 155)
+    @Column(name = "nombre", length = 155)
+    private String nombre;
+
+    @Size(max = 9)
+    @Column(name = "dui", length = 9)
+    private String dui;
+
+    @Size(max = 14)
+    @Column(name = "nit", length = 14)
+    private String nit;
+
+    @Column(name = "activo")
+    private Boolean activo;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDui() {
+        return dui;
+    }
+
+    public void setDui(String dui) {
+        this.dui = dui;
+    }
+
+    public String getNit() {
+        return nit;
+    }
+
+    public void setNit(String nit) {
+        this.nit = nit;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+}

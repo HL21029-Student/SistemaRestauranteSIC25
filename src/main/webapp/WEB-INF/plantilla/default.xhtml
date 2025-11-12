@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Sistemas de Inventarios</title>
+    <h:outputStylesheet library="estilos" name="crud.css"/>
+
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; }
+        main.app { display: flex; min-height: 100vh; }
+        nav.sidebar {
+            width: 280px;
+            background: rgba(170, 78, 46, 0.45);
+            border-right: 1px solid #ad4726;
+            padding: 1rem;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .content {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow: auto;
+        }
+        header .titulo { margin: 0; }
+        article { flex: 1; }
+        footer { text-align: center; padding: .5rem 0; color: #666; font-size: .9rem; border-top: 1px solid #ad4726; }
+        @media (max-width: 800px) {
+            main.app { flex-direction: column; }
+            nav.sidebar { width: 100%; border-right: none; border-bottom: 1px solid #cdcbcb; }
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <f:view locale="#{sesionUsuarioBean.idiomas[sesionUsuarioBean.idiomaSeleccionado]}">
+
+        <main class="app">
+
+            <nav class="sidebar" style="margin:0">
+                <ui:include src="menu.xhtml"/>
+            </nav>
+
+            <div class="content">
+                <header>
+                    <ui:insert name="header">
+                        <h1 class="titulo">Sistema de Inventario</h1>
+                    </ui:insert>
+                </header>
+
+                <article>
+                    <h:panelGroup id="pnlTabla">
+                        <p:growl showSummary="true" showDetail="true" keepAlive="1000"/>
+                        <ui:insert name="contenido-tabla"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup id="pnlDetalle">
+                        <ui:insert name="contenido-detalle"/>
+                    </h:panelGroup>
+                </article>
+
+                <ui:insert name="extra"/>
+                <footer>
+                    Todos los derechos reservados - Universidad de El Salvador @2025
+                </footer>
+            </div>
+        </main>
+
+    </f:view>
+</h:body>
+</html>

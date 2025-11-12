@@ -1,0 +1,226 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:h="jakarta.faces.html"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:f="jakarta.faces.core"
+        template="/WEB-INF/plantilla/default.xhtml"
+        xmlns:ues="jakarta.faces.composite/ues"
+>
+    <ui:define name="header">
+        <h1>#{defaultfrm['page.tipoProducto']}</h1>
+    </ui:define>
+
+    <ui:define name="contenido-tabla">
+        <h:panelGrid>
+            <h:form id="frmTop">
+                <p:treeTable id="tabla-top"
+                             rendered="#{tipoProductoFrm.estado == 'NADA'}"
+                             styleClass="tabla-crud"
+                             value="#{tipoProductoFrm.root}"
+                             var="reg"
+                             selectionMode="single"
+                             selection="#{tipoProductoFrm.selectedNode}">
+
+                    <p:ajax event="select"
+                            listener="#{tipoProductoFrm.onNodeSelect}"
+                            update=":pnlDetalle :pnlTabla"/>
+
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{reg.nombre}"/>
+                    </p:column>
+
+                    <p:column headerText="ID">
+                        <h:outputText value="#{reg.idTipoProducto}"/>
+                    </p:column>
+
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{reg.activo ? 'Activo' : 'Inactivo'}"/>
+                    </p:column>
+
+                    <p:column headerText="Observación">
+                        <h:outputText value="#{reg.comentarios}"/>
+                    </p:column>
+                </p:treeTable>
+
+                <ues:botones-top formulario="#{tipoProductoFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+
+            </h:form>
+            <p:messages showSummary="true" showDetail="true"/>
+        </h:panelGrid>
+    </ui:define>
+
+
+    <ui:define name="contenido-detalle">
+
+        <p:tabView id="tabTipoProducto" cache="false" dynamic="true" rendered="#{tipoProductoFrm.estado != 'NADA'}">
+
+            <p:tab closable="false" title="Generalidades">
+                <h:panelGrid>
+                    <h:form id="frmCrear">
+                        <h:panelGrid>
+
+                            <p:outputLabel for="txtId" value="ID:"/>
+                            <p:inputText id="txtId" value="#{tipoProductoFrm.registro.idTipoProducto}"
+                                         readonly="true"
+                                         disabled="true"/>
+                            <p:outputLabel for="txtNombre" value="Nombre:"/>
+                            <p:inputText id="txtNombre" value="#{tipoProductoFrm.registro.nombre}" size="75"/>
+
+                            <p:outputLabel for="cmbTipoPadre" value="Tipo Padre:"/>
+                            <p:selectOneMenu id="cmbTipoPadre"
+                                             value="#{tipoProductoFrm.registro.idTipoProductoPadre}"
+                                             converter="tipoProductoConverter">
+                                <f:selectItem itemLabel="-- Ninguno (Tipo Raíz) --" itemValue="#{null}"/>
+                                <f:selectItems value="#{tipoProductoFrm.tiposPadreDisponibles}"
+                                               var="tpfrm"
+                                               itemLabel="#{tpfrm.nombre}"
+                                               itemValue="#{tpfrm}"
+                                />
+                            </p:selectOneMenu>
+                            <p:outputLabel for="chkActivo" value="Activo:"/>
+                            <h:selectBooleanCheckbox id="chkActivo" value="#{tipoProductoFrm.registro.activo}"/>
+                            <p:outputLabel for="txtObservacion" value="Observación:"/>
+                            <p:inputTextarea id="txtObservacion" value="#{tipoProductoFrm.registro.comentarios}"
+                                             rows="4"
+                                             cols="50"/>
+
+                            <ues:botones-crud formulario="#{tipoProductoFrm}"
+                                              actualizar=":pnlDetalle :pnlTabla :tabTipoProducto"/>
+                        </h:panelGrid>
+                    </h:form>
+                </h:panelGrid>
+            </p:tab>
+
+            <p:tab closable="false" title="Caracteristicas" disabled="#{tipoProductoFrm.estado != 'MODIFICAR'}">
+                <h:panelGrid>
+                    <h:panelGroup id="pnlCaracteristica">
+                        <h2>#{tipoProductoFrm.registro.nombre}</h2>
+                        <h:form id="frmTablaCaracteristica">
+                            <p:dataTable value="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.modelo}"
+                                         var="tpc"
+                                         paginator="true"
+                                         paginatorPosition="bottom"
+                                         lazy="true"
+                                         selection="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.registro}"
+                                         selectionMode="single"
+                                         rows="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.pageSize}"
+                                         rendered="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.estado == 'NADA'}">
+                                <p:ajax event="rowSelect"
+                                        process="@this"
+                                        listener="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.seleccionarRegistro}"
+                                        update=":tabTipoProducto:pnlCaracteristica :tabTipoProducto:pnlDetalleCaracteristica"
+                                />
+                                <p:column headerText="ID">
+                                    <h:outputText value="#{tpc.id}"/>
+                                </p:column>
+
+                                <p:column headerText="Caracteristica">
+                                    <h:outputText value="#{tpc.idCaracteristica.nombre}"/>
+                                </p:column>
+
+                                <p:column headerText="Obligatorio">
+                                    <h:outputText value="#{tpc.obligatorio ? 'Sí' : 'No'}"/>
+                                </p:column>
+
+                                <p:column headerText="Fecha de creación">
+                                    <h:outputText value="#{tpc.fechaCreacion}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"
+                                                           timeZone="America/El_Salvador"/>
+                                    </h:outputText>
+                                </p:column>
+
+                            </p:dataTable>
+
+                            <ues:botones-top formulario="#{tipoProductoFrm.tipoProductoCaracteristicaFrm}"
+                                             actualizar=":tabTipoProducto:pnlCaracteristica :tabTipoProducto:pnlDetalleCaracteristica"/>
+                        </h:form>
+                    </h:panelGroup>
+
+
+                    <h:panelGroup id="pnlDetalleCaracteristica">
+                        <p:growl id="growlDetalleCaracteristica" showDetail="true"/>
+                        <p:growl id="growl-stickyTablaCaracteristica" for="stiky-key" showDetail="true" sticky="true"/>
+
+                        <h:panelGrid rendered="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.estado != 'NADA'}">
+                            <h:form id="frmDetalleCaracteristica">
+                                <h:panelGrid columns="2">
+                                    <p:outputLabel for="txtIdCaracteristica" value="ID:"/>
+                                    <p:inputText id="txtIdCaracteristica"
+                                                 value="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.registro.idCaracteristica != null?
+                                                 tipoProductoFrm.tipoProductoCaracteristicaFrm.registro.idCaracteristica.id : ''}"
+                                                 readonly="true"
+                                                 disabled="true"/>
+
+                                    <p:outputLabel for="txtCaracteristica" value="Caracteristica:"/>
+                                    <h:panelGroup id="pnlCaracteristica">
+                                        <h:panelGrid columns="2">
+                                            <p:inputText id="txtCaracteristica"
+                                                         value="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.registro.idCaracteristica != null?
+                                                         tipoProductoFrm.tipoProductoCaracteristicaFrm.registro.idCaracteristica.nombre : ''}"
+                                                         size="50" readonly="true" disabled="true"/>
+                                            <p:commandButton type="button" onclick="PF('dlgCaracteristica').show();"
+                                                             value="Seleccionar Caracteristica"
+                                                             icon="pi pi-external-link"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+
+                                    <p:outputLabel for="chkObligatorio" value="Obligatorio:"/>
+                                    <h:selectBooleanCheckbox id="chkObligatorio"
+                                                             value="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.registro.obligatorio}"/>
+
+                                    <p:outputLabel for="dpFechaCreacion" value="Fecha de creación"/>
+                                    <p:datePicker id="dpFechaCreacion"
+                                                  value="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.registro.fechaCreacion}"
+                                                  showTime="true"
+                                                  hourFormat="24"
+                                                  timeInput="true"
+                                                  timeZone="America/El_Salvador"
+                                                  pattern="yyyy-MM-dd HH:mm:ss"
+                                                  required="true"
+                                                  requiredMessage="La fecha es obligatoria"
+                                                  touchUI="false"/>
+
+                                </h:panelGrid>
+
+                                <ues:botones-crud formulario="#{tipoProductoFrm.tipoProductoCaracteristicaFrm}"
+                                                  actualizar=":tabTipoProducto:pnlCaracteristica :tabTipoProducto:pnlDetalleCaracteristica"/>
+                            </h:form>
+                        </h:panelGrid>
+                    </h:panelGroup>
+                </h:panelGrid>
+
+            </p:tab>
+        </p:tabView>
+
+    </ui:define>
+
+    <ui:define name="extra">
+        <p:dialog id="dlgCaracteristica" widgetVar="dlgCaracteristica" modal="true" closable="true">
+            <h:form id="frmDlgCaracteristica">
+                <h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Seleccione la caracteristica:" for="txtSCaracteristica"/>
+                        <p:autoComplete id="txtSCaracteristica"
+                                        completeMethod="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.buscarCaracteristicaPorNombres}"
+                                        value="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.registro.idCaracteristica}"
+                                        var="c"
+                                        converter="caracteristicaConverter"
+                                        itemLabel="#{c.nombre}"
+                                        itemValue="#{c}"
+                                        forceSelection="true"
+                                        dropdown="true"
+                                        size="40"
+                                        placeholder="Escribe el nombre de la característica"
+                                        emptyMessage="No se encontraron características activas con ese nombre"/>
+                    </h:panelGrid>
+                    <h:commandButton value="Seleccionar" procces="@from"
+                                     actionListener="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.btnSeleccionarCaracteristicaHandler}"
+                                     update=":tabTipoProducto:frmDetalleCaracteristica:pnlCaracteristica"
+                                     oncomplete="PF('dlgCaracteristica').hide();"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>

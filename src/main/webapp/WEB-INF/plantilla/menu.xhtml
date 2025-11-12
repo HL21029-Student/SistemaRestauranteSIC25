@@ -1,0 +1,38 @@
+<ui:composition
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns="http://www.w3.org/1999/xhtml"
+>
+    <div class="ui-g">
+        <p:growl/>
+
+
+            <div >
+                        <h:form id="frmIdioma" style="display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+                            <p:selectOneMenu value="#{sesionUsuarioBean.idiomaSeleccionado}"
+                                             valueChangeListener="#{sesionUsuarioBean.cambiarIdioma}"
+                                             style="min-width: 120px; margin: 0;"
+                            >
+                                <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="Idioma"/>
+                                <f:selectItems value="#{sesionUsuarioBean.idiomas.entrySet()}"
+                                               var="idioma"
+                                               itemLabel="#{idioma.key}"
+                                               itemValue="#{idioma.key}"/>
+                                <f:ajax execute="@form" render="@all"/>
+
+                            </p:selectOneMenu>
+                            <p:commandButton type="button" icon="pi pi-user" styleClass="mr-2" style="margin: 0"/>
+                        </h:form>
+            </div>
+
+        <div>
+            <h:form id="frmMenuPrincipal">
+                <p:menu model="#{menuFrm.model}" appendTo="body" toggleable="true"/>
+            </h:form>
+        </div>
+
+    </div>
+
+</ui:composition>

@@ -1,0 +1,308 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
+        xmlns="http://www.w3.org/1999/xhtml"
+        template="../WEB-INF/plantilla/default.xhtml">
+
+    <ui:define name="header">
+        <h1>#{defaultfrm['page.venta']}</h1>
+    </ui:define>
+    <ui:define name="contenido-tabla">
+        <h:panelGrid>
+            <h:form id="frmTop">
+                <p:dataTable lazy="true"
+                             rendered="#{ventaFrm.estado == 'NADA'}"
+                             rows="#{ventaFrm.pageSize}"
+                             paginator="true"
+                             paginatorPosition="bottom"
+                             value="#{ventaFrm.modelo}" var="reg"
+                             selectionMode="single"
+                             selection="#{ventaFrm.registro}"
+                             styleClass="tabla-crud">
+                    <p:ajax event="rowSelect"
+                            listener="#{ventaFrm.seleccionarRegistro}"
+                            update=":pnlDetalle :pnlTabla"/>
+
+                    <p:column headerText="ID">
+                        <h:outputText value="#{reg.id}"/>
+                    </p:column>
+
+                    <p:column headerText="Cliente">
+                        <h:outputText value="#{reg.idCliente != null ? reg.idCliente.nombre : '-'}"/>
+                    </p:column>
+
+                    <p:column headerText="Fecha">
+                        <h:outputText value="#{reg.fecha}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" timeZone="America/El_Salvador"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{reg.estado}"/>
+                    </p:column>
+
+                    <p:column headerText="Observaciones">
+                        <h:outputText value="#{reg.observaciones}"/>
+                    </p:column>
+
+                    <p:column headerText="Monto Total">
+                    <h:outputText value="#{ventaFrm.calcularMontoTotal(reg)}">
+                        <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2"/>
+                    </h:outputText>
+                    </p:column>
+
+
+                </p:dataTable>
+
+                <ues:botones-top formulario="#{ventaFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+            </h:form>
+        </h:panelGrid>
+    </ui:define>
+
+    <ui:define name="contenido-detalle">
+
+        <p:tabView id="tabVenta" cache="false" dynamic="true" rendered="#{ventaFrm.estado != 'NADA'}">
+            <p:tab closable="false" title="Generalidades">
+                <h:panelGroup id="pnlClienteWrapper">
+                    <h:form id="frmCrear">
+                        <h:panelGrid columns="2">
+                            <p:outputLabel for="txtId" value="ID:"/>
+                            <p:inputText id="txtId"
+                                         value="#{ventaFrm.registro.id}"
+                                         readonly="true"
+                                         disabled="true"/>
+
+                            <p:outputLabel for="txtClienteSelect" value="Cliente:"/>
+                            <h:panelGroup id="pnlCliente">
+                                <h:panelGrid columns="2">
+                                    <p:inputText id="txtClienteSelect"
+                                                 value="#{ventaFrm.registro.idCliente.nombre}"
+                                                 readonly="true" disabled="true" size="10"/>
+
+                                    <p:commandButton type="button" onclick="PF('dlgClienteSelect').show();"
+                                                     value="Seleccionar Cliente" icon="pi pi-external-link"/>
+                                </h:panelGrid>
+
+                            </h:panelGroup>
+
+                            <p:outputLabel for="dpFecha" value="Fecha de venta:"/>
+                            <p:datePicker id="dpFecha"
+                                          value="#{ventaFrm.registro.fecha}"
+                                          showTime="true"
+                                          hourFormat="24"
+                                          timeInput="true"
+                                          timeZone="America/El_Salvador"
+                                          pattern="yyyy-MM-dd HH:mm:ss"
+                                          required="true"
+                                          requiredMessage="La fecha es obligatoria"
+                                          touchUI="false"/>
+
+                            <p:outputLabel for="cmbEstado" value="Estado:"/>
+                            <p:selectOneMenu id="cmbEstado"
+                                             value="#{ventaFrm.registro.estado}"
+                                             required="true"
+                                             requiredMessage="Debe seleccionar un estado.">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItem itemLabel="ACTIVA" itemValue="ACTIVA"/>
+                                <f:selectItem itemLabel="ANULADA" itemValue="ANULADA"/>
+                                <f:selectItem itemLabel="FINALIZADA" itemValue="FINALIZADA"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel for="txtObservaciones" value="Observaciones:"/>
+                            <p:inputTextarea id="txtObservaciones"
+                                             value="#{ventaFrm.registro.observaciones}"
+                                             rows="4" cols="50"/>
+
+
+                        </h:panelGrid>
+
+                        <ues:botones-crud formulario="#{ventaFrm}" actualizar=":pnlDetalle :pnlTabla :tabVenta"/>
+                    </h:form>
+                </h:panelGroup>
+            </p:tab>
+
+            <p:tab closable="false" title="Producto" disabled="#{ventaFrm.estado != 'MODIFICAR'}">
+                <h:panelGrid>
+                    <h:panelGroup id="pnlPVenta">
+                        <h2>Detalle de Productos</h2>
+                        <h:form id="frmDetalleVentaList">
+                            <p:dataTable value="#{ventaFrm.ventaDetalleFrm.modelo}" var="vd"
+                                         id="tblProductoVenta"
+                                         paginator="true"
+                                         paginatorPosition="bottom"
+                                         lazy="true"
+                                         selection="#{ventaFrm.ventaDetalleFrm.registro}"
+                                         selectionMode="single"
+                                         rows="#{ventaFrm.ventaDetalleFrm.pageSize}"
+                                         rendered="#{ventaFrm.ventaDetalleFrm.estado =='NADA'}"
+                            >
+                                <p:ajax event="rowSelect"
+                                        process="@this"
+                                        listener="#{ventaFrm.ventaDetalleFrm.seleccionarRegistro}"
+                                        update=":tabVenta:pnlPVenta :tabVenta:pnlDetalleVenta"/>
+                                <p:column headerText="ID">
+                                    <h:outputText value="#{vd.id}"/>
+                                </p:column>
+                                <p:column headerText="Producto">
+                                    <h:outputText
+                                            value="#{vd.idProducto.nombreProducto}"/>
+                                </p:column>
+                                <p:column headerText="Cantidad">
+                                    <h:outputText value="#{vd.cantidad}"/>
+                                </p:column>
+                                <p:column headerText="Precio Unitario">
+                                    <h:outputText value="#{vd.precio}">
+                                        <f:convertNumber type="currency" currencySymbol="$" maxFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Estado">
+                                    <h:outputText value="#{vd.estado}">
+                                    </h:outputText>
+                                </p:column>
+                                <p:column headerText="Observaciones">
+                                    <h:outputText value="#{vd.observaciones}">
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                            <ues:botones-top formulario="#{ventaFrm.ventaDetalleFrm}"
+                                             actualizar=":tabVenta:pnlPVenta :tabVenta:pnlDetalleVenta"/>
+                        </h:form>
+                    </h:panelGroup>
+
+                    <h:panelGroup id="pnlDetalleVenta">
+                        <p:growl id="growlDetalleVenta" showDetail="true"/>
+                        <p:growl id="growl-stickyDetalleVenta" for="sticky-key" sticky="true" showDetail="true"/>
+                        <h:panelGrid columns="2" rendered="#{ventaFrm.ventaDetalleFrm.estado !='NADA' }">
+                            <h:form id="frmDetalleVentaEdit">
+                                <h:panelGrid columns="2">
+
+                                    <p:outputLabel for="txtIdDetalle" value="ID:"/>
+                                    <p:inputText id="txtIdDetalle"
+                                                 value="#{ventaFrm.ventaDetalleFrm.registro.id}"
+                                                 readonly="true"
+                                                 disabled="true"/>
+
+                                    <p:outputLabel for="txtProducto" value="Producto:"/>
+                                    <h:panelGroup id="pnlProducto">
+                                        <h:panelGrid columns="2">
+                                            <p:inputText id="txtProducto"
+                                                         value="#{ventaFrm.ventaDetalleFrm.registro.idProducto.nombreProducto}"
+                                                         readonly="true" disabled="true" size="10"/>
+                                            <p:commandButton type="button" onclick="PF('dlgProductSelect').show();"
+                                                             value="Seleccionar Producto" icon="pi pi-external-link"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+
+
+                                    <p:outputLabel for="txtCantidad" value="Cantidad:"/>
+                                    <p:inputNumber id="txtCantidad"
+                                                   value="#{ventaFrm.ventaDetalleFrm.registro.cantidad}"
+                                                   mode="number"
+                                                   integerOnly="true"
+                                                   minValue="1"
+                                                   required="true"
+                                                   requiredMessage="La cantidad debe ser un entero positivo"
+                                                   validator="#{ventaFrm.ventaDetalleFrm.validarCantidad}"
+                                    />
+
+                                    <p:outputLabel for="txtPrecioUnitario" value="Precio Unitario:"/>
+                                    <p:inputNumber id="txtPrecioUnitario"
+                                                   value="#{ventaFrm.ventaDetalleFrm.registro.precio}"
+                                                   mode="decimal"
+                                                   minValue="0.0"
+                                                   minFractionDigits="2"
+                                                   maxFractionDigits="2"
+                                                   required="true"
+                                                   requiredMessage="El precio es obligatorio"
+                                                   validator="#{ventaFrm.ventaDetalleFrm.validarPrecio}"
+                                    />
+
+                                    <p:outputLabel for="cmbEstadoDetalle" value="Estado:"/>
+                                    <p:selectOneMenu id="cmbEstadoDetalle"
+                                                     value="#{ventaFrm.ventaDetalleFrm.registro.estado}"
+                                                     required="true"
+                                                     requiredMessage="Debe seleccionar un estado.">
+                                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}"
+                                                      noSelectionOption="true"/>
+                                        <f:selectItem itemLabel="ACTIVO" itemValue="ACTIVO"/>
+                                        <f:selectItem itemLabel="INACTIVO" itemValue="INACTIVO"/>
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel for="txtObservacionesDetalle" value="Observaciones:"/>
+                                    <p:inputTextarea id="txtObservacionesDetalle"
+                                                     value="#{ventaFrm.ventaDetalleFrm.registro.observaciones}"
+                                                     rows="4" cols="50"/>
+                                </h:panelGrid>
+
+                                <ues:botones-crud formulario="#{ventaFrm.ventaDetalleFrm}"
+                                                  actualizar=":tabVenta:pnlPVenta :tabVenta:pnlDetalleVenta"/>
+                            </h:form>
+                        </h:panelGrid>
+                    </h:panelGroup>
+
+
+                </h:panelGrid>
+            </p:tab>
+
+
+        </p:tabView>
+    </ui:define>
+
+    <ui:define name="extra">
+        <p:dialog id="dlgClienteSelect" widgetVar="dlgClienteSelect" modal="true" closable="true">
+            <h:form id="frmDlgClienteSelect">
+                <h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Seleccione el Cliente:" for="txtClienteSelect"/>
+                        <p:autoComplete id="txtClienteSelect"
+                                        completeMethod="#{ventaFrm.buscarClientesPorNombre}"
+                                        value="#{ventaFrm.registro.idCliente}"
+                                        var="cli"
+                                        converter="clienteConverter"
+                                        itemLabel="#{cli.nombre}"
+                                        itemValue="#{cli}"
+                                        forceSelection="true"
+                                        dropdown="true"
+                                        size="40"
+                                        placeholder="Escribe el nombre del cliente"
+                                        emptyMessage="No se encontraron clientes activos con ese nombre"/>
+
+                    </h:panelGrid>
+                    <h:commandButton value="Seleccionar" process="@from"
+                                     actionListener="#{ventaFrm.btnSeleccionarClienteHandler}"
+                                     update=":tabVenta:frmCrear:pnlCliente"
+                                     oncomplete="PF('dlgClienteSelect').hide();"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgProductSelect" widgetVar="dlgProductSelect" modal="true" closable="true">
+            <h:form id="frmDlgProductSelect">
+                <h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Seleccione el Producto:" for="txtProductSelect"/>
+                        <p:autoComplete id="txtProductSelect"
+                                        completeMethod="#{ventaFrm.ventaDetalleFrm.buscarProductosPorNombre}"
+                                        value="#{ventaFrm.ventaDetalleFrm.registro.idProducto}"
+                                        var="prod"
+                                        converter="productoConverter"
+                                        itemLabel="#{prod.nombreProducto}"
+                                        itemValue="#{prod}"
+                                        forceSelection="true"
+                                        dropdown="true"
+                                        size="40"
+                                        placeholder="Escribe el nombre del producto"
+                                        emptyMessage="No se encontraron productos activos con ese nombre"/>
+                    </h:panelGrid>
+                    <h:commandButton value="Seleccionar" process="@from"
+                                     actionListener="#{ventaFrm.ventaDetalleFrm.btnSeleccionarProductoHandler}"
+                                     update=":tabVenta:pnlDetalleVenta:pnlProducto"
+                                     oncomplete="PF('dlgProductSelect').hide();"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>

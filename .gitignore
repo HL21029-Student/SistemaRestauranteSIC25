@@ -1,0 +1,57 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Ignorar pom y server.xml
+pom.xml
+**/server.xml
+
+### IntelliJ IDEA ###
+# Ignore most .idea files but keep some project configuration
+.idea/*
+!.idea/.gitignore
+!.idea/encodings.xml
+!.idea/misc.xml
+!.idea/vcs.xml
+!.idea/dataSources.xml
+!.idea/jpa.xml
+
+# Always ignore these IntelliJ files
+*.iws
+*.iml
+*.ipr
+
+# Copilot and other plugin data
+.idea/copilot/
+.idea/copilot.data.migration.edit.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/shelf/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store

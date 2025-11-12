@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+    <persistence-unit name="FerreteriaPU" transaction-type="JTA">
+        <jta-data-source>jdbc/pgdb</jta-data-source>
+
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Almacen</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Caracteristica</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Cliente</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Compra</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.CompraDetalle</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Kardex</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.KardexDetalle</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Producto</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.ProductoTipoProducto</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.ProductoTipoProductoCaracteristica</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Proveedor</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoAlmacen</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoProductoCaracteristica</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoProducto</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoUnidadMedida</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.UnidadMedida</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Venta</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.VentaDetalle</class>
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            </properties>
+    </persistence-unit>
+
+</persistence>

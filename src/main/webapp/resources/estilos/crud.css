@@ -1,0 +1,164 @@
+/* ==== Estilo General ==== */
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url("#{resource['imagenes/vista-superior-del-martillo-de-acero-con-otros-elementos-y-herramientas-de-construccion (1).jpg']}");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: rgba(189, 161, 73, 0.1);
+    margin: 0;
+    padding: 20px;
+}
+
+/* ==== Contenedor Principal ==== */
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: rgb(205, 203, 203);
+    padding: 25px;
+    border-radius: 12px;
+    border: 3px solid #8B4513;
+    box-shadow: 0 5px 15px rgba(9, 0, 0, 0.1);
+}
+
+/* ==== Estilo para el selector de idioma ==== */
+#frmIdioma .ui-selectonemenu,
+#frmIdioma .ui-button {
+    margin: 0 !important;
+    padding: 2px 6px !important;
+    font-size: 0.95em;
+}
+
+
+/* ==== Títulos ==== */
+h1, h2, h3 {
+    color: rgba(248, 218, 124, 0.82);
+    text-align: center;
+    margin-bottom: 20px;
+    background: rgba(173, 71, 38, 0.54);
+    padding: 25px;
+    border-radius: 12px;
+}
+
+/* ==== Formularios ==== */
+form {
+    display: grid;
+    border-radius: 10px;
+}
+
+label {
+    font-weight: bold;
+    color: rgba(248, 218, 124, 0.82);
+}
+
+input, select {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 2px solid rgb(173, 71, 38);
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+input:focus, select:focus {
+    border-color: #D2691E;
+    background: rgba(248, 218, 124, 0.82);
+}
+
+input:hover, select:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: #A0522D;
+}
+
+/* ==== Botones ==== */
+button {
+    padding: 10px 18px;
+    background: rgba(139, 69, 19, 0.8);
+    color: #cdcbcb;
+    border: 2px solid #8B4513;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: rgba(181, 82, 3, 0.59);
+    border-color: #A0522D;
+    transform: translateY(-2px);
+}
+
+/* Botones secundarios */
+button.edit {
+    background: rgba(205, 133, 63, 0.8);
+    border-color: #CD853F;
+}
+
+button.edit:hover {
+    background: rgba(222, 184, 135, 0.9);
+    border-color: #DEB887;
+}
+
+button.delete {
+    background: rgba(160, 82, 45, 0.8);
+    border-color: #A0522D;
+}
+
+button.delete:hover {
+    background: rgba(210, 105, 30, 0.9);
+    border-color: #D2691E;
+}
+
+/* ==== Tablas ==== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(170, 78, 46, 0.94);
+    border: 2px solid #8B4513;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #A0522D;
+    text-align: left;
+}
+
+th {
+    background: rgba(139, 69, 19, 0.8);
+    color: #cdcbcb;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background: rgba(170, 78, 46, 0.45);
+}
+
+tr:hover {
+    background: rgba(210, 180, 140, 0.5);
+    cursor: pointer;
+}
+
+td {
+    transition: background 0.3s ease;
+}
+
+/* ==== Mensajes ==== */
+.success {
+    background: rgb(205, 203, 203);
+    color: #000000;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.error {
+    background: rgba(160, 82, 45, 0.85);
+    color: #cdcbcb;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #A0522D;
+    margin-bottom: 15px;
+}

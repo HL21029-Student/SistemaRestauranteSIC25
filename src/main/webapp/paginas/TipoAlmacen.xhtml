@@ -1,0 +1,72 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        template="../WEB-INF/plantilla/default.xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
+        xmlns="http://www.w3.org/1999/xhtml"
+
+>
+    <ui:define name="header">
+        <h1>#{defaultfrm['page.tipoAlmacen']}</h1>
+    </ui:define>
+
+    <ui:define name="contenido-tabla">
+        <h:panelGrid>
+            <h:form id="frmTop">
+                <p:dataTable id="tabla-top"
+                             lazy="true"
+                             rendered="#{tipoAlmacenFrm.estado == 'NADA'}"
+                             styleClass="tabla-crud"
+                             rows="#{tipoAlmacenFrm.pageSize}"
+                             paginator="true"
+                             paginatorPosition="bottom"
+                             value="#{tipoAlmacenFrm.modelo}" var="reg"
+                             selectionMode="single"
+                             selection="#{tipoAlmacenFrm.registro}">
+                    <p:ajax event="rowSelect" listener="#{tipoAlmacenFrm.selectionHandler}"
+                            update=":pnlDetalle :pnlTabla"/>
+
+                    <p:column headerText="ID">
+                        <h:outputText value="#{reg.idTipoAlmacen}"/>
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{reg.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{reg.activo ? 'Activo' : 'Inactivo'}"/>
+                    </p:column>
+                    <p:column headerText="Observacion">
+                        <h:outputText value="#{reg.obsevaciones}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <ues:botones-top formulario="#{tipoAlmacenFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+
+            </h:form>
+        </h:panelGrid>
+    </ui:define>
+
+    <ui:define name="contenido-detalle">
+        <h:form id="frmCrear" rendered="#{tipoAlmacenFrm.estado != 'NADA'}">
+
+            <h:panelGrid columns="2">
+                <p:outputLabel for="txtId" value="ID:"/>
+                <p:inputText id="txtId" value="#{tipoAlmacenFrm.registro.idTipoAlmacen}" readonly="true"
+                             disabled="true"/>
+                <p:outputLabel for="txtNombre" value="Nombre:"/>
+                <p:inputText id="txtNombre" value="#{tipoAlmacenFrm.registro.nombre}" size="75"
+                             required="true"/>
+                <p:outputLabel for="chkActivo" value="Activo:"/>
+                <h:selectBooleanCheckbox id="chkActivo" value="#{tipoAlmacenFrm.registro.activo}"/>
+                <p:outputLabel for="txtObservacion" value="Observacion:"/>
+                <p:inputTextarea id="txtObservacion" value="#{tipoAlmacenFrm.registro.obsevaciones}" rows="4"
+                                 cols="50"/>
+            </h:panelGrid>
+
+            <ues:botones-crud formulario="#{tipoAlmacenFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

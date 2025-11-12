@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JpaBuddyIdeaProjectConfig" migrateDefaultValues="false" reUseTableSchema="true">
+    <option name="migrateDefaultValues" value="false" />
+    <option name="reLastEntityCreationPackage" value="src/main/java/sv/edu/ues/occ/ingenieria/sic135/ferreteria/web/core/entity" />
+    <option name="reverseEngineeringLastDbConnectionId" value="1c91935c-0da5-4430-ab80-04075b51163d" />
+  </component>
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="InventarioWebAppPrn335" name="inventarioPu" framework="JPA" ormUnit="InventarioWebAppPrn335:inventarioPu" defaultDataSourceId="852d42a6-75af-4796-aa6a-941c93a3482c" />
+      <persistence-unit moduleName="InventarioWebAppPrn335" name="InventarioPU" framework="JPA" ormUnit="InventarioWebAppPrn335:InventarioPU" defaultDataSourceId="852d42a6-75af-4796-aa6a-941c93a3482c" />
+    </persistence-units>
+  </component>
+</project>

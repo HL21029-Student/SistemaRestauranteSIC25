@@ -1,0 +1,77 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
+        xmlns="http://www.w3.org/1999/xhtml"
+        template="../WEB-INF/plantilla/default.xhtml">
+
+    <ui:define name="header">
+        <h1>#{defaultfrm['page.cliente']}</h1>
+    </ui:define>
+
+    <ui:define name="contenido-tabla">
+        <h:panelGrid>
+            <h:form id="frmTop">
+                <p:dataTable id="tabla-top"
+                             lazy="true"
+                             rendered="#{clienteFrm.estado == 'NADA'}"
+                             styleClass="tabla-crud"
+                             rows="#{clienteFrm.pageSize}"
+                             paginator="true"
+                             paginatorPosition="bottom"
+                             value="#{clienteFrm.modelo}" var="reg"
+                             selectionMode="single"
+                             selection="#{clienteFrm.registro}">
+                    <p:ajax event="rowSelect" listener="#{clienteFrm.selectionHandler}"
+                            update=":pnlDetalle :pnlTabla"/>
+
+                    <p:column headerText="ID">
+                        <h:outputText value="#{reg.id}"/>
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{reg.nombre}"/>
+                    </p:column>
+                    <p:column headerText="DUI">
+                        <h:outputText value="#{reg.dui}"/>
+                    </p:column>
+                    <p:column headerText="NIT">
+                        <h:outputText value="#{reg.nit}"/>
+                    </p:column>
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{reg.activo ? 'Activo' : 'Inactivo'}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <ues:botones-top formulario="#{clienteFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+            </h:form>
+        </h:panelGrid>
+    </ui:define>
+
+    <ui:define name="contenido-detalle">
+        <h:form id="frmCrear" rendered="#{clienteFrm.estado != 'NADA'}">
+            <h:panelGrid columns="2" columnClasses="etiqueta, campo">
+
+                <p:outputLabel for="txtId" value="ID:"/>
+                <p:inputText id="txtId" value="#{clienteFrm.registro.id}" readonly="true" disabled="true"/>
+
+                <p:outputLabel for="txtNombre" value="Nombre:"/>
+                <p:inputText id="txtNombre" value="#{clienteFrm.registro.nombre}" required="true" maxlength="155"/>
+
+                <p:outputLabel for="txtDui" value="DUI:"/>
+                <p:inputText id="txtDui" value="#{clienteFrm.registro.dui}" maxlength="9"/>
+
+                <p:outputLabel for="txtNit" value="NIT:"/>
+                <p:inputText id="txtNit" value="#{clienteFrm.registro.nit}" maxlength="14"/>
+
+                <p:outputLabel for="chkActivo" value="Activo:"/>
+                <h:selectBooleanCheckbox id="chkActivo" value="#{clienteFrm.registro.activo}"/>
+
+            </h:panelGrid>
+
+            <ues:botones-crud formulario="#{clienteFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
