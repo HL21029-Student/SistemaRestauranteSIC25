@@ -3,9 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# Ignorar pom y server.xml
-pom.xml
-**/server.xml
+
 
 ### IntelliJ IDEA ###
 # Ignore most .idea files but keep some project configuration

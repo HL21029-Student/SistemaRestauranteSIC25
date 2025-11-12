@@ -1,164 +1,180 @@
-/* ==== Estilo General ==== */
+/* Estilo tranquilo y básico - tonos azules con acento naranja */
+
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-image: url("#{resource['imagenes/vista-superior-del-martillo-de-acero-con-otros-elementos-y-herramientas-de-construccion (1).jpg']}");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    color: rgba(189, 161, 73, 0.1);
+    background-image: url('https://img.freepik.com/foto-gratis/vista-superior-martillo-acero-otros-elementos-construccion-herramientas_23-2150576395.jpg?t=st=1762985055~exp=1762988655~hmac=2684a8dbe9c42f753771b88c7aca0188867e927a007b91811e5709e1bf7f7d41&w=1480');
+    color: #083047;
     margin: 0;
     padding: 20px;
 }
 
-/* ==== Contenedor Principal ==== */
+/* Contenedor principal */
 .container {
     max-width: 900px;
-    margin: auto;
-    background: rgb(205, 203, 203);
-    padding: 25px;
-    border-radius: 12px;
-    border: 3px solid #8B4513;
-    box-shadow: 0 5px 15px rgba(9, 0, 0, 0.1);
+    margin: 24px auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(243,154,60,0.18); /* acento naranja suave */
+    box-shadow: 0 6px 18px rgba(3,48,71,0.06);
 }
 
-/* ==== Estilo para el selector de idioma ==== */
+/* Selector de idioma (mantener compatibilidad con componentes existentes) */
 #frmIdioma .ui-selectonemenu,
 #frmIdioma .ui-button {
     margin: 0 !important;
-    padding: 2px 6px !important;
+    padding: 6px 8px !important;
     font-size: 0.95em;
+    background: transparent;
+    border: 1px solid rgba(6, 100, 140, 0.06);
 }
 
-
-/* ==== Títulos ==== */
+/* Títulos */
 h1, h2, h3 {
-    color: rgba(248, 218, 124, 0.82);
+    color: #0b557a;
     text-align: center;
-    margin-bottom: 20px;
-    background: rgba(173, 71, 38, 0.54);
-    padding: 25px;
-    border-radius: 12px;
+    margin-bottom: 18px;
+    background: rgba(6,85,122,0.06);
+    padding: 14px;
+    border-left: 6px solid #f39a3c; /* acento naranja */
+    border-radius: 6px;
 }
 
-/* ==== Formularios ==== */
+/* Formularios */
 form {
     display: grid;
-    border-radius: 10px;
+    gap: 12px;
 }
 
 label {
-    font-weight: bold;
-    color: rgba(248, 218, 124, 0.82);
+    font-weight: 600;
+    color: #0b557a;
+    margin-bottom: 4px;
+    display: inline-block;
 }
 
-input, select {
+input, select, textarea {
     padding: 10px;
-    background: rgba(255, 255, 255, 0.7);
-    border: 2px solid rgb(173, 71, 38);
-    border-radius: 8px;
+    background: #f7fbff;
+    border: 1px solid #cfe9f8;
+    border-radius: 6px;
     outline: none;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     font-size: 14px;
+    color: #083047;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-input:focus, select:focus {
-    border-color: #D2691E;
-    background: rgba(248, 218, 124, 0.82);
+input:focus, select:focus, textarea:focus {
+    border-color: #6fb3e6;
+    box-shadow: 0 0 0 4px rgba(111,179,230,0.10);
 }
 
-input:hover, select:hover {
-    background: rgba(255, 255, 255, 0.85);
-    border-color: #A0522D;
+input:hover, select:hover, textarea:hover {
+    background: #f2f9ff;
 }
 
-/* ==== Botones ==== */
+/* Botones */
 button {
-    padding: 10px 18px;
-    background: rgba(139, 69, 19, 0.8);
-    color: #cdcbcb;
-    border: 2px solid #8B4513;
-    border-radius: 8px;
+    padding: 10px 16px;
+    background: #f39a3c; /* naranja primario */
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
     font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: transform 0.12s ease, background 0.12s ease;
 }
 
 button:hover {
-    background: rgba(181, 82, 3, 0.59);
-    border-color: #A0522D;
+    background: #e07a2a;
     transform: translateY(-2px);
 }
 
 /* Botones secundarios */
 button.edit {
-    background: rgba(205, 133, 63, 0.8);
-    border-color: #CD853F;
+    background: #4aa3d8; /* azul secundaria */
 }
 
 button.edit:hover {
-    background: rgba(222, 184, 135, 0.9);
-    border-color: #DEB887;
+    background: #3b8fbf;
 }
 
 button.delete {
-    background: rgba(160, 82, 45, 0.8);
-    border-color: #A0522D;
+    background: #ff7a45; /* naranja claro para eliminar */
 }
 
 button.delete:hover {
-    background: rgba(210, 105, 30, 0.9);
-    border-color: #D2691E;
+    background: #e65e2b;
 }
 
-/* ==== Tablas ==== */
+/* Tablas */
 table {
     width: 100%;
     border-collapse: collapse;
-    background: rgba(170, 78, 46, 0.94);
-    border: 2px solid #8B4513;
-    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid rgba(6,100,140,0.06);
+    border-radius: 8px;
     overflow: hidden;
 }
 
 th, td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #A0522D;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e6f6ff;
     text-align: left;
+    color: #083047;
 }
 
 th {
-    background: rgba(139, 69, 19, 0.8);
-    color: #cdcbcb;
-    font-weight: bold;
+    background: #e6f6ff;
+    color: #0b557a;
+    font-weight: 600;
 }
 
 tr:nth-child(even) {
-    background: rgba(170, 78, 46, 0.45);
+    background: #fbfdff;
 }
 
 tr:hover {
-    background: rgba(210, 180, 140, 0.5);
+    background: rgba(243,154,60,0.06); /* sutil hover naranja */
     cursor: pointer;
 }
 
 td {
-    transition: background 0.3s ease;
+    transition: background 0.18s ease;
 }
 
-/* ==== Mensajes ==== */
+/* Mensajes */
 .success {
-    background: rgb(205, 203, 203);
-    color: #000000;
+    background: #e6f9ef;
+    color: #0a5b3d;
     padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 15px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(10,91,61,0.12);
 }
 
 .error {
-    background: rgba(160, 82, 45, 0.85);
-    color: #cdcbcb;
+    background: #fff4ea;
+    color: #6b3b14;
     padding: 10px;
-    border-radius: 8px;
-    border: 2px solid #A0522D;
-    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid rgba(243,154,60,0.14);
+    margin-bottom: 12px;
+}
+
+/* Pequeños ajustes responsive */
+@media (max-width: 600px) {
+    .container {
+        padding: 16px;
+        margin: 12px;
+    }
+    h1, h2, h3 {
+        font-size: 1.1em;
+        padding: 10px;
+    }
+    button {
+        width: 100%;
+    }
 }
