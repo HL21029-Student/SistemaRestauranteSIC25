@@ -8,7 +8,6 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.primefaces.event.SelectEvent;
-import sv.edu.ues.occ.ingenieria.prn335.inventario.web.core.control.*;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.control.*;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Cliente;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Venta;
