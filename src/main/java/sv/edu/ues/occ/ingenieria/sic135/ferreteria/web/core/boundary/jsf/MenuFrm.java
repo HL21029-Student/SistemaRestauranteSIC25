@@ -53,12 +53,12 @@ public class MenuFrm implements Serializable {
             String labelAdminCuentas = bundle != null ? bundle.getString("menu.adminCuentas") : "Administración de Cuentas y facturacion";
             String labelAdminUsuarios = bundle != null ? bundle.getString("menu.adminUsuarios") : "Administración de Usuarios";
 
-            DefaultSubMenu tipos = DefaultSubMenu.builder().label(labelTipos).expanded(true).build();
+            DefaultSubMenu tipos = DefaultSubMenu.builder().label(labelTipos).expanded(false).build();
             tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoAlmacen") : "Bodega", "pi pi-building", "TipoAlmacen.jsf"));
             tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoProducto") : "Producto", "pi pi-th-large", "TipoProducto.jsf"));
             tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoUnidadMedida") : "Unidad de Medida", "pi pi-calculator", "TipoUnidadMedida.jsf"));
 
-            DefaultSubMenu especificos = DefaultSubMenu.builder().label(labelEspecificos).expanded(true).build();
+            DefaultSubMenu especificos = DefaultSubMenu.builder().label(labelEspecificos).expanded(false).build();
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.almacen") : "Almacén", "pi pi-warehouse", "Almacen.jsf"));
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.producto") : "Producto", "pi pi-box", "Producto.jsf"));
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.cliente") : "Cliente", "pi pi-user", "Cliente.jsf"));

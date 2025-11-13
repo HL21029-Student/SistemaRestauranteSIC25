@@ -2,7 +2,8 @@
 
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-image: url('https://img.freepik.com/foto-gratis/vista-superior-martillo-acero-otros-elementos-construccion-herramientas_23-2150576395.jpg?t=st=1762985055~exp=1762988655~hmac=2684a8dbe9c42f753771b88c7aca0188867e927a007b91811e5709e1bf7f7d41&w=1480');
+    /*background-image: url('https://img.freepik.com/foto-gratis/vista-superior-martillo-acero-otros-elementos-construccion-herramientas_23-2150576395.jpg?t=st=1762985055~exp=1762988655~hmac=2684a8dbe9c42f753771b88c7aca0188867e927a007b91811e5709e1bf7f7d41&w=1480');*/
+    background: #cdcbcb;
     color: #083047;
     margin: 0;
     padding: 20px;
