@@ -17,8 +17,8 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
     @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
-    public LibroDiarioDAO(Class<LibroDiario> TipoDato) {
-        super(TipoDato);
+    public LibroDiarioDAO() {
+        super(LibroDiario.class);
     }
 
     @Override

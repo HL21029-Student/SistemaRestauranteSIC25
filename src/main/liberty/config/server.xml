@@ -11,9 +11,15 @@
         <user name="dev" password="dev1234"/>
     </basicRegistry>
 
-    <library id="postgres-library">
-        <file name="${server.config.dir}/postgresql-42.7.7.jar" />
+    <library id="primefaces-library">
+        <file name="${server.config.dir}/primefaces-15.0.8-jakarta.jar"/>
     </library>
+
+
+    <library id="postgres-library">
+        <file name="${server.config.dir}/postgresql-42.7.7.jar"/>
+    </library>
+    <jdbcDriver id="postgres-driver" libraryRef="postgres-library" />
 
     <httpEndpoint id="defaultHttpEndpoint" httpPort="9082" httpsPort="9445" />
 
