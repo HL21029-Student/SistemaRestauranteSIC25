@@ -49,11 +49,14 @@ public class MenuFrm implements Serializable {
 
             String labelTipos = bundle != null ? bundle.getString("menu.tipos") : "Tipos";
             String labelEspecificos = bundle != null ? bundle.getString("menu.especificos") : "Específicos";
+            String labelAdminLibros = bundle != null ? bundle.getString("menu.adminLibros") : "Administración de Libros";
+            String labelAdminCuentas = bundle != null ? bundle.getString("menu.adminCuentas") : "Administración de Cuentas y facturacion";
+            String labelAdminUsuarios = bundle != null ? bundle.getString("menu.adminUsuarios") : "Administración de Usuarios";
 
             DefaultSubMenu tipos = DefaultSubMenu.builder().label(labelTipos).expanded(true).build();
-            tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoAlmacen") : "Tipo Almacén", "pi pi-building", "TipoAlmacen.jsf"));
-            tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoProducto") : "Tipo Producto", "pi pi-th-large", "TipoProducto.jsf"));
-            tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoUnidadMedida") : "Tipo de Unidad de Medida", "pi pi-calculator", "TipoUnidadMedida.jsf"));
+            tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoAlmacen") : "Bodega", "pi pi-building", "TipoAlmacen.jsf"));
+            tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoProducto") : "Producto", "pi pi-th-large", "TipoProducto.jsf"));
+            tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoUnidadMedida") : "Unidad de Medida", "pi pi-calculator", "TipoUnidadMedida.jsf"));
 
             DefaultSubMenu especificos = DefaultSubMenu.builder().label(labelEspecificos).expanded(true).build();
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.almacen") : "Almacén", "pi pi-warehouse", "Almacen.jsf"));
@@ -64,8 +67,19 @@ public class MenuFrm implements Serializable {
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.compras") : "Compras", "pi pi-shopping-cart", "Compras.jsf"));
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.ventas") : "Ventas", "pi pi-dollar", "Ventas.jsf"));
 
+            DefaultSubMenu adminLibros = DefaultSubMenu.builder().label(labelAdminLibros).expanded(false).build();
+            adminLibros.getElements().add(crearItem(bundle != null ? bundle.getString("menu.libroDiario") : "Libro Diario", "pi pi-book", "LibroDiario.jsf"));
+            adminLibros.getElements().add(crearItem(bundle != null ? bundle.getString("menu.libroMayor") : "Libro Mayor", "pi pi-bookmark", "LibroMayor.jsf"));
+
+            DefaultSubMenu adminCuentas = DefaultSubMenu.builder().label(labelAdminCuentas).expanded(false).build();
+
+            DefaultSubMenu adminUsuarios = DefaultSubMenu.builder().label(labelAdminUsuarios).expanded(false).build();
+
             model.getElements().add(tipos);
             model.getElements().add(especificos);
+            model.getElements().add(adminLibros);
+            model.getElements().add(adminCuentas);
+            model.getElements().add(adminUsuarios);
 
         } catch (Exception e) {
             e.printStackTrace();
