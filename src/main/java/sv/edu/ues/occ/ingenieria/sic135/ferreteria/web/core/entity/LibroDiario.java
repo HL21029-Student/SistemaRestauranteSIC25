@@ -7,6 +7,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "libro_diario", schema = "public")
+@NamedQueries({
+    @NamedQuery(name = "LibroDiario.findDiarioAjustePadre", query = "SELECT l FROM LibroDiario l WHERE l.diarioAjustePadre IS NULL ORDER BY l.nombre")
+})
 public class LibroDiario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,18 +25,9 @@ public class LibroDiario {
     private String comentario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_detalle_libro_diario")
-    private DetalleLibroDiario idDetalleLibroDiario;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "diario_ajuste_padre")
     private LibroDiario diarioAjustePadre;
 
-    @OneToMany(mappedBy = "diarioAjustePadre")
-    private Set<LibroDiario> libroDiarios = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "idLibroDiario")
-    private Set<LibroMayor> libroMayors = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -59,14 +53,6 @@ public class LibroDiario {
         this.comentario = comentario;
     }
 
-    public DetalleLibroDiario getIdDetalleLibroDiario() {
-        return idDetalleLibroDiario;
-    }
-
-    public void setIdDetalleLibroDiario(DetalleLibroDiario idDetalleLibroDiario) {
-        this.idDetalleLibroDiario = idDetalleLibroDiario;
-    }
-
     public LibroDiario getDiarioAjustePadre() {
         return diarioAjustePadre;
     }
@@ -75,20 +61,5 @@ public class LibroDiario {
         this.diarioAjustePadre = diarioAjustePadre;
     }
 
-    public Set<LibroDiario> getLibroDiarios() {
-        return libroDiarios;
-    }
-
-    public void setLibroDiarios(Set<LibroDiario> libroDiarios) {
-        this.libroDiarios = libroDiarios;
-    }
-
-    public Set<LibroMayor> getLibroMayors() {
-        return libroMayors;
-    }
-
-    public void setLibroMayors(Set<LibroMayor> libroMayors) {
-        this.libroMayors = libroMayors;
-    }
 
 }

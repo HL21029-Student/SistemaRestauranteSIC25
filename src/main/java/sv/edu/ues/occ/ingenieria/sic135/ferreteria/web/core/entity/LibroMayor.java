@@ -18,9 +18,6 @@ public class LibroMayor {
     @Column(name = "observacion")
     private String observacion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_detalle_libro_mayor")
-    private DetalleLibroMayor idDetalleLibroMayor;
 
     public Long getId() {
         return id;
@@ -46,12 +43,5 @@ public class LibroMayor {
         this.observacion = observacion;
     }
 
-    public DetalleLibroMayor getIdDetalleLibroMayor() {
-        return idDetalleLibroMayor;
-    }
-
-    public void setIdDetalleLibroMayor(DetalleLibroMayor idDetalleLibroMayor) {
-        this.idDetalleLibroMayor = idDetalleLibroMayor;
-    }
 
 }

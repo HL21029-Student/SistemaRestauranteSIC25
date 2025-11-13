@@ -11,10 +11,18 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "detalle_libro_diario", schema = "public")
+@NamedQueries({
+        @NamedQuery(name="DetalleLibroDiario.findByLibroDiarioId",
+                query="SELECT d FROM DetalleLibroDiario d WHERE d.libroDiario.id = :libroDiarioId")
+})
 public class DetalleLibroDiario {
     @Id
     @Column(name = "id_detalle_libro_diario", nullable = false)
     private UUID id;
+
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "id_libro_diario")
+    private LibroDiario libroDiario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_kardex_detalle")
@@ -50,11 +58,6 @@ public class DetalleLibroDiario {
     @Column(name = "\"update at\"")
     private OffsetDateTime updateAt;
 
-    @OneToMany(mappedBy = "idDetalleLibroDiario")
-    private Set<Factura> facturas = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "idDetalleLibroDiario")
-    private Set<LibroDiario> libroDiarios = new LinkedHashSet<>();
 
     public UUID getId() {
         return id;
@@ -144,20 +147,11 @@ public class DetalleLibroDiario {
         this.updateAt = updateAt;
     }
 
-    public Set<Factura> getFacturas() {
-        return facturas;
+    public LibroDiario getLibroDiario() {
+        return libroDiario;
     }
 
-    public void setFacturas(Set<Factura> facturas) {
-        this.facturas = facturas;
+    public void setLibroDiario(LibroDiario libroDiario) {
+        this.libroDiario = libroDiario;
     }
-
-    public Set<LibroDiario> getLibroDiarios() {
-        return libroDiarios;
-    }
-
-    public void setLibroDiarios(Set<LibroDiario> libroDiarios) {
-        this.libroDiarios = libroDiarios;
-    }
-
 }
