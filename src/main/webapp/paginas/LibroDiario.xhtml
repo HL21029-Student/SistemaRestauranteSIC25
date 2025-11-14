@@ -73,7 +73,8 @@
                             </p:selectOneMenu>
 
                         </h:panelGrid>
-                        <ues:botones-crud formulario="#{libroDiarioFrm}" actualizar=":pnlDetalle :pnlTabla :tabLibroDiario"/>
+                        <ues:botones-crud formulario="#{libroDiarioFrm}"
+                                          actualizar=":pnlDetalle :pnlTabla :tabLibroDiario"/>
                     </h:form>
                 </h:panelGrid>
             </p:tab>
@@ -148,58 +149,85 @@
 
                     <h:panelGroup id="pnlDetalleAsientosContables">
                         <p:growl id="growlDetalleAsientosContables" showDetail="true"/>
-                        <p:growl id="growl-stickyTablaAsientosContables" for="sticky-key" showDetail="true" sticky="true"/>
+                        <p:growl id="growl-stickyTablaAsientosContables" for="sticky-key" showDetail="true"
+                                 sticky="true"/>
 
-                        <h:form id="frmDetalleAsientosContables">
-                            <h:panelGrid rendered="#{libroDiarioFrm.detalleLibroDiarioFrm.estado != 'NADA'}">
+                        <h:panelGrid rendered="#{libroDiarioFrm.detalleLibroDiarioFrm.estado !='NADA'}">
+                            <h:form id="frmDetalleAsientosContables">
+                                <h:panelGrid columns="2">
 
-                                <p:outputLabel for="txtIdAsiento" value="ID:"/>
-                                <p:inputText id="txtIdAsiento" value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.id}"
-                                             readonly="true" disabled="true"/>
+                                    <p:outputLabel for="txtIdDetalleAsientosContables" value="ID:"/>
+                                    <p:inputText id="txtIdDetalleAsientosContables"
+                                                 value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.id}"
+                                                 readonly="true" disabled="true"/>
 
-                                <p:outputLabel for="txtFechaAsiento" value="Fecha:"/>
-                                <p:calendar id="txtFechaAsiento"
-                                            value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.fecha}"
-                                            pattern="dd/MM/yyyy"/>
+                                    <p:outputLabel for="txtFechaDetalleAsientosContables" value="Fecha:"/>
+                                    <p:calendar id="txtFechaDetalleAsientosContables"
+                                                value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.fecha}"
+                                                pattern="dd/MM/yyyy"/>
 
-                                <p:outputLabel for="cmbCuentaContable" value="Cuenta Contable:"/>
-                                <p:selectOneMenu id="cmbCuentaContable"
-                                                 value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.idCuentaContable}"
-                                                 converter="cuentaContableConverter">
-                                    <f:selectItems value="#{libroDiarioFrm.cuentasContablesDisponibles}"
-                                                   var="cc"
-                                                   itemLabel="#{cc.codigo} - #{cc.nombre}"
-                                                   itemValue="#{cc}"/>
-                                </p:selectOneMenu>
 
-                                <p:outputLabel for="txtNumeroPartida" value="Número de Partida:"/>
-                                <p:inputText id="txtNumeroPartida"
-                                             value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.numeroPartida}"/>
+                                    <p:outputLabel for="acCuentaContableDetalleAsientosContables"
+                                                   value="Cuenta Contable:"/>
+                                    <h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <p:outputLabel value="Seleccione la cuenta contable:"
+                                                           for="acCuentaContableDetalleAsientosContables"/>
+                                            <p:autoComplete id="acCuentaContableDetalleAsientosContables"
+                                                            value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.idCuentaContable}"
+                                                            completeMethod="#{libroDiarioFrm.detalleLibroDiarioFrm.buscarCuentaContablePorNombre}"
+                                                            var="cuenta"
+                                                            converter="cuentaContableConverter"
+                                                            itemLabel="#{cuenta.codigo}-#{cuenta.nombre}"
+                                                            itemValue="#{cuenta}"
+                                                            forceSelection="true"
+                                                            dropdown="true"
+                                                            size="40"
+                                                            placeholder="Ingrese el nombre de la cuenta"
+                                                            emptyMessage="No se encontraron cuentas contables"
+                                            />
+                                        </h:panelGrid>
+                                        <p:commandButton value="Seleccionar Cuenta" type="button"
+                                                         process="@form"
+                                                         actionListener="#{libroDiarioFrm.detalleLibroDiarioFrm.btnSeleccionarCuentaContableHandler}"
+                                                         update=":tabLibroDiario:pnlAsientosContables :tabLibroDiario:pnlDetalleAsientosContables" />
+                                    </h:panelGrid>
 
-                                <p:outputLabel for="txtConceptoAsiento" value="Concepto:"/>
-                                <p:inputText id="txtConceptoAsiento"
-                                             value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.concepto}"/>
+                                    <p:outputLabel for="txtNumeroPartidaDetalleAsientosContables"
+                                                   value="Número de Partida:"/>
+                                    <p:inputText id="txtNumeroPartidaDetalleAsientosContables"
+                                                 value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.numeroPartida}"/>
 
-                                <p:outputLabel for="txtParcialAsiento" value="Parcial:"/>
-                                <p:inputText id="txtParcialAsiento"
-                                             value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.parcial}"/>
+                                    <p:outputLabel for="txtConceptoDetalleAsientosContables" value="Concepto:"/>
+                                    <p:inputText id="txtConceptoDetalleAsientosContables"
+                                                 value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.concepto}"/>
 
-                                <p:outputLabel for="txtDebeAsiento" value="Debe:"/>
-                                <p:inputText id="txtDebeAsiento"
-                                             value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.debe}"/>
-                                <p:outputLabel for="txtMontoAsiento" value="Monto Total:"/>
-                                <p:inputText id="txtMontoAsiento"/>
+                                    <p:outputLabel for="txtParcialDetalleAsientosContables" value="Parcial:"/>
+                                    <p:inputText id="txtParcialDetalleAsientosContables"
+                                                    value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.parcial}"/>
 
-                                <ues:botones-crud formulario="#{libroDiarioFrm.detalleLibroDiarioFrm}"
-                                                  actualizar=":tabLibroDiario:pnlAsientosContables :tabLibroDiario:pnlDetalleAsientosContables :tabLibroDiario"/>
-                            </h:panelGrid>
-                        </h:form>
+                                    <p:outputLabel for="chkDireccionAsientosContables" value="Direccion de la cuenta:"/>
+                                    <h:panelGrid>
+                                        <p:selectOneRadio id="chkDireccionAsientosContables"
+                                                          value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.debe}">
+                                            <f:selectItem itemLabel="Debe" itemValue="#{true}"/>
+                                            <f:selectItem itemLabel="Haber" itemValue="#{false}"/>
+                                        </p:selectOneRadio>
+                                    </h:panelGrid>
+
+                                    <p:outputLabel for="txtMontoDetalleAsientosContables" value="Monto Total:"/>
+                                    <p:inputText id="txtMontoDetalleAsientosContables"
+                                                 value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.monto}"/>
+
+
+                                </h:panelGrid>
+                            </h:form>
+                        </h:panelGrid>
 
                     </h:panelGroup>
 
                 </h:panelGrid>
             </p:tab>
-
 
 
         </p:tabView>

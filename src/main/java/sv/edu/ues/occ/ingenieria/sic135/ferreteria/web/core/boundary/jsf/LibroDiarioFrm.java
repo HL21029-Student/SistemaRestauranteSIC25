@@ -168,7 +168,6 @@ public class LibroDiarioFrm extends DefaultFrm<LibroDiario> implements Serializa
     }
 
 
-
     public TreeNode getRoot() {
         return root;
     }
