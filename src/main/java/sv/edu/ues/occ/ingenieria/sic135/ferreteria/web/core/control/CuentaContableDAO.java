@@ -8,6 +8,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jakarta.persistence.TypedQuery;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.CuentaContable;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Usuario;
 
@@ -289,4 +293,48 @@ public class CuentaContableDAO implements Serializable {
                                 "ORDER BY c.createAt DESC", Object[].class)
                 .getResultList();
     }
+
+    //para poder buscar por nombre en el libro diario
+    public List<CuentaContable> findByNombreLike(final String nombre, int first, int max) {
+        try{
+            if(nombre!=null && !nombre.isBlank() && first>=0 && max>0){
+                TypedQuery<CuentaContable> q= em.createNamedQuery("CuentaContable.findByNombreLike", CuentaContable.class);
+                q.setParameter("nombre", "%" + nombre.trim().toUpperCase()+"%");
+                q.setFirstResult(first);
+                q.setMaxResults(max);
+                return q.getResultList();
+            }
+        } catch (Exception e) {
+            Logger.getLogger(CuentaContableDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+        }
+        return List.of();
+    }
+
+    public CuentaContable findbyId(Long id) {
+        try {
+            if (id == null) {
+                return null;
+            }
+            return em.find(CuentaContable.class, id);
+        } catch (Exception ex) {
+            Logger.getLogger(CuentaContableDAO.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return null;
+        }
+    }
+
+    public List<CuentaContable> findByIdCuentaContable(Long idCuentaContable, int first, int max) {
+        if(idCuentaContable != null){
+            try{
+                TypedQuery<CuentaContable> q = em.createNamedQuery("CuentaContable.findByIdCuentaContable", CuentaContable.class);
+                q.setParameter("id", idCuentaContable);
+                q.setFirstResult(first);
+                q.setMaxResults(max);
+                return q.getResultList();
+            } catch (Exception e) {
+                Logger.getLogger(CuentaContableDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return List.of();
+    }
+
 }

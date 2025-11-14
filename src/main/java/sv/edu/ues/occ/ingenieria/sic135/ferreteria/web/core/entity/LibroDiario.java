@@ -8,7 +8,9 @@ import java.util.Set;
 @Entity
 @Table(name = "libro_diario", schema = "public")
 @NamedQueries({
-    @NamedQuery(name = "LibroDiario.findDiarioAjustePadre", query = "SELECT l FROM LibroDiario l WHERE l.diarioAjustePadre IS NULL ORDER BY l.nombre")
+        @NamedQuery(name = "LibroDiario.findDiarioAjustePadre", query = "SELECT l FROM LibroDiario l WHERE l.diarioAjustePadre IS NULL ORDER BY l.nombre"),
+        @NamedQuery(name = "LibroDiario.findDiarioAjusteHijos", query = "SELECT l FROM LibroDiario l WHERE l.diarioAjustePadre.id = :idPadre ORDER BY l.nombre"),
+        @NamedQuery(name="LibroDiario.findByNameLike", query = "SELECT l FROM LibroDiario l WHERE upper(l.nombre) like :nombre")
 })
 public class LibroDiario {
     @Id
