@@ -83,7 +83,7 @@
 <div class="icon-container">
     <i class=""></i>
 </div>
-<form action="paginas/TipoAlmacen.jsf" method="get">
+<form action="paginas/LibroDiario.jsf" method="get">
     <button class="btn-iniciar">Iniciar</button>
 </form>
 </body>

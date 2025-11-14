@@ -48,6 +48,38 @@ public class DetalleLibroDiarioDAO extends  InventarioDefaultDataAccess<DetalleL
             }
         }
         return Collections.emptyList();
-
     }
+
+    //findByCuentaContableId
+    public List<DetalleLibroDiario> findByCuentaContableId(Long cuentaContableId, int first, int max){
+        if(cuentaContableId!=null){
+            try {
+                TypedQuery<DetalleLibroDiario> q = em.createNamedQuery("DetalleLibroDiario.findByCuentaContableId", DetalleLibroDiario.class);
+                q.setParameter("cuentaContableId", cuentaContableId);
+                q.setFirstResult(first);
+                q.setMaxResults(max);
+                return q.getResultList();
+            }catch (Exception e){
+                Logger.getLogger(DetalleLibroDiarioDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    //countByCuentaContableId
+    public Long countByCuentaContableId(final Long cuentaContableId){
+        if(cuentaContableId!=null){
+            try {
+                TypedQuery<Long> q = em.createNamedQuery("DetalleLibroDiario.countByCuentaContableId", Long.class);
+                q.setParameter("cuentaContableId", cuentaContableId);
+                return q.getSingleResult();
+            }catch (Exception e){
+                Logger.getLogger(DetalleLibroDiarioDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return 0L;
+    }
+
+
+
 }

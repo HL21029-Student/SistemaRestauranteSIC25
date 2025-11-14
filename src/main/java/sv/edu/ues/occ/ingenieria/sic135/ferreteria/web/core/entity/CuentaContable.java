@@ -9,6 +9,13 @@ import java.util.Set;
 
 @Entity
 @Table(name = "cuenta_contable", schema = "public")
+@NamedQueries({
+        @NamedQuery(name = "CuentaContable.findByCodigoLike", query = "SELECT c FROM CuentaContable c WHERE upper(c.codigo) like :codigo"),
+        @NamedQuery(name = "CuentaContable.findByNombreLike", query = "SELECT c FROM CuentaContable c WHERE upper(c.nombre) like :nombre"),
+        @NamedQuery(name = "CuentaContable.findCuentasPadre", query = "SELECT c FROM CuentaContable c WHERE c.cuentaPadre IS NULL ORDER BY c.codigo"),
+        @NamedQuery(name = "CuentaContable.findHijosByPadre", query = "SELECT c FROM CuentaContable c WHERE c.cuentaPadre.id = :idPadre ORDER BY c.codigo"),
+        @NamedQuery(name="CuentaContable.findByIdCuentaContable", query="SELECT c FROM CuentaContable c WHERE c.id = :id"),
+})
 public class CuentaContable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

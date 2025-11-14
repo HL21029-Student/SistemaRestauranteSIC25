@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -13,7 +14,11 @@ import java.util.UUID;
 @Table(name = "detalle_libro_diario", schema = "public")
 @NamedQueries({
         @NamedQuery(name="DetalleLibroDiario.findByLibroDiarioId",
-                query="SELECT d FROM DetalleLibroDiario d WHERE d.libroDiario.id = :libroDiarioId")
+                query="SELECT d FROM DetalleLibroDiario d WHERE d.libroDiario.id = :libroDiarioId"),
+        @NamedQuery(name="DetalleLibroDiario.findByCuentaContableId",
+                query="SELECT d FROM DetalleLibroDiario d WHERE d.idCuentaContable.id = :cuentaContableId"),
+        @NamedQuery(name="DetalleLibroDiario.countByCuentaContableId",
+                query="SELECT COUNT(d) FROM DetalleLibroDiario d WHERE d.idCuentaContable.id = :cuentaContableId")
 })
 public class DetalleLibroDiario {
     @Id
@@ -29,7 +34,7 @@ public class DetalleLibroDiario {
     private KardexDetalle idKardexDetalle;
 
     @Column(name = "fecha")
-    private OffsetDateTime fecha;
+    private Date fecha;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cuenta_contable")
@@ -53,11 +58,22 @@ public class DetalleLibroDiario {
     private BigDecimal monto;
 
     @Column(name = "\"create at\"")
-    private OffsetDateTime createAt;
+    private Date createAt;
 
     @Column(name = "\"update at\"")
-    private OffsetDateTime updateAt;
+    private Date updateAt;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if (!(o instanceof DetalleLibroDiario)) return false;
+        DetalleLibroDiario other = (DetalleLibroDiario) o;
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);
+    }
 
     public UUID getId() {
         return id;
@@ -73,14 +89,6 @@ public class DetalleLibroDiario {
 
     public void setIdKardexDetalle(KardexDetalle idKardexDetalle) {
         this.idKardexDetalle = idKardexDetalle;
-    }
-
-    public OffsetDateTime getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(OffsetDateTime fecha) {
-        this.fecha = fecha;
     }
 
     public CuentaContable getIdCuentaContable() {
@@ -131,20 +139,28 @@ public class DetalleLibroDiario {
         this.monto = monto;
     }
 
-    public OffsetDateTime getCreateAt() {
-        return createAt;
+    public Date getFecha() {
+        return fecha;
     }
 
-    public void setCreateAt(OffsetDateTime createAt) {
-        this.createAt = createAt;
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
     }
 
-    public OffsetDateTime getUpdateAt() {
+    public Date getUpdateAt() {
         return updateAt;
     }
 
-    public void setUpdateAt(OffsetDateTime updateAt) {
+    public void setUpdateAt(Date updateAt) {
         this.updateAt = updateAt;
+    }
+
+    public Date getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
     }
 
     public LibroDiario getLibroDiario() {
