@@ -4,6 +4,7 @@
         template="../WEB-INF/plantilla/default.xhtml"
         xmlns:h="jakarta.faces.html"
         xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
         xmlns="http://www.w3.org/1999/xhtml"
 >
 
@@ -12,10 +13,69 @@
     </ui:define>
 
     <ui:define name="contenido-tabla">
-        <h:panelGroup>
-            <h:outputText value="Pantalla de factura (sin funcionalidad aún)."/>
-        </h:panelGroup>
+        <h:form id="frmFacturas">
+            <ues:botones-top formulario="#{facturaFrm}" actualizar=":pnlTabla :pnlDetalle"/>
+
+            <p:dataTable id="tblFacturas" value="#{facturaFrm.modelo}" var="f"
+                         paginator="true" rows="10" reflow="true"
+                         selectionMode="single" selection="#{facturaFrm.registro}"
+                         rowKey="#{f.id}">
+                <p:ajax event="rowSelect" listener="#{facturaFrm.seleccionarRegistro}" update=":pnlDetalle"/>
+
+                <p:column headerText="Número">
+                    <h:outputText value="#{f.numeroFactura}"/>
+                </p:column>
+                <p:column headerText="Fecha">
+                    <h:outputText value="#{f.fechaFactura}"/>
+                </p:column>
+                <p:column headerText="Subtotal">
+                    <h:outputText value="#{f.subtotal}"/>
+                </p:column>
+                <p:column headerText="Descuento">
+                    <h:outputText value="#{f.descuento}"/>
+                </p:column>
+                <p:column headerText="IVA">
+                    <h:outputText value="#{f.iva ? 'Sí' : 'No'}"/>
+                </p:column>
+                <p:column headerText="Total">
+                    <h:outputText value="#{f.total}"/>
+                </p:column>
+                <p:column headerText="Estado">
+                    <h:outputText value="#{f.estado}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+    <ui:define name="contenido-detalle">
+        <h:form id="frmDetalleFactura">
+            <h:panelGrid columns="2" rendered="#{facturaFrm.registro != null}">
+
+                <h:outputLabel value="Número" for="numero"/>
+                <p:inputText id="numero" value="#{facturaFrm.registro.numeroFactura}"/>
+
+                <h:outputLabel value="Fecha" for="fecha"/>
+                <p:calendar id="fecha" value="#{facturaFrm.registro.fechaFactura}" pattern="yyyy-MM-dd"/>
+
+                <h:outputLabel value="Subtotal" for="subtotal"/>
+                <p:inputNumber id="subtotal" value="#{facturaFrm.registro.subtotal}"/>
+
+                <h:outputLabel value="Descuento" for="descuento"/>
+                <p:inputNumber id="descuento" value="#{facturaFrm.registro.descuento}"/>
+
+                <h:outputLabel value="Aplicar IVA" for="iva"/>
+                <p:selectBooleanCheckbox id="iva" value="#{facturaFrm.registro.iva}"/>
+
+                <h:outputLabel value="Total" for="total"/>
+                <p:inputNumber id="total" value="#{facturaFrm.registro.total}"/>
+
+                <h:outputLabel value="Estado" for="estado"/>
+                <p:inputText id="estado" value="#{facturaFrm.registro.estado}"/>
+
+            </h:panelGrid>
+
+            <ues:botones-crud formulario="#{facturaFrm}" actualizar=":pnlTabla :pnlDetalle"/>
+        </h:form>
     </ui:define>
 
 </ui:composition>
-

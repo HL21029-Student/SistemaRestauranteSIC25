@@ -12,9 +12,29 @@
     </ui:define>
 
     <ui:define name="contenido-tabla">
-        <h:panelGroup>
-            <h:outputText value="Pantalla de reporte de ventas diarias (sin funcionalidad aún)."/>
-        </h:panelGroup>
+        <h:form id="frmReporteVentas">
+            <h:panelGrid columns="3" style="margin-bottom:1rem">
+                <h:outputLabel value="Fecha" for="fecha"/>
+                <p:datePicker id="fecha" value="#{reporteVentasDiariasFrm.fecha}" pattern="yyyy-MM-dd"/>
+                <p:commandButton value="Buscar" actionListener="#{reporteVentasDiariasFrm.cargarVentas}" update="tblVentas"/>
+            </h:panelGrid>
+
+            <p:dataTable id="tblVentas" value="#{reporteVentasDiariasFrm.ventas}" var="v"
+                         paginator="true" rows="10" reflow="true">
+                <p:column headerText="Fecha">
+                    <h:outputText value="#{v.fechaVenta}"/>
+                </p:column>
+                <p:column headerText="Cliente">
+                    <h:outputText value="#{v.idCliente != null ? v.idCliente.nombre : ''}"/>
+                </p:column>
+                <p:column headerText="Total">
+                    <h:outputText value="#{v.total}"/>
+                </p:column>
+                <p:column headerText="Estado">
+                    <h:outputText value="#{v.estado}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
     </ui:define>
 
 </ui:composition>
