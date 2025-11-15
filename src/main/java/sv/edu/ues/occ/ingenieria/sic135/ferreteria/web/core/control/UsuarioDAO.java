@@ -12,7 +12,7 @@ import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Usuario;
 @Stateless
 public class UsuarioDAO implements Serializable {
 
-    @PersistenceContext(unitName = "ferreteriaPU")
+    @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
     /**

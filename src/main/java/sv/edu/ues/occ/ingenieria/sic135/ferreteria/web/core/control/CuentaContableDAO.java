@@ -14,11 +14,12 @@ import java.util.logging.Logger;
 import jakarta.persistence.TypedQuery;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.CuentaContable;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Usuario;
+import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.ManualCuenta;
 
 @Stateless
 public class CuentaContableDAO implements Serializable {
 
-    @PersistenceContext(unitName = "ferreteriaPU")
+    @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
     /**
@@ -272,11 +273,9 @@ public class CuentaContableDAO implements Serializable {
                 .setParameter("idCuenta", cuenta.getId())
                 .getSingleResult();
 
-        Long countManuales = em.createQuery("SELECT COUNT(m) FROM ManualCuenta m WHERE m.idCuentaContable.id = :idCuenta", Long.class)
-                .setParameter("idCuenta", cuenta.getId())
-                .getSingleResult();
+        // Ya no se bloquea por manuales; se eliminarán en cascada.
 
-        return (countMovimientos == 0 && countManuales == 0);
+        return (countMovimientos == 0);
     }
 
     /**
@@ -335,6 +334,11 @@ public class CuentaContableDAO implements Serializable {
             }
         }
         return List.of();
+    }
+
+    public List<ManualCuenta> listarManualCuentas() {
+        return em.createQuery("SELECT m FROM ManualCuenta m ORDER BY m.idCuentaContable.codigo", ManualCuenta.class)
+                .getResultList();
     }
 
 }

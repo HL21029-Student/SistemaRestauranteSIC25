@@ -24,6 +24,13 @@
         <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.UnidadMedida</class>
         <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Venta</class>
         <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.VentaDetalle</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.ManualCuenta</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.CuentaContable</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.DetalleLibroDiario</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Usuario</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoCuenta</class>
+        <class>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.SubTipoCuenta</class>
+
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
             </properties>

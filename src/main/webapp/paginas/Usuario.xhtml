@@ -1,0 +1,66 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        template="../WEB-INF/plantilla/default.xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
+        xmlns="http://www.w3.org/1999/xhtml"
+>
+   <ui:define name="header">
+      <h1>#{defaultfrm['page.Usuario']}</h1>
+   </ui:define>
+
+   <ui:define name="contenido-tabla">
+       <h:form id="frmUsuarios">
+           <ues:botones-top formulario="#{usuarioFrm}" actualizar=":pnlTabla :pnlDetalle"/>
+
+           <p:dataTable id="tblUsuarios" value="#{usuarioFrm.modelo}" var="u"
+                        paginator="true" rows="10" reflow="true"
+                        selectionMode="single" selection="#{usuarioFrm.registro}"
+                        rowKey="#{u.id}">
+               <p:ajax event="rowSelect" listener="#{usuarioFrm.seleccionarRegistro}" update=":pnlDetalle"/>
+
+               <p:column headerText="Username">
+                   <h:outputText value="#{u.username}"/>
+               </p:column>
+               <p:column headerText="Nombre completo">
+                   <h:outputText value="#{u.nombreCompleto}"/>
+               </p:column>
+               <p:column headerText="Email">
+                   <h:outputText value="#{u.email}"/>
+               </p:column>
+               <p:column headerText="Rol">
+                   <h:outputText value="#{u.rol}"/>
+               </p:column>
+               <p:column headerText="Activo">
+                   <h:outputText value="#{u.activo ? 'Sí' : 'No'}"/>
+               </p:column>
+           </p:dataTable>
+       </h:form>
+   </ui:define>
+
+   <ui:define name="contenido-detalle">
+       <h:form id="frmDetalleUsuario">
+           <h:panelGrid columns="2" rendered="#{usuarioFrm.registro != null}">
+               <h:outputLabel value="Username" for="username"/>
+               <p:inputText id="username" value="#{usuarioFrm.registro.username}"/>
+
+               <h:outputLabel value="Nombre completo" for="nombreCompleto"/>
+               <p:inputText id="nombreCompleto" value="#{usuarioFrm.registro.nombreCompleto}"/>
+
+               <h:outputLabel value="Email" for="email"/>
+               <p:inputText id="email" value="#{usuarioFrm.registro.email}"/>
+
+               <h:outputLabel value="Rol" for="rol"/>
+               <p:inputText id="rol" value="#{usuarioFrm.registro.rol}"/>
+
+               <h:outputLabel value="Activo" for="activo"/>
+               <p:selectBooleanCheckbox id="activo" value="#{usuarioFrm.registro.activo}"/>
+           </h:panelGrid>
+
+           <ues:botones-crud formulario="#{usuarioFrm}" actualizar=":pnlTabla :pnlDetalle"/>
+       </h:form>
+   </ui:define>
+
+</ui:composition>

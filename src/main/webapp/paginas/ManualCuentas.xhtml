@@ -1,0 +1,61 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        template="../WEB-INF/plantilla/default.xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns="http://www.w3.org/1999/xhtml"
+>
+
+    <ui:define name="header">
+        <h1>Manual de cuentas</h1>
+    </ui:define>
+
+    <ui:define name="contenido-tabla">
+        <h:form id="frmManualCuentas">
+
+            <p:dataTable id="tblManual" value="#{manualCuentaCrudFrm.manuales}" var="m"
+                         paginator="true" rows="10" reflow="true">
+                <p:column headerText="Código">
+                    <h:outputText value="#{m.idCuentaContable.codigo}"/>
+                </p:column>
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{m.idCuentaContable.nombre}"/>
+                </p:column>
+                <p:column headerText="Naturaleza">
+                    <h:outputText value="#{m.naturalezaCuenta}"/>
+                </p:column>
+                <p:column headerText="Función">
+                    <h:outputText value="#{m.funcionCuenta}"/>
+                </p:column>
+                <p:column headerText="Ejemplos">
+                    <h:outputText value="#{m.ejemploMovimiento}"/>
+                </p:column>
+                <p:column headerText="Acciones">
+                    <p:commandButton value="Editar" actionListener="#{manualCuentaCrudFrm.editarManual(m)}"
+                                     update=":pnlDetalle"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+    <ui:define name="contenido-detalle">
+        <h:form id="frmDetalleManual">
+            <h:panelGrid columns="2" rendered="#{manualCuentaCrudFrm.manualSeleccionado != null}">
+
+                <h:outputLabel value="Naturaleza" for="naturaleza"/>
+                <p:inputTextarea id="naturaleza" value="#{manualCuentaCrudFrm.manualSeleccionado.naturalezaCuenta}" rows="3" cols="40"/>
+
+                <h:outputLabel value="Función" for="funcion"/>
+                <p:inputTextarea id="funcion" value="#{manualCuentaCrudFrm.manualSeleccionado.funcionCuenta}" rows="3" cols="40"/>
+
+                <h:outputLabel value="Ejemplo" for="ejemplo"/>
+                <p:inputTextarea id="ejemplo" value="#{manualCuentaCrudFrm.manualSeleccionado.ejemploMovimiento}" rows="3" cols="40"/>
+            </h:panelGrid>
+
+            <p:commandButton value="Guardar" actionListener="#{manualCuentaCrudFrm.guardarManual}"
+                             update=":pnlTabla :pnlDetalle" rendered="#{manualCuentaCrudFrm.manualSeleccionado != null}"/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

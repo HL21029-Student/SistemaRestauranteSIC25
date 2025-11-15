@@ -62,7 +62,7 @@ public class CuentaContable {
     @OneToMany(mappedBy = "idCuentaContable")
     private Set<DetalleLibroDiario> detalleLibroDiarios = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "idCuentaContable")
+    @OneToMany(mappedBy = "idCuentaContable", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ManualCuenta> manualCuentas = new LinkedHashSet<>();
 
     public Long getId() {
