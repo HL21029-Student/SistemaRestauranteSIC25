@@ -22,7 +22,7 @@
             <p:dataTable id="tblVentas" value="#{reporteVentasDiariasFrm.ventas}" var="v"
                          paginator="true" rows="10" reflow="true">
                 <p:column headerText="Fecha">
-                    <h:outputText value="#{v.fechaVenta}"/>
+                    <h:outputText value="#{v.fecha}"/>
                 </p:column>
                 <p:column headerText="Cliente">
                     <h:outputText value="#{v.idCliente != null ? v.idCliente.nombre : ''}"/>

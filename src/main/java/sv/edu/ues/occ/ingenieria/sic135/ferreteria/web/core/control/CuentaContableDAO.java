@@ -309,6 +309,7 @@ public class CuentaContableDAO implements Serializable {
         return List.of();
     }
 
+    //para poder buscar por id, utilizado en el libro diario
     public CuentaContable findbyId(Long id) {
         try {
             if (id == null) {
@@ -321,6 +322,7 @@ public class CuentaContableDAO implements Serializable {
         }
     }
 
+    //para poder buscar por idCuentaContable,utilizado en el libro diario
     public List<CuentaContable> findByIdCuentaContable(Long idCuentaContable, int first, int max) {
         if(idCuentaContable != null){
             try{
