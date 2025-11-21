@@ -1,18 +1,36 @@
 package sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.control;
 
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoAlmacen;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoCuenta;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-
-public class TipoCuentaDAO implements Serializable {
+@Stateless
+@LocalBean
+public class TipoCuentaDAO extends InventarioDefaultDataAccess<TipoCuenta, Object> implements Serializable {
 
     @PersistenceContext(unitName = "ferreteriaPU")
     private EntityManager em;
+
+    public TipoCuentaDAO(Class<TipoCuenta> TipoDato) {
+        super(TipoDato);
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return em;
+    }
+
+    @Override
+    protected Class<TipoCuenta> getEntityClass() {
+        return TipoCuenta.class;
+    }
 
     /**
      * Crea un nuevo registro de {@link TipoCuenta} en la base de datos.
@@ -99,4 +117,6 @@ public class TipoCuentaDAO implements Serializable {
                 .getSingleResult();
         return count > 0;
     }
+
+
 }

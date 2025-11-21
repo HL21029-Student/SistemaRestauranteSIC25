@@ -1,5 +1,6 @@
 package sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.control;
 
+import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -7,13 +8,30 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoAlmacen;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Usuario;
 
 @Stateless
-public class UsuarioDAO implements Serializable {
+@LocalBean
+public class UsuarioDAO extends InventarioDefaultDataAccess<Usuario, Object> implements Serializable {
 
     @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
+
+    public UsuarioDAO(Class<Usuario> TipoDato) {
+        super(TipoDato);
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return em;
+    }
+
+    @Override
+    protected Class<Usuario> getEntityClass() {
+        return Usuario.class;
+    }
 
     /**
      * Crea un nuevo usuario en la base de datos.
@@ -165,4 +183,6 @@ public class UsuarioDAO implements Serializable {
                 .getSingleResult();
         return count > 0;
     }
+
+
 }

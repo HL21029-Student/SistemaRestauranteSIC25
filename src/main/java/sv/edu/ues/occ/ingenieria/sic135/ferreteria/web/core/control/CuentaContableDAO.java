@@ -1,5 +1,6 @@
 package sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.control;
 
+import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -13,14 +14,30 @@ import java.util.logging.Logger;
 
 import jakarta.persistence.TypedQuery;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.CuentaContable;
+import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.TipoAlmacen;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Usuario;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.ManualCuenta;
 
 @Stateless
-public class CuentaContableDAO implements Serializable {
+@LocalBean
+public class CuentaContableDAO extends InventarioDefaultDataAccess<TipoAlmacen, Object> implements Serializable {
 
     @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
+
+    public CuentaContableDAO(Class<TipoAlmacen> TipoDato) {
+        super(TipoDato);
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return em;
+    }
+
+    @Override
+    protected Class<TipoAlmacen> getEntityClass() {
+        return TipoAlmacen.class;
+    }
 
     /**
      * Crea una nueva cuenta contable y registra los datos de auditoría
@@ -340,5 +357,6 @@ public class CuentaContableDAO implements Serializable {
         return em.createQuery("SELECT m FROM ManualCuenta m ORDER BY m.idCuentaContable.codigo", ManualCuenta.class)
                 .getResultList();
     }
+
 
 }

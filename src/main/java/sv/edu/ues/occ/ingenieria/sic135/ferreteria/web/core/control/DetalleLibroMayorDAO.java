@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 @Stateless
 @LocalBean
 public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLibroMayor, Object> implements Serializable {
-    @PersistenceContext
+    @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
     public DetalleLibroMayorDAO() {
