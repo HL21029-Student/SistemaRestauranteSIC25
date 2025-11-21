@@ -20,13 +20,13 @@ import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.ManualCuenta;
 
 @Stateless
 @LocalBean
-public class CuentaContableDAO extends InventarioDefaultDataAccess<TipoAlmacen, Object> implements Serializable {
+public class CuentaContableDAO extends InventarioDefaultDataAccess<CuentaContable, Object> implements Serializable {
 
     @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
-    public CuentaContableDAO(Class<TipoAlmacen> TipoDato) {
-        super(TipoDato);
+    public CuentaContableDAO() {
+        super(CuentaContable.class);
     }
 
     @Override
@@ -35,8 +35,8 @@ public class CuentaContableDAO extends InventarioDefaultDataAccess<TipoAlmacen, 
     }
 
     @Override
-    protected Class<TipoAlmacen> getEntityClass() {
-        return TipoAlmacen.class;
+    protected Class<CuentaContable> getEntityClass() {
+        return CuentaContable.class;
     }
 
     /**

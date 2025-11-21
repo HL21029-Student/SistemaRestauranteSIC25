@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class CuentaContableConverter implements Converter<CuentaContable>, Serializable {
     @Inject
     CuentaContableDAO cuentaContableDAO;
+
     @Override
     public CuentaContable getAsObject(FacesContext facesContext, UIComponent uiComponent, String s) {
         if(s != null && !s.isBlank()){
@@ -27,7 +28,6 @@ public class CuentaContableConverter implements Converter<CuentaContable>, Seria
                 String idStr = s.substring(inicioId+1, finId);
                 try{
                     Long id = Long.valueOf(idStr);
-                    //refactorizar el metdo findbyId a findOfId para estandarizar nombres
                     return cuentaContableDAO.findbyId(id);
                 }catch(Exception ex){
                     Logger.getLogger(CuentaContableConverter.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);

@@ -19,8 +19,8 @@ public class UsuarioDAO extends InventarioDefaultDataAccess<Usuario, Object> imp
     @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
-    public UsuarioDAO(Class<Usuario> TipoDato) {
-        super(TipoDato);
+    public UsuarioDAO() {
+        super(Usuario.class);
     }
 
     @Override
