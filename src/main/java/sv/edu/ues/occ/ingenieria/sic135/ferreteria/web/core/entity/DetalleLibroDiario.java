@@ -30,7 +30,7 @@ public class DetalleLibroDiario {
     private LibroDiario libroDiario;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_kardex_detalle")
+    @JoinColumn(name = "id_kardex_detalle", nullable = true)
     private KardexDetalle idKardexDetalle;
 
     @Column(name = "fecha")

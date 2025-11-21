@@ -8,6 +8,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "kardex_detalle", schema = "public")
+@NamedQueries({
+        @NamedQuery(name = "KardexDetalle.findByReferenciaLoteLike",
+                query = "SELECT k FROM KardexDetalle k WHERE k.lote LIKE :lote")
+})
 public class KardexDetalle {
     @Id
     @Column(name = "id_kardex_detalle", nullable = false)
