@@ -165,6 +165,8 @@
                                     <p:calendar id="txtFechaDetalleAsientosContables"
                                                 value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.fecha}"
                                                 pattern="dd/MM/yyyy"/>
+
+
                                     <p:outputLabel for="acCuentaContableDetalleAsientosContables"
                                                    value="Cuenta Contable:"/>
                                     <h:panelGrid>
@@ -176,7 +178,7 @@
                                                             completeMethod="#{libroDiarioFrm.detalleLibroDiarioFrm.buscarCuentaContablePorNombre}"
                                                             var="cuenta"
                                                             converter="cuentaContableConverter"
-                                                            itemLabel="#{cuenta.nombre}"
+                                                            itemLabel="#{cuenta.codigo}-#{cuenta.nombre}"
                                                             itemValue="#{cuenta}"
                                                             forceSelection="true"
                                                             dropdown="true"
@@ -200,6 +202,10 @@
                                     <p:inputText id="txtConceptoDetalleAsientosContables"
                                                  value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.concepto}"/>
 
+                                    <p:outputLabel for="txtParcialDetalleAsientosContables" value="Parcial:"/>
+                                    <p:inputText id="txtParcialDetalleAsientosContables"
+                                                    value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.parcial}"/>
+
                                     <p:outputLabel for="chkDireccionAsientosContables" value="Direccion de la cuenta:"/>
                                     <h:panelGrid>
                                         <p:selectOneRadio id="chkDireccionAsientosContables"
@@ -215,10 +221,6 @@
 
 
                                 </h:panelGrid>
-
-                                <ues:botones-crud formulario="#{libroDiarioFrm.detalleLibroDiarioFrm}"
-                                                  actualizar=":tabLibroDiario:pnlAsientosContables :tabLibroDiario:pnlDetalleAsientosContables"/>
-
                             </h:form>
                         </h:panelGrid>
 
