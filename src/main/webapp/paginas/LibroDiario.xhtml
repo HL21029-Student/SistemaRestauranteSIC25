@@ -164,7 +164,6 @@
                                                 value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.fecha}"
                                                 pattern="dd/MM/yyyy"/>
 
-
                                     <p:outputLabel for="acCuentaContable" value="Nombre Cuenta:"/>
                                     <h:panelGroup id="pnlAsientosContables">
                                         <h:panelGrid>
@@ -178,20 +177,6 @@
                                             />
                                         </h:panelGrid>
                                     </h:panelGroup>
-
-                                    <p:outputLabel for="txtKardex" value="Referencia Lote de Kardex:"/>
-                                    <h:panelGroup id="pnlKardexSeleccion">
-                                        <h:panelGrid>
-                                            <p:inputText id="txtKardex"
-                                                         value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.idKardexDetalle != null ? libroDiarioFrm.detalleLibroDiarioFrm.registro.idKardexDetalle.lote : ''}"
-                                                         readonly="true" disabled="true" size="40"/>
-                                            <p:commandButton type="button" onclick="PF('dlgBuscarKardexDetalle').show();"
-                                                             value="Buscar Kardex" icon="pi pi-search"/>
-                                            <p:commandButton value="Limpiar" actionListener="#{libroDiarioFrm.detalleLibroDiarioFrm.btnLimpiarKardexHandler}"
-                                                             update=":tabLibroDiario:frmDetalleAsientosContables"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-
 
                                     <p:outputLabel for="txtNumeroPartidaDetalleAsientosContables"
                                                    value="Número de Partida:"/>
@@ -261,31 +246,6 @@
             </h:form>
         </p:dialog>
 
-        <p:dialog id="dlgBuscarKardexDetalle" widgetVar="dlgBuscarKardexDetalle" modal="true" closable="true">
-            <h:form id="frmDlgBuscarKardexDetalle">
-                <h:panelGrid>
-                    <h:panelGrid columns="2">
-                        <p:outputLabel value="Seleccione el Kardex (detalle):" for="acKardex"/>
-                        <p:autoComplete id="acKardex"
-                                        completeMethod="#{libroDiarioFrm.detalleLibroDiarioFrm.buscarKardexDetallePorReferencia}"
-                                        value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.idKardexDetalle}"
-                                        var="kd"
-                                        converter="kardexDetalleConverter"
-                                        itemLabel="#{kd.referencia}"
-                                        itemValue="#{kd}"
-                                        forceSelection="true"
-                                        dropdown="true"
-                                        size="40"
-                                        placeholder="Ingrese referencia del kardex"
-                                        emptyMessage="No se encontraron registros"/>
-                    </h:panelGrid>
-                    <h:commandButton value="Seleccionar Kardex" process="@form"
-                                     actionListener="#{libroDiarioFrm.detalleLibroDiarioFrm.btnSeleccionarKardexDetalleHandler}"
-                                     update=":tabLibroDiario:frmDetalleAsientosContables"
-                                     oncomplete="PF('dlgBuscarKardexDetalle').hide();"/>
-                </h:panelGrid>
-            </h:form>
-        </p:dialog>
     </ui:define>
 
 </ui:composition>

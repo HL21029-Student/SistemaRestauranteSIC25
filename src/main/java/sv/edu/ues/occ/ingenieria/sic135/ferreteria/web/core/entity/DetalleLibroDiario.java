@@ -29,10 +29,6 @@ public class DetalleLibroDiario {
     @JoinColumn(name = "id_libro_diario")
     private LibroDiario libroDiario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_kardex_detalle", nullable = true)
-    private KardexDetalle idKardexDetalle;
-
     @Column(name = "fecha")
     private Date fecha;
 
@@ -83,13 +79,6 @@ public class DetalleLibroDiario {
         this.id = id;
     }
 
-    public KardexDetalle getIdKardexDetalle() {
-        return idKardexDetalle;
-    }
-
-    public void setIdKardexDetalle(KardexDetalle idKardexDetalle) {
-        this.idKardexDetalle = idKardexDetalle;
-    }
 
     public CuentaContable getIdCuentaContable() {
         return idCuentaContable;

@@ -36,10 +36,6 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
     protected Long idCuentaContable;
     List<CuentaContable> cuentaContables;
 
-    //para poder implementar referenias atravez de kardex
-    @Inject
-    KardexDetalleDAO kardexDetalleDAO;
-    protected UUID idKardexDetalle;
 
     @Named("libroDiarioFrm")
     @Inject
@@ -58,7 +54,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     @Override
     protected String getIdAsText(DetalleLibroDiario r) {
-        if(r!= null && r.getId() != null){
+        if (r != null && r.getId() != null) {
             return r.getId().toString();
         }
         return null;
@@ -66,12 +62,12 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     @Override
     protected DetalleLibroDiario getIdByText(String id) {
-        if(id != null && id.isBlank() && this.modelo != null && this.modelo.getWrappedData() != null && !this.modelo.getWrappedData().isEmpty()){
-            try{
+        if (id != null && id.isBlank() && this.modelo != null && this.modelo.getWrappedData() != null && !this.modelo.getWrappedData().isEmpty()) {
+            try {
                 Long buscado = Long.parseLong(id);
                 return this.modelo.getWrappedData().stream().filter(r -> r.getId().equals(buscado)).findFirst().orElse(null);
-            }catch(IllegalArgumentException e){
-                Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(java.util.logging.Level.SEVERE,e.getMessage(),e);
+            } catch (IllegalArgumentException e) {
+                Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(java.util.logging.Level.SEVERE, e.getMessage(), e);
             }
         }
         return null;
@@ -79,11 +75,12 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     @PostConstruct
     @Override
-    public void inicializar(){
+    public void inicializar() {
         super.inicializar();
-        if(this.idCuentaContable !=null){
+
+        if (this.idCuentaContable != null) {
             listaDetalleLibroDiarios = detalleLibroDiarioDAO.findByCuentaContableId(this.idCuentaContable, 0, Integer.MAX_VALUE);
-        }else {
+        } else {
             listaDetalleLibroDiarios = List.of();
         }
     }
@@ -98,7 +95,6 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
         detalleLibroDiario.setParcial(BigDecimal.ZERO);
         detalleLibroDiario.setDebe(false);
         detalleLibroDiario.setMonto(BigDecimal.ZERO);
-
         return detalleLibroDiario;
     }
 
@@ -109,7 +105,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     @Override
     protected DetalleLibroDiario buscarRegistroPorId(Object id) {
-        if(id instanceof UUID buscado && this.modelo != null){
+        if (id instanceof UUID buscado && this.modelo != null) {
             return this.modelo.getWrappedData().stream().filter(r -> r.getId().equals(buscado)).findFirst().orElse(null);
         }
         return null;
@@ -117,26 +113,26 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     //cargar datos
     @Override
-    public List<DetalleLibroDiario> cargarDatos(int first, int max){
-        try{
-            if(first>=0 && max>0 && this.idCuentaContable!=null) {
+    public List<DetalleLibroDiario> cargarDatos(int first, int max) {
+        try {
+            if (first >= 0 && max > 0 && this.idCuentaContable != null) {
                 return detalleLibroDiarioDAO.findByCuentaContableId(this.idCuentaContable, first, max);
             }
-        }catch (Exception e){
-            Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.SEVERE,e.getMessage(),e);
+        } catch (Exception e) {
+            Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.SEVERE, e.getMessage(), e);
         }
         return listaDetalleLibroDiarios;
     }
 
     //contar datos
     @Override
-    public int contarDatos(){
-        try{
-            if(this.idCuentaContable!=null) {
+    public int contarDatos() {
+        try {
+            if (this.idCuentaContable != null) {
                 return this.detalleLibroDiarioDAO.countByCuentaContableId(this.idCuentaContable).intValue();
             }
-        }catch (Exception e){
-            Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.SEVERE,e.getMessage(),e);
+        } catch (Exception e) {
+            Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.SEVERE, e.getMessage(), e);
         }
         return 0;
     }
@@ -144,12 +140,12 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     //buscar cuenta por nombre de cuenta contable
     public List<CuentaContable> buscarCuentaContablePorNombre(final String nombre) {
-        try{
-            if(nombre != null && !nombre.isBlank()) {
+        try {
+            if (nombre != null && !nombre.isBlank()) {
                 return cuentaContableDAO.findByNombreLike(nombre, 0, Integer.MAX_VALUE);
             }
         } catch (Exception e) {
-            Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.SEVERE,e.getMessage(),e);
+            Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.SEVERE, e.getMessage(), e);
         }
         return List.of();
     }
@@ -169,11 +165,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
                 if (this.idCuentaContable != null) {
                     try {
                         CuentaContable cuenta = cuentaContableDAO.findbyId(this.idCuentaContable);
-                        if (cuenta != null) {
-                            this.registro.setIdCuentaContable(cuenta);
-                        } else {
-                            this.registro.setIdCuentaContable(null);
-                        }
+                        this.registro.setIdCuentaContable(cuenta);
                     } catch (Exception e) {
                         Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.WARNING, e.getMessage(), e);
                         this.registro.setIdCuentaContable(null);
@@ -181,41 +173,6 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
                 } else {
                     this.registro.setIdCuentaContable(null);
                 }
-
-                // NORMALIZAR idKardexDetalle: si hay UUID cargar la entidad; si no, asegurar null.
-                if (this.idKardexDetalle != null) {
-                    try {
-                        KardexDetalle kardex = kardexDetalleDAO.findbyId(this.idKardexDetalle);
-                        if (kardex != null) {
-                            this.registro.setIdKardexDetalle(kardex);
-                        } else {
-                            this.registro.setIdKardexDetalle(null);
-                        }
-                    } catch (Exception e) {
-                        Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.WARNING, e.getMessage(), e);
-                        this.registro.setIdKardexDetalle(null);
-                    }
-                } else {
-                    // Protección adicional: limpiar posibles valores inválidos que vengan del formulario
-                    if (this.registro.getIdKardexDetalle() != null) {
-                        try {
-                            UUID posibleId = this.registro.getIdKardexDetalle().getId();
-                            if (posibleId == null) {
-                                this.registro.setIdKardexDetalle(null);
-                            } else {
-                                // opcional: reemplazar por la entidad gestionada
-                                KardexDetalle kardex = kardexDetalleDAO.findbyId(posibleId);
-                                this.registro.setIdKardexDetalle(kardex);
-                            }
-                        } catch (Exception ex) {
-                            Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.WARNING, ex.getMessage(), ex);
-                            this.registro.setIdKardexDetalle(null);
-                        }
-                    } else {
-                        this.registro.setIdKardexDetalle(null);
-                    }
-                }
-
                 super.btnGuardarHandler(actionEvent);
             } catch (Exception e) {
                 Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.SEVERE, e.getMessage(), e);
@@ -223,58 +180,35 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
         }
     }
 
+
     //btnSeleccionarCuentaContableHandler
     public void btnSeleccionarCuentaContableHandler(ActionEvent actionEvent) {
-        if(this.registro != null && this.registro.getIdCuentaContable() != null){
-            this.cuentaContables = cuentaContableDAO.findByIdCuentaContable(this.registro.getIdCuentaContable().getId(), 0, Integer.MAX_VALUE);
-            this.idCuentaContable = this.registro.getIdCuentaContable().getId();
-        }else{
-            this.cuentaContables = List.of();
-            this.idCuentaContable = null;
-        }
-    }
-
-    //Logica base para poder inicializar la funcionalidad de kardexDetalle
-    //pero en realidad esta logica va mas allá de kardex
-    public void btnSeleccionarKardexDetalleHandler(ActionEvent actionEvent) {
-        if(this.registro != null && this.registro.getIdKardexDetalle() != null){
-            this.idKardexDetalle = this.registro.getIdKardexDetalle().getId();
-        } else {
-            this.idKardexDetalle = null;
-        }
-    }
-
-    public void btnLimpiarKardexHandler(ActionEvent actionEvent) {
-        if(this.registro != null){
-            this.registro.setIdKardexDetalle(null);
-            this.idKardexDetalle = null;
-        }
-    }
-
-    //se utiliza el nombre del lote para referenciar y buscar por él
-    public List<KardexDetalle> buscarKardexDetallePorReferencia(final String lote){
-        try{
-            if(lote != null && !lote.isBlank()) {
-                return kardexDetalleDAO.findByReferenciaLoteLike(lote, 0, Integer.MAX_VALUE);
+        if (this.registro != null &&
+                this.idCuentaContable != null) {
+            try {
+                CuentaContable cuenta = cuentaContableDAO.findbyId(this.idCuentaContable);
+                this.registro.setIdCuentaContable(cuenta);
+            } catch (Exception e) {
+                Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.WARNING, e.getMessage(), e);
+                this.registro.setIdCuentaContable(null);
             }
-        } catch (Exception e) {
-            Logger.getLogger(DetalleLibroDiarioFrm.class.getName()).log(Level.SEVERE,e.getMessage(),e);
         }
-        return List.of();
     }
 
-    public UUID getIdKardexDetalle() {
-        return idKardexDetalle;
+    //Sobrescribir la seleccion para inicializar el flag en estado MODIFICAR
+    @Override
+    public void btnSeleccionarHandler(DetalleLibroDiario registro) {
+
     }
-    public void setIdKardexDetalle(UUID idKardexDetalle) {
-        this.idKardexDetalle = idKardexDetalle;
-    }
+
 
     public Long getIdCuentaContable() {
         return idCuentaContable;
     }
 
-    public void setIdCuentaContable(Long idCuentaContable) {this.idCuentaContable = idCuentaContable;}
+    public void setIdCuentaContable(Long idCuentaContable) {
+        this.idCuentaContable = idCuentaContable;
+    }
 
     public LibroDiario getIdLibroDiario() {
         return idLibroDiario;
@@ -291,4 +225,6 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
     public void setLibroDiarioFrm(LibroDiarioFrm libroDiarioFrm) {
         this.libroDiarioFrm = libroDiarioFrm;
     }
+
+
 }

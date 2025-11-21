@@ -14,11 +14,10 @@ import java.util.UUID;
 })
 public class KardexDetalle {
     @Id
-    @Column(name = "id_kardex_detalle", nullable = false)
+    @Column(name = "id_kardex_detalle", nullable = false, columnDefinition = "uuid")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-//    @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "id_kardex")
     private Kardex idKardex;
 

@@ -45,6 +45,6 @@ public class KardexDetalleDAO extends InventarioDefaultDataAccess<KardexDetalle,
     }catch(Exception e){
            Logger.getLogger(KardexDetalleDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
        }
-       return List.of();
+       return null;
     }
 }
