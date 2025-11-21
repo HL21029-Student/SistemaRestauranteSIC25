@@ -21,8 +21,8 @@ public class SubTipoCuentaDAO extends InventarioDefaultDataAccess<SubTipoCuenta,
     private EntityManager em;
 
     // Constructor por defecto que inicializa la clase base con el tipo de entidad.
-    public SubTipoCuentaDAO(Class<SubTipoCuenta> TipoDato) {
-        super(TipoDato);
+    public SubTipoCuentaDAO() {
+        super(SubTipoCuenta.class);
     }
 
     //aquí seguimos el patron de la implementación de los DAO

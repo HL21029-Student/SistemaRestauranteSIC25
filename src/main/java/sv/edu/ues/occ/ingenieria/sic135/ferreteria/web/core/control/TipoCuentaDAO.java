@@ -18,8 +18,8 @@ public class TipoCuentaDAO extends InventarioDefaultDataAccess<TipoCuenta, Objec
     @PersistenceContext(unitName = "ferreteriaPU")
     private EntityManager em;
 
-    public TipoCuentaDAO(Class<TipoCuenta> TipoDato) {
-        super(TipoDato);
+    public TipoCuentaDAO() {
+        super(TipoCuenta.class);
     }
 
     @Override

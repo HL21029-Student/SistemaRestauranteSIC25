@@ -37,7 +37,7 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
         try{
             return em.createNamedQuery("LibroDiario.findDiarioAjustePadre", LibroDiario.class).getResultList();
         }catch (Exception ex){
-            Logger.getLogger(LibroDiarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LibroDiarioDAO.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return List.of();
         }
     }
@@ -49,7 +49,7 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
                     .setParameter("idPadre", idPadre)
                     .getResultList();
         } catch (Exception ex) {
-            Logger.getLogger(LibroDiarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LibroDiarioDAO.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return List.of();
         }
     }
@@ -65,9 +65,21 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
                 return q.getResultList();
             }
         }catch (Exception ex){
-            Logger.getLogger(LibroDiarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LibroDiarioDAO.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
         }
         return List.of();
+    }
+
+    public LibroDiario findById(final Long id) {
+        if(id == null){
+            return null;
+        }
+        try {
+            return em.find(LibroDiario.class, id);
+        } catch (Exception ex) {
+            Logger.getLogger(LibroDiarioDAO.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return null;
+        }
     }
 
 

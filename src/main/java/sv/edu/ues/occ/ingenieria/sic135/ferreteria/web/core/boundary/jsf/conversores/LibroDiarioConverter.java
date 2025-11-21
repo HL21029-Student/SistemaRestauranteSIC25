@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 @FacesConverter(value = "libroDiarioConverter", managed = true)
 @Dependent
-public class libroDiarioConverter implements Converter<LibroDiario>, Serializable {
+public class LibroDiarioConverter implements Converter<LibroDiario>, Serializable {
     @Inject
     LibroDiarioDAO libroDiarioDAO;
 
@@ -30,7 +30,7 @@ public class libroDiarioConverter implements Converter<LibroDiario>, Serializabl
                     Long id = Long.valueOf(idStr);
                     return libroDiarioDAO.findById(id);
                 }catch(Exception ex){
-                    Logger.getLogger(libroDiarioConverter.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+                    Logger.getLogger(LibroDiarioConverter.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
                 }
             }
         }
