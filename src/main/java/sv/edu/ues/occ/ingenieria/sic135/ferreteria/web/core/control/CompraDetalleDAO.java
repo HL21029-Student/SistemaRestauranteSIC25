@@ -20,17 +20,11 @@ public class CompraDetalleDAO extends InventarioDefaultDataAccess<CompraDetalle,
 
     @Override
     public EntityManager getEntityManager() {
-        return em;
+        return null;
     }
 
     @Override
     protected Class<CompraDetalle> getEntityClass() {
-        return CompraDetalle.class;
+        return null;
     }
-
-    //implementar logica de negocio aqui
-    //calcular costos totales por producto y luego por dia
-
-
-
 }
