@@ -20,11 +20,11 @@ public class CompraDetalleDAO extends InventarioDefaultDataAccess<CompraDetalle,
 
     @Override
     public EntityManager getEntityManager() {
-        return null;
+        return em;
     }
 
     @Override
     protected Class<CompraDetalle> getEntityClass() {
-        return null;
+        return CompraDetalle.class;
     }
 }

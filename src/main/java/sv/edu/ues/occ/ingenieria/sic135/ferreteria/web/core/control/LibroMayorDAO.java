@@ -20,11 +20,11 @@ public class LibroMayorDAO extends InventarioDefaultDataAccess<LibroMayor, Objec
 
     @Override
     public EntityManager getEntityManager() {
-        return null;
+        return em;
     }
 
     @Override
     protected Class<LibroMayor> getEntityClass() {
-        return null;
+        return LibroMayor.class;
     }
 }

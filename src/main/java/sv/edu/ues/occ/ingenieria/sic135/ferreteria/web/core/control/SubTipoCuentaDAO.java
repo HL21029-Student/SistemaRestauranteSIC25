@@ -1,5 +1,7 @@
 package sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.control;
 
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.SubTipoCuenta;
@@ -8,14 +10,31 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public class SubTipoCuentaDAO implements Serializable {
-
+@Stateless
+@LocalBean
+public class SubTipoCuentaDAO extends InventarioDefaultDataAccess<SubTipoCuenta, Object> implements Serializable {
     /**
      * Manejador de entidades JPA utilizado para ejecutar operaciones
      * de persistencia sobre la base de datos.
      */
     @PersistenceContext(unitName = "ferreteriaPU")
     private EntityManager em;
+
+    // Constructor por defecto que inicializa la clase base con el tipo de entidad.
+    public SubTipoCuentaDAO(Class<SubTipoCuenta> TipoDato) {
+        super(TipoDato);
+    }
+
+    //aquí seguimos el patron de la implementación de los DAO
+    @Override
+    public EntityManager getEntityManager() {
+        return em;
+    }
+
+    @Override
+    protected Class<SubTipoCuenta> getEntityClass() {
+        return SubTipoCuenta.class;
+    }
 
     /**
      * Persiste un nuevo registro de {@link SubTipoCuenta} en la base de datos.
@@ -115,4 +134,6 @@ public class SubTipoCuentaDAO implements Serializable {
                 .getSingleResult();
         return count > 0;
     }
+
+
 }
