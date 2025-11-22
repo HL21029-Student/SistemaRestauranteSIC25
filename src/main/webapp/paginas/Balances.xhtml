@@ -1,0 +1,73 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        template="../WEB-INF/plantilla/default.xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns="http://www.w3.org/1999/xhtml">
+
+    <!-- TITULO SUPERIOR -->
+    <ui:define name="header">
+        <h1>Balance de Comprobación</h1>
+    </ui:define>
+
+    <!-- CONTENIDO PRINCIPAL (Solo tabla, sin formularios) -->
+    <ui:define name="contenido-tabla">
+
+        <h:form id="frmBalance">
+
+            <p:panel header="Balance de Comprobación" style="margin-top:20px;">
+
+                <p:dataTable id="tblBalance"
+                             value="#{balanceFrm.lista}"
+                             var="b"
+                             reflow="true"
+                             style="width: 100%; font-size:14px;">
+
+                    <!-- COLUMNA CUENTAS -->
+                    <p:column headerText="CUENTAS" style="width:50%;">
+                        <h:outputText value="#{b.nombre}"/>
+                        <f:facet name="footer">
+                            <strong>TOTALES:</strong>
+                        </f:facet>
+                    </p:column>
+
+                    <!-- DEUDOR -->
+                    <p:column headerText="DEUDOR" style="width:25%; text-align:right;">
+                        <h:outputText value="#{b.deudor ? b.saldo : ''}">
+                            <f:convertNumber type="currency" currencySymbol="$"/>
+                        </h:outputText>
+
+                        <f:facet name="footer">
+                            <h:outputText value="#{balanceFrm.totalDeudor}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </f:facet>
+                    </p:column>
+
+                    <!-- ACREEDOR -->
+                    <p:column headerText="ACREEDOR" style="width:25%; text-align:right;">
+                        <h:outputText value="#{b.acreedor ? b.saldo : ''}">
+                            <f:convertNumber type="currency" currencySymbol="$"/>
+                        </h:outputText>
+
+                        <f:facet name="footer">
+                            <h:outputText value="#{balanceFrm.totalAcreedor}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </f:facet>
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+    <!-- NO USAMOS DETALLE -->
+    <ui:define name="contenido-detalle">
+    </ui:define>
+
+</ui:composition>
