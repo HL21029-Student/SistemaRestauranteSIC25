@@ -33,7 +33,7 @@
                     databaseName="ferreteria_bd"
                     portNumber="5432"
                     user="postgres"
-                    password="postgresmy"/>
+                    password="abc123"/>
     </dataSource>
 
 

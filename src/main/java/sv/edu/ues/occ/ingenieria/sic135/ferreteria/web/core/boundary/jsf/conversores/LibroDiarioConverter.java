@@ -1,47 +1,62 @@
 package sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.boundary.jsf.conversores;
 
-import jakarta.enterprise.context.Dependent;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
-import jakarta.inject.Inject;
-import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.control.LibroDiarioDAO;
+import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.boundary.jsf.LibroMayorFrm;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.LibroDiario;
 
-import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@FacesConverter(value = "libroDiarioConverter", managed = true)
-@Dependent
-public class LibroDiarioConverter implements Converter<LibroDiario>, Serializable {
-    @Inject
-    LibroDiarioDAO libroDiarioDAO;
+@FacesConverter(value = "libroDiarioConverter")
+public class LibroDiarioConverter implements Converter<LibroDiario> {
 
     @Override
-    public LibroDiario getAsObject(FacesContext facesContext, UIComponent uiComponent, String s) {
-        if(s != null && !s.isBlank()){
-            int inicioId =s.lastIndexOf('(');
-            int finId =s.lastIndexOf(')');
-            if(inicioId != -1 && finId != -1 && finId > inicioId){
-                String idStr = s.substring(inicioId+1, finId);
-                try{
-                    Long id = Long.valueOf(idStr);
-                    return libroDiarioDAO.findById(id);
-                }catch(Exception ex){
-                    Logger.getLogger(LibroDiarioConverter.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-                }
-            }
+    public LibroDiario getAsObject(FacesContext context, UIComponent component, String value) {
+        Logger.getLogger(LibroDiarioConverter.class.getName())
+                .log(Level.INFO, "CONVERSOR - Convirtiendo string a objeto: {0}", value);
+
+        if (value == null || value.trim().isEmpty()) {
+            return null;
         }
-        return null;
+
+        try {
+            // Obtener el managed bean desde el contexto
+            LibroMayorFrm libroMayorFrm = context.getApplication()
+                    .evaluateExpressionGet(context, "#{libroMayorFrm}", LibroMayorFrm.class);
+
+            if (libroMayorFrm == null) {
+                Logger.getLogger(LibroDiarioConverter.class.getName())
+                        .log(Level.SEVERE, "CONVERSOR - No se pudo obtener el managed bean libroMayorFrm");
+                return null;
+            }
+
+            // Buscar en la lista disponible
+            return libroMayorFrm.getLibrosDiariosDisponibles().stream()
+                    .filter(libro -> value.equals(libro.getId().toString()) ||
+                            value.equals(libro.getNombre() + " (" + libro.getId().toString() + ")"))
+                    .findFirst()
+                    .orElse(null);
+
+        } catch (Exception ex) {
+            Logger.getLogger(LibroDiarioConverter.class.getName())
+                    .log(Level.SEVERE, "CONVERSOR - Error al convertir: " + value, ex);
+            return null;
+        }
     }
 
     @Override
-    public String getAsString(FacesContext facesContext, UIComponent uiComponent, LibroDiario libroDiario) {
-        if(libroDiario != null && libroDiario.getId()!=null && libroDiario.getNombre()!=null){
-            return libroDiario.getNombre()+" ("+libroDiario.getId().toString()+")";
+    public String getAsString(FacesContext context, UIComponent component, LibroDiario value) {
+        if (value == null) {
+            return "";
         }
-        return null;
+
+        if (value.getId() != null && value.getNombre() != null) {
+            return value.getNombre() + " (" + value.getId() + ")";
+        }
+
+        return value.getId() != null ? value.getId().toString() : "";
     }
 }
