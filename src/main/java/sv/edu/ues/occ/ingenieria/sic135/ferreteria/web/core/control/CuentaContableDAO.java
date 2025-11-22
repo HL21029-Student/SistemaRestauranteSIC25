@@ -120,6 +120,25 @@ public class CuentaContableDAO extends InventarioDefaultDataAccess<CuentaContabl
     }
 
     /**
+     * Busca cuentas contables cuyo código contenga el texto indicado (búsqueda parcial, sin distinción de mayúsculas).
+     */
+    public List<CuentaContable> findByCodigoLike(String codigo, int first, int max) {
+        try {
+            if (codigo != null && !codigo.isBlank() && first >= 0 && max > 0) {
+                String patron = "%" + codigo.trim().toUpperCase() + "%";
+                return em.createQuery("SELECT c FROM CuentaContable c WHERE UPPER(c.codigo) LIKE :codigo ORDER BY c.codigo", CuentaContable.class)
+                        .setParameter("codigo", patron)
+                        .setFirstResult(first)
+                        .setMaxResults(max)
+                        .getResultList();
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(CuentaContableDAO.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+        }
+        return List.of();
+    }
+
+    /**
      * Actualiza una cuenta contable y registra el usuario y la fecha de
      * @param cuenta Entidad {@link CuentaContable} a actualizar.
      * @param idUsuarioModificador Identificador del usuario que realiza la modificación.
@@ -358,5 +377,34 @@ public class CuentaContableDAO extends InventarioDefaultDataAccess<CuentaContabl
                 .getResultList();
     }
 
+
+    /**
+     * Comprueba si una cuenta contable puede ser eliminada por su id.
+     * Devuelve true si no tiene subcuentas, movimientos ni manuales asociados.
+     */
+    public boolean puedeSerEliminadaPorId(Long idCuenta) {
+        if (idCuenta == null) return false;
+        try {
+            Long countSubcuentas = em.createQuery("SELECT COUNT(sc) FROM CuentaContable sc WHERE sc.cuentaPadre.id = :idCuenta", Long.class)
+                    .setParameter("idCuenta", idCuenta)
+                    .getSingleResult();
+            if (countSubcuentas > 0) return false;
+
+            Long countMovimientos = em.createQuery("SELECT COUNT(d) FROM DetalleLibroDiario d WHERE d.idCuentaContable.id = :idCuenta", Long.class)
+                    .setParameter("idCuenta", idCuenta)
+                    .getSingleResult();
+            if (countMovimientos > 0) return false;
+
+            Long countManuales = em.createQuery("SELECT COUNT(m) FROM ManualCuenta m WHERE m.idCuentaContable.id = :idCuenta", Long.class)
+                    .setParameter("idCuenta", idCuenta)
+                    .getSingleResult();
+            if (countManuales > 0) return false;
+
+            return true;
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(CuentaContableDAO.class.getName()).log(java.util.logging.Level.SEVERE, ex.getMessage(), ex);
+            return false;
+        }
+    }
 
 }
