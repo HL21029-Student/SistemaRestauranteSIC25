@@ -7,6 +7,7 @@ import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.ManualCuenta;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Stateless
 @LocalBean
@@ -39,6 +40,25 @@ public class ManualCuentaDAO extends InventarioDefaultDataAccess<ManualCuenta, O
                     .getSingleResult();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    /**
+     * Lista los manuales de cuentas ordenados por el código de la cuenta contable asociada.
+     * Se usa JOIN FETCH para garantizar que el idCuentaContable venga inicializado
+     * y se pueda acceder a su código y nombre desde la vista JSF.
+     */
+    public List<ManualCuenta> listarOrdenadoPorCodigoCuenta() {
+        try {
+            return em.createQuery(
+                    "SELECT m FROM ManualCuenta m " +
+                            "JOIN FETCH m.idCuentaContable c " +
+                            "WHERE c.codigo IS NOT NULL " +
+                            "ORDER BY c.codigo",
+                    ManualCuenta.class
+            ).getResultList();
+        } catch (Exception ex) {
+            return List.of();
         }
     }
 }

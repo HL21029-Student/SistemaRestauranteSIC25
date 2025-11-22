@@ -17,10 +17,10 @@
             <p:dataTable id="tblManual" value="#{manualCuentaCrudFrm.manuales}" var="m"
                          paginator="true" rows="10" reflow="true">
                 <p:column headerText="Código">
-                    <h:outputText value="#{m.idCuentaContable.codigo}"/>
+                    <h:outputText value="#{m.idCuentaContable != null ? m.idCuentaContable.codigo : ''}"/>
                 </p:column>
                 <p:column headerText="Nombre">
-                    <h:outputText value="#{m.idCuentaContable.nombre}"/>
+                    <h:outputText value="#{m.idCuentaContable != null ? m.idCuentaContable.nombre : ''}"/>
                 </p:column>
                 <p:column headerText="Naturaleza">
                     <h:outputText value="#{m.naturalezaCuenta}"/>

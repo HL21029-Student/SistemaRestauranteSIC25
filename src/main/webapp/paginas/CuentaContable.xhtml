@@ -7,57 +7,87 @@
         xmlns:ues="jakarta.faces.composite/ues"
         xmlns="http://www.w3.org/1999/xhtml"
 >
-   <ui:define name="header">
-      <h1>#{defaultfrm['page.CuentaContable']}</h1>
-   </ui:define>
+    <ui:define name="header">
+        <h1>#{defaultfrm['page.CuentaContable']}</h1>
+    </ui:define>
 
-   <ui:define name="contenido-tabla">
-       <h:form id="frmCuentas">
-           <ues:botones-top formulario="#{cuentaContableFrm}" actualizar=":pnlTabla :pnlDetalle"/>
+    <ui:define name="contenido-tabla">
+        <h:form id="frmCuentas">
+            <ues:botones-top formulario="#{cuentaContableFrm}" actualizar=":pnlTabla :pnlDetalle"/>
 
-           <p:dataTable id="tblCuentas" value="#{cuentaContableFrm.modelo}" var="c"
-                        paginator="true" rows="10" reflow="true"
-                        selectionMode="single" selection="#{cuentaContableFrm.registro}"
-                        rowKey="#{c.id}">
-               <p:ajax event="rowSelect" listener="#{cuentaContableFrm.seleccionarRegistro}" update=":pnlDetalle"/>
+            <p:dataTable id="tblCuentas" value="#{cuentaContableFrm.modelo}" var="c"
+                         paginator="true" rows="10" reflow="true"
+                         selectionMode="single" selection="#{cuentaContableFrm.registro}"
+                         rowKey="#{c.id}">
+                <p:ajax event="rowSelect" listener="#{cuentaContableFrm.seleccionarRegistro}" update=":pnlDetalle"/>
 
-               <p:column headerText="Código">
-                   <h:outputText value="#{c.codigo}"/>
-               </p:column>
-               <p:column headerText="Nombre">
-                   <h:outputText value="#{c.nombre}"/>
-               </p:column>
-               <p:column headerText="Tipo de cuenta">
-                   <h:outputText value="#{c.idTipoCuenta != null ? c.idTipoCuenta.nombre : ''}"/>
-               </p:column>
-               <p:column headerText="Subtipo de cuenta">
-                   <h:outputText value="#{c.idSubTipoCuenta != null ? c.idSubTipoCuenta.nombre : ''}"/>
-               </p:column>
-               <p:column headerText="Descripción">
-                   <h:outputText value="#{c.descripcion}"/>
-               </p:column>
-               <p:column headerText="Cuenta padre">
-                   <h:outputText value="#{c.cuentaPadre != null ? c.cuentaPadre.codigo : ''}"/>
-               </p:column>
-           </p:dataTable>
-       </h:form>
-   </ui:define>
+                <p:column headerText="Código">
+                    <h:outputText value="#{c.codigo}"/>
+                </p:column>
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{c.nombre}"/>
+                </p:column>
+                <p:column headerText="Tipo de cuenta">
+                    <h:outputText value="#{c.idTipoCuenta != null ? c.idTipoCuenta.nombre : ''}"/>
+                </p:column>
+                <p:column headerText="Subtipo de cuenta">
+                    <h:outputText value="#{c.idSubTipoCuenta != null ? c.idSubTipoCuenta.nombre : ''}"/>
+                </p:column>
+                <p:column headerText="Descripción">
+                    <h:outputText value="#{c.descripcion}"/>
+                </p:column>
+                <p:column headerText="Cuenta padre">
+                    <h:outputText value="#{c.cuentaPadre != null ? c.cuentaPadre.codigo : ''}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
 
-   <ui:define name="contenido-detalle">
-       <h:form id="frmDetalleCuenta">
-           <h:panelGrid columns="2" rendered="#{cuentaContableFrm.registro != null}">
-               <h:outputLabel value="Código" for="codigo"/>
-               <p:inputText id="codigo" value="#{cuentaContableFrm.registro.codigo}"/>
+    <ui:define name="contenido-detalle">
+        <h:form id="frmDetalleCuenta">
+            <h:panelGrid columns="2" rendered="#{cuentaContableFrm.registro != null}">
+                <h:outputLabel value="Código" for="codigo"/>
+                <p:inputText id="codigo" value="#{cuentaContableFrm.registro.codigo}"/>
 
-               <h:outputLabel value="Nombre" for="nombre"/>
-               <p:inputText id="nombre" value="#{cuentaContableFrm.registro.nombre}"/>
+                <h:outputLabel value="Nombre" for="nombre"/>
+                <p:inputText id="nombre" value="#{cuentaContableFrm.registro.nombre}"/>
 
-               <h:outputLabel value="Descripción" for="descripcion"/>
-               <p:inputTextarea id="descripcion" value="#{cuentaContableFrm.registro.descripcion}" rows="3" cols="40"/>
-           </h:panelGrid>
+                <h:outputLabel value="Descripción" for="descripcion"/>
+                <p:inputTextarea id="descripcion" value="#{cuentaContableFrm.registro.descripcion}" rows="3" cols="40"/>
 
-           <ues:botones-crud formulario="#{cuentaContableFrm}" actualizar=":pnlTabla :pnlDetalle"/>
-       </h:form>
-   </ui:define>
+                <h:outputLabel value="Tipo de cuenta" for="idTipoCuenta"/>
+                <p:selectOneMenu id="idTipoCuenta" value="#{cuentaContableFrm.tipoCuentaIdSeleccionado}" style="width:100%" converter="jakarta.faces.Long">
+                    <f:selectItem itemLabel="-- Seleccione --" itemValue=""/>
+                    <f:selectItems value="#{cuentaContableFrm.tipos}" var="t" itemLabel="#{t.nombre}" itemValue="#{t.id}"/>
+                    <p:ajax listener="#{cuentaContableFrm.cargarSubtiposPorTipo}" update=":frmDetalleCuenta:idSubTipoCuenta"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Subtipo de cuenta" for="idSubTipoCuenta"/>
+                <p:selectOneMenu id="idSubTipoCuenta" value="#{cuentaContableFrm.subTipoCuentaIdSeleccionado}" style="width:100%" converter="jakarta.faces.Long">
+                    <f:selectItem itemLabel="-- Seleccione --" itemValue=""/>
+                    <f:selectItems value="#{cuentaContableFrm.subtipos}" var="s" itemLabel="#{s.nombre}" itemValue="#{s.id}"/>
+                </p:selectOneMenu>
+
+                <h:outputLabel value="Cuenta padre" for="cuentaPadre"/>
+                <p:autoComplete id="cuentaPadre" value="#{cuentaContableFrm.registro.cuentaPadre}" completeMethod="#{cuentaContableFrm.completarCuentaPadre}" var="cp"
+                                itemLabel="#{cp.codigo} - #{cp.nombre}" itemValue="#{cp}" converter="cuentaContableConverter"
+                                forceSelection="true" dropdown="true" />
+            </h:panelGrid>
+
+            <ues:botones-crud formulario="#{cuentaContableFrm}" actualizar=":pnlTabla :pnlDetalle" showDelete="#{false}"/>
+
+            <!-- Botón local para eliminar con confirmación -->
+            <p:commandButton id="btnEliminarLocal" value="#{defaultfrm['defaultfrm.delete']}"
+                             rendered="#{cuentaContableFrm.registro != null}"
+                             type="button" onclick="PF('confirmDlgCuenta').show();"/>
+
+            <p:confirmDialog widgetVar="confirmDlgCuenta" header="#{defaultfrm['defaultfrm.delete']}" message="#{msgs['confirm.eliminar.cuenta']}" modal="true" appendTo="@(body)">
+                <p:commandButton value="#{defaultfrm['defaultfrm.delete']}" process="@this" onstart="this.disabled=true;" oncomplete="PF('confirmDlgCuenta').hide();"
+                                 actionListener="#{cuentaContableFrm.btnEliminarHandler}" update=":pnlTabla :pnlDetalle"/>
+                <p:commandButton value="#{defaultfrm['defaultfrm.cancel']}" onclick="PF('confirmDlgCuenta').hide();" type="button"/>
+            </p:confirmDialog>
+
+        </h:form>
+    </ui:define>
 
 </ui:composition>
