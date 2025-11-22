@@ -7,43 +7,43 @@
         xmlns:ues="jakarta.faces.composite/ues"
         xmlns="http://www.w3.org/1999/xhtml"
 >
-    <ui:define name="header">
-        <h1>#{defaultfrm['page.CuentaContable']}</h1>
-    </ui:define>
+   <ui:define name="header">
+      <h1>#{defaultfrm['page.CuentaContable']}</h1>
+   </ui:define>
 
-    <ui:define name="contenido-tabla">
-        <h:form id="frmCuentas">
-            <ues:botones-top formulario="#{cuentaContableFrm}" actualizar=":pnlTabla :pnlDetalle"/>
+   <ui:define name="contenido-tabla">
+       <h:form id="frmCuentas">
+           <ues:botones-top formulario="#{cuentaContableFrm}" actualizar=":pnlTabla :pnlDetalle"/>
 
-            <p:dataTable id="tblCuentas" value="#{cuentaContableFrm.modelo}" var="c"
-                         paginator="true" rows="10" reflow="true"
-                         selectionMode="single" selection="#{cuentaContableFrm.registro}"
-                         rowKey="#{c.id}">
-                <p:ajax event="rowSelect" listener="#{cuentaContableFrm.seleccionarRegistro}" update=":pnlDetalle"/>
+           <p:dataTable id="tblCuentas" value="#{cuentaContableFrm.modelo}" var="c"
+                        paginator="true" rows="10" reflow="true"
+                        selectionMode="single" selection="#{cuentaContableFrm.registro}"
+                        rowKey="#{c.id}">
+               <p:ajax event="rowSelect" listener="#{cuentaContableFrm.seleccionarRegistro}" update=":pnlDetalle"/>
 
-                <p:column headerText="Código">
-                    <h:outputText value="#{c.codigo}"/>
-                </p:column>
-                <p:column headerText="Nombre">
-                    <h:outputText value="#{c.nombre}"/>
-                </p:column>
-                <p:column headerText="Tipo de cuenta">
-                    <h:outputText value="#{c.idTipoCuenta != null ? c.idTipoCuenta.nombre : ''}"/>
-                </p:column>
-                <p:column headerText="Subtipo de cuenta">
-                    <h:outputText value="#{c.idSubTipoCuenta != null ? c.idSubTipoCuenta.nombre : ''}"/>
-                </p:column>
-                <p:column headerText="Descripción">
-                    <h:outputText value="#{c.descripcion}"/>
-                </p:column>
-                <p:column headerText="Cuenta padre">
-                    <h:outputText value="#{c.cuentaPadre != null ? c.cuentaPadre.codigo : ''}"/>
-                </p:column>
-            </p:dataTable>
-        </h:form>
-    </ui:define>
+               <p:column headerText="Código">
+                   <h:outputText value="#{c.codigo}"/>
+               </p:column>
+               <p:column headerText="Nombre">
+                   <h:outputText value="#{c.nombre}"/>
+               </p:column>
+               <p:column headerText="Tipo de cuenta">
+                   <h:outputText value="#{c.idTipoCuenta != null ? c.idTipoCuenta.nombre : ''}"/>
+               </p:column>
+               <p:column headerText="Subtipo de cuenta">
+                   <h:outputText value="#{c.idSubTipoCuenta != null ? c.idSubTipoCuenta.nombre : ''}"/>
+               </p:column>
+               <p:column headerText="Descripción">
+                   <h:outputText value="#{c.descripcion}"/>
+               </p:column>
+               <p:column headerText="Cuenta padre">
+                   <h:outputText value="#{c.cuentaPadre != null ? c.cuentaPadre.codigo : ''}"/>
+               </p:column>
+           </p:dataTable>
+       </h:form>
+   </ui:define>
 
-    <ui:define name="contenido-detalle">
+   <ui:define name="contenido-detalle">
         <h:form id="frmDetalleCuenta">
             <h:panelGrid columns="2" rendered="#{cuentaContableFrm.registro != null}">
                 <h:outputLabel value="Código" for="codigo"/>
