@@ -5,16 +5,197 @@
         xmlns:h="jakarta.faces.html"
         xmlns:p="http://primefaces.org/ui"
         xmlns:ues="jakarta.faces.composite/ues"
-        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.w3.org/1999/xhtml">
 
->
     <ui:define name="header">
         <h1>#{defaultfrm['page.LibroMayor']}</h1>
     </ui:define>
 
     <ui:define name="contenido-tabla">
+        <h:panelGrid>
+            <h:form id="frmTop">
+                <p:treeTable id="tabla-top"
+                             rendered="#{libroMayorFrm.estado == 'NADA'}"
+                             styleClass="tabla-crud"
+                             value="#{libroMayorFrm.root}"
+                             var="reg"
+                             selectionMode="single"
+                             selection="#{libroMayorFrm.selectedNode}">
+                    <p:ajax event="select"
+                            listener="#{libroMayorFrm.onNodeSelect}"
+                            update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"/>
 
+                    <p:column headerText="ID">
+                        <h:outputText value="#{reg.id}"/>
+                    </p:column>
+                    <p:column headerText="Observación">
+                        <h:outputText value="#{reg.observacion}"/>
+                    </p:column>
+                    <p:column headerText="Libro Diario">
+                        <h:outputText value="#{reg.idLibroDiario.nombre}" rendered="#{reg.idLibroDiario != null}"/>
+                        <h:outputText value="Sin referencia" rendered="#{reg.idLibroDiario == null}" style="color: #999;"/>
+                    </p:column>
+                </p:treeTable>
+
+                <ues:botones-top formulario="#{libroMayorFrm}" actualizar=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"/>
+
+            </h:form>
+            <p:messages id="messagesTop" showSummary="true" showDetail="true" autoUpdate="true"/>
+        </h:panelGrid>
     </ui:define>
 
+    <ui:define name="contenido-detalle">
+        <h:panelGroup id="libroMayorDetalle">
+            <p:tabView id="tabLibroMayor"
+                       cache="false"
+                       dynamic="true"
+                       rendered="#{libroMayorFrm.estado != 'NADA'}"
+                       activeIndex="0">
+
+                <p:tab id="tabInformacion"
+                       closable="false"
+                       title="#{libroMayorFrm.estado == 'CREAR' ? 'Crear Libro Mayor' : 'Editar Libro Mayor'}">
+                    <h:panelGrid>
+                        <h:form id="frmDetalle">
+                            <p:panel header="Información del Libro Mayor">
+                                <h:panelGrid columns="1" cellpadding="5" style="width: 100%">
+
+                                    <!-- ID -->
+                                    <h:panelGrid columns="1" cellpadding="5" style="width: 100%; margin-bottom: 15px;">
+                                        <p:outputLabel for="txtId" value="ID:" style="font-weight: bold;"/>
+                                        <p:inputText id="txtId"
+                                                     value="#{libroMayorFrm.registro.id}"
+                                                     readonly="true"
+                                                     disabled="true"
+                                                     style="width: 300px;"
+                                                     placeholder="Se generará automáticamente"/>
+                                    </h:panelGrid>
+
+                                    <!-- LIBRO DIARIO -->
+                                    <h:panelGrid columns="1" cellpadding="5" style="width: 100%; margin-bottom: 15px;">
+                                        <p:outputLabel for="cmbLibroDiario"
+                                                       value="Libro Diario:"
+                                                       style="font-weight: bold;"/>
+                                        <p:selectOneMenu id="cmbLibroDiario"
+                                                         value="#{libroMayorFrm.libroDiarioIdSeleccionado}"
+                                                         style="width: 300px; margin-bottom: 10px;">
+                                            <f:selectItem itemLabel="-- Ninguno (Tipo Raíz) --" itemValue="#{null}"/>
+                                            <f:selectItems value="#{libroMayorFrm.librosDiariosDisponibles}"
+                                                           var="libroDiario"
+                                                           itemLabel="#{libroDiario.nombre}"
+                                                           itemValue="#{libroDiario.id}"/>
+                                            <p:ajax event="change"
+                                                    listener="#{libroMayorFrm.actualizarLibroDiarioDesdeId}"
+                                                    update="@this"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+
+                                    <!-- OBSERVACIÓN -->
+                                    <h:panelGrid columns="1" cellpadding="5" style="width: 100%; margin-bottom: 15px;">
+                                        <p:outputLabel for="txtObservacion"
+                                                       value="Observación *:"
+                                                       style="font-weight: bold;"/>
+                                        <p:inputTextarea id="txtObservacion"
+                                                         value="#{libroMayorFrm.registro.observacion}"
+                                                         required="true"
+                                                         requiredMessage="La observación es obligatoria"
+                                                         rows="4"
+                                                         style="width: 300px;"
+                                                         placeholder="Ingrese la observación del libro mayor"
+                                                         maxlength="500"/>
+                                        <p:message for="txtObservacion" display="icon"/>
+                                    </h:panelGrid>
+
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <!-- BOTONES CORREGIDOS -->
+                            <h:panelGrid columns="4"
+                                         style="margin-top: 20px; text-align: center;"
+                                         columnClasses="text-center, text-center, text-center, text-center">
+                                <p:commandButton value="#{libroMayorFrm.estado == 'CREAR' ? 'Crear' : 'Guardar'}"
+                                                 action="#{libroMayorFrm.guardarOSalvarRegistro}"
+                                                 icon="pi pi-check"
+                                                 update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                                 process="@form"
+                                                 styleClass="ui-button-success"/>
+
+                                <p:commandButton value="Cancelar"
+                                                 action="#{libroMayorFrm.cancelarCreacion}"
+                                                 icon="pi pi-times"
+                                                 update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"
+                                                 process="@none"
+                                                 styleClass="ui-button-secondary"
+                                                 immediate="true"/>
+
+                                <!-- BOTÓN ELIMINAR CORREGIDO -->
+                                <p:commandButton value="Eliminar"
+                                                 action="#{libroMayorFrm.eliminarLibroMayor}"
+                                                 icon="pi pi-trash"
+                                                 update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                                 process="@this"
+                                                 rendered="#{libroMayorFrm.estado == 'MODIFICAR' and libroMayorFrm.registro.id != null}"
+                                                 styleClass="ui-button-danger"
+                                                 onclick="return confirm('¿Está seguro de que desea eliminar este Libro Mayor?')"/>
+
+                                <p:commandButton value="Limpiar"
+                                                 action="#{libroMayorFrm.limpiarFormulario}"
+                                                 icon="pi pi-refresh"
+                                                 update="frmDetalle"
+                                                 process="@none"
+                                                 rendered="#{libroMayorFrm.estado == 'CREAR'}"
+                                                 styleClass="ui-button-warning"/>
+                            </h:panelGrid>
+
+                        </h:form>
+                    </h:panelGrid>
+                </p:tab>
+
+                <p:tab id="tabDetalles"
+                       title="Detalles Adicionales"
+                       disabled="#{libroMayorFrm.estado != 'MODIFICAR' or libroMayorFrm.registro.id == null}">
+                    <h:panelGrid>
+                        <h:form id="frmDetalles">
+                            <p:panel header="Detalles del Libro Mayor">
+                                <h:panelGrid columns="2"
+                                             style="margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 5px;"
+                                             columnClasses="font-weight-bold,">
+                                    <p:outputLabel value="ID:" style="font-weight: bold;"/>
+                                    <p:outputLabel value="#{libroMayorFrm.registro.id}"/>
+
+                                    <p:outputLabel value="Libro Diario:" style="font-weight: bold;"/>
+                                    <p:outputLabel value="#{libroMayorFrm.registro.idLibroDiario != null ? libroMayorFrm.registro.idLibroDiario.nombre : '-- Ninguno (Tipo Raíz) --'}"/>
+
+                                    <p:outputLabel value="Observación:" style="font-weight: bold;"/>
+                                    <p:outputLabel value="#{libroMayorFrm.registro.observacion}"
+                                                   style="max-width: 400px; word-wrap: break-word;"/>
+                                </h:panelGrid>
+
+                                <!-- INFORMACIÓN ADICIONAL SI ES NECESARIO -->
+                                <h:panelGrid columns="1" rendered="#{libroMayorFrm.registro.fechaCreacion != null}"
+                                             style="margin-top: 20px; background: #f0f8ff; padding: 15px; border-radius: 5px;">
+                                    <p:outputLabel value="Información de Auditoría:" style="font-weight: bold; color: #0066cc;"/>
+                                    <h:panelGrid columns="2" style="margin-top: 10px;">
+                                        <p:outputLabel value="Fecha de Creación:" style="font-weight: bold;"/>
+                                        <p:outputLabel value="#{libroMayorFrm.registro.fechaCreacion}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                        </p:outputLabel>
+
+                                        <p:outputLabel value="Fecha de Modificación:" style="font-weight: bold;"
+                                                       rendered="#{libroMayorFrm.registro.fechaModificacion != null}"/>
+                                        <p:outputLabel value="#{libroMayorFrm.registro.fechaModificacion}"
+                                                       rendered="#{libroMayorFrm.registro.fechaModificacion != null}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                                        </p:outputLabel>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:form>
+                    </h:panelGrid>
+                </p:tab>
+
+            </p:tabView>
+        </h:panelGroup>
+    </ui:define>
 
 </ui:composition>

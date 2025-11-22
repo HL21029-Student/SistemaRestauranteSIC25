@@ -59,6 +59,7 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
     //funcion para calcular el saldo de correspondiente a una cuenta contable
     //con respcto a la naturaleza de la cuenta y los montos en debe y haber
 
+    /*
     /**
      * Mayoriza iterativamente para una cuenta (por nombre) dentro de un LibroDiario.
      * - Trae los DetalleLibroDiario del libro indicado.
@@ -71,6 +72,7 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
      * @param idLibroMayor id del LibroMayor donde se creará el detalle (Long)
      * @return el DetalleLibroMayor creado con el saldo calculado, o null en error
      */
+    /*
     public DetalleLibroMayor mayorizarYCrearDetalle(final Long libroDiarioId, final String nombreCuenta, final Long idLibroMayor) {
         if (libroDiarioId == null || nombreCuenta == null || nombreCuenta.isBlank() || idLibroMayor == null) {
             LOG.log(Level.WARNING, "Parámetros inválidos para mayorizar");
@@ -170,5 +172,157 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
         }
     }
 
+     */
 
+
+    /**
+     * Mayoriza iterativamente para cada cuenta contable especifica dentro de un LibroDiario.
+     * Solo procesa los detalles que coinciden con el nombre de cuenta contable especificado
+     * @param libroDiarioId id del LibroDiario
+     * @param nombreCuenta  nombre de la cuenta contable a mayorizar
+     * @param idLibroMayor id del libro mayor creado con el saldo calculado, o null en error
+     * @return
+     */
+    public DetalleLibroMayor mayorizarYCrearDetalle(final Long libroDiarioId, final String nombreCuenta, final Long idLibroMayor ){
+        if (libroDiarioId == null || nombreCuenta == null || nombreCuenta.isBlank() || idLibroMayor == null) {
+            LOG.log(Level.WARNING, "Parámetros inválidos para mayorizar: libroDiarioId={0}, nombreCuenta={1}, idLibroMayor={2}",
+                    new Object[]{libroDiarioId, nombreCuenta, idLibroMayor});
+            return null;
+        }
+        try{
+            // 1 Traer detalles del libro diario
+            TypedQuery<DetalleLibroDiario> q= em.createQuery(
+                    "SELECT d FROM DetalleLibroDiario d " +
+                            "WHERE d.libroDiario.id = :libroDiarioId " +
+                            "AND LOWER(TRIM(d.idCuentaContable.nombre)) = LOWER(TRIM(:nombreCuenta))",
+                    DetalleLibroDiario.class
+            );
+            q.setParameter("libroDiarioId", libroDiarioId);
+            q.setParameter("nombreCuenta", nombreCuenta);
+            List<DetalleLibroDiario> detalles = q.getResultList();
+
+            // 2 Si no hay detalles que coincidan , retornara null
+            if(detalles.isEmpty()){
+                LOG.log(Level.INFO,"No se encontraron detalles  para la cuenta: {0} en el libro diario: {1} ",
+                        new Object[]{nombreCuenta, libroDiarioId});
+                return null;
+            }
+
+            // 3 Iterando y calculado saldo - inicio saldo 0
+            BigDecimal saldo = BigDecimal.ZERO;
+
+            for (DetalleLibroDiario detalle : detalles) {
+                //Validando que el detalle tenga los datos necesarios
+                if(detalle.getMonto() == null){
+                    continue;
+                }
+
+                //Obteniendo Montos (filtrados para la cuenta seleccionada)
+                BigDecimal montoDebe =Boolean.TRUE.equals(detalle.getMonto()) ? detalle.getMonto() : BigDecimal.ZERO;
+                BigDecimal montoHaber = Boolean.FALSE.equals(detalle.getDebe()) ? detalle.getMonto() : BigDecimal.ZERO;
+
+                //Obteniendo el tipo de cuenta
+                String tipoCuenta = obtenerTipoCuenta(detalle);
+
+                //Aplicando reglas contables segun el tipo de cuenta
+                switch (tipoCuenta.toLowerCase()) {
+                    case "activo":
+                    case "gasto":
+                    case "resultado deudora":
+                    case "cuenta de orden":
+                        // saldo + debe - haber = saldo
+                        saldo = saldo.add(montoDebe).subtract(montoHaber);
+                        LOG.log(Level.FINE, "Procesado [Grupo A]: Debe={0}, Haber={1}, SaldoAcumulado={2}",
+                                new Object[]{montoDebe, montoHaber, saldo});
+                        break;
+
+                    case "pasivo":
+                    case "patrimonio":
+                    case "ingreso":
+                    case "resultado acreedor":
+                        // saldo - debe + haber = saldo
+                        saldo = saldo.subtract(montoDebe).add(montoHaber);
+                        LOG.log(Level.FINE, "Procesado [Grupo B]: Debe={0}, Haber={1}, SaldoAcumulado={2}",
+                                new Object[]{montoDebe, montoHaber, saldo});
+                        break;
+
+                    default:
+                        // Por defecto, aplicar regla de activo/gasto
+                        saldo = saldo.add(montoDebe).subtract(montoHaber);
+                        LOG.log(Level.WARNING, "Tipo de cuenta no reconocido: {0}. Aplicando regla por defecto", tipoCuenta);
+                        break;
+                }
+            }
+            return  crearDetalleLibroMayor(saldo,idLibroMayor,nombreCuenta);
+        }catch (Exception ex){
+            LOG.log(Level.SEVERE, "Error al mayorizar para cuenta: " + nombreCuenta + " en libro diario: " + libroDiarioId, ex);
+            return null;
+        }
+    }
+    /**
+     * Metodo auxiliar DetalleLibroMayor con el saldo resultante
+     * */
+    private String obtenerTipoCuenta(DetalleLibroDiario detalle) {
+        if (detalle == null || detalle.getIdCuentaContable() == null ||
+                detalle.getIdCuentaContable().getIdTipoCuenta() == null) {
+            return "";
+        }
+
+        try {
+            Object tipoCuenta = detalle.getIdCuentaContable().getIdTipoCuenta();
+
+            // Intentar metodo getNombre
+            try {
+                java.lang.reflect.Method metodoGetNombre = tipoCuenta.getClass().getMethod("getNombre");
+                Object resultado = metodoGetNombre.invoke(tipoCuenta);
+                if (resultado instanceof String) {
+                    return ((String) resultado).trim();
+                }
+            } catch (NoSuchMethodException e) {
+                //Iterando  el metodo  getCodigo() si getNombre no existe
+                try {
+                    java.lang.reflect.Method metodoGetCodigo = tipoCuenta.getClass().getMethod("getCodigo");
+                    Object resultado = metodoGetCodigo.invoke(tipoCuenta);
+                    if (resultado instanceof String) {
+                        return ((String) resultado).trim();
+                    }
+                } catch (NoSuchMethodException e2) {
+                    LOG.log(Level.FINE, "No se encontraron métodos getNombre ni getCodigo en TipoCuenta");
+                }
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.WARNING, "Error al obtener tipo de cuenta", ex);
+        }
+
+        return "";
+    }
+
+    /**
+     * Metodo auxiliar para crear y persistir el DetalleLibroMayor
+     */
+    private DetalleLibroMayor crearDetalleLibroMayor(BigDecimal saldo, Long idLibroMayor, String nombreCuenta) {
+        try {
+            LibroMayor libroMayor = em.find(LibroMayor.class, idLibroMayor);
+            if (libroMayor == null) {
+                LOG.log(Level.WARNING, "LibroMayor no encontrado con id {0}", idLibroMayor);
+                return null;
+            }
+
+            DetalleLibroMayor detalleLibroMayor = new DetalleLibroMayor();
+            detalleLibroMayor.setId(UUID.randomUUID());
+            detalleLibroMayor.setSaldo(saldo);
+            detalleLibroMayor.setIdLibroMayor(libroMayor);
+
+            em.persist(detalleLibroMayor);
+            em.flush();
+
+            LOG.log(Level.INFO, "DetalleLibroMayor creado exitosamente: Cuenta={0}, Saldo={1}",
+                    new Object[]{nombreCuenta, saldo});
+
+            return detalleLibroMayor;
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al crear DetalleLibroMayor", ex);
+            return null;
+        }
+    }
 }
