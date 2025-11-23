@@ -1,6 +1,6 @@
 package sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.boundary.jsf;
 
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.view.ViewScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -9,10 +9,14 @@ import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.control.InventarioDe
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Factura;
 
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named("facturaFrm")
-@RequestScoped
+@ViewScoped
 public class FacturaFrm extends DefaultFrm<Factura> {
+
+    private static final Logger LOGGER = Logger.getLogger(FacturaFrm.class.getName());
 
     @Inject
     private FacturaDAO facturaDAO;
@@ -44,12 +48,21 @@ public class FacturaFrm extends DefaultFrm<Factura> {
         if (id == null || id.isBlank()) {
             return null;
         }
-        return facturaDAO.findById(UUID.fromString(id));
+        try {
+            UUID uuid = UUID.fromString(id);
+            return facturaDAO.findById(uuid);
+        } catch (IllegalArgumentException ex) {
+            LOGGER.log(Level.WARNING, "ID de factura no válido: " + id, ex);
+            return null;
+        }
     }
 
     @Override
     protected Factura nuevoRegistro() {
-        return new Factura();
+        Factura f = new Factura();
+        f.setFechaFactura(java.time.OffsetDateTime.now());
+        f.setIva(Boolean.FALSE);
+        return f;
     }
 
     @Override
@@ -62,7 +75,13 @@ public class FacturaFrm extends DefaultFrm<Factura> {
         if (id == null) {
             return null;
         }
-        return facturaDAO.findById(id);
+        try {
+            UUID uuid = UUID.fromString(id.toString());
+            return facturaDAO.findById(uuid);
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "ID inválido para Factura: " + id, ex);
+            return null;
+        }
     }
 }
 
