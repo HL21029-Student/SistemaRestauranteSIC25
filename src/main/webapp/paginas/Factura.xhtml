@@ -55,7 +55,10 @@
                 <p:inputText id="numero" value="#{facturaFrm.registro.numeroFactura}"/>
 
                 <h:outputLabel value="Fecha" for="fecha"/>
-                <p:calendar id="fecha" value="#{facturaFrm.registro.fechaFactura}" pattern="yyyy-MM-dd"/>
+                <p:calendar id="fecha" value="#{facturaFrm.registro.fechaFactura}"
+                            pattern="yyyy-MM-dd'T'HH:mm"
+                            converter="offsetDateTimeConverter"
+                            showTime="true"/>
 
                 <h:outputLabel value="Subtotal" for="subtotal"/>
                 <p:inputNumber id="subtotal" value="#{facturaFrm.registro.subtotal}"/>
