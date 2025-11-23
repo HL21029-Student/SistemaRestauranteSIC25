@@ -16,23 +16,148 @@
             <h:panelGrid columns="3" style="margin-bottom:1rem">
                 <h:outputLabel value="Fecha" for="fecha"/>
                 <p:datePicker id="fecha" value="#{reporteVentasDiariasFrm.fecha}" pattern="yyyy-MM-dd"/>
-                <p:commandButton value="Buscar" actionListener="#{reporteVentasDiariasFrm.cargarVentas}" update="tblVentas"/>
+                <p:commandButton value="Buscar"
+                                 icon="pi pi-search"
+                                 actionListener="#{reporteVentasDiariasFrm.cargarVentas}"
+                                 update="pnlResumen tblVentas pnlBotones"
+                                 styleClass="ui-button-success"/>
             </h:panelGrid>
 
+            <!-- Botones de Exportación -->
+            <h:panelGroup id="pnlBotones" rendered="#{reporteVentasDiariasFrm.ventas != null and not empty reporteVentasDiariasFrm.ventas}">
+                <p:toolbar style="margin-bottom:1rem">
+                    <p:toolbarGroup>
+                        <p:commandButton value="Exportar PDF"
+                                         icon="pi pi-file-pdf"
+                                         ajax="false"
+                                         styleClass="ui-button-danger">
+                            <p:dataExporter type="pdf"
+                                            target="tblVentas"
+                                            fileName="reporte_ventas_#{reporteVentasDiariasFrm.fecha}"
+                                            pageOnly="false"/>
+                        </p:commandButton>
+
+                        <p:commandButton value="Exportar Excel"
+                                         icon="pi pi-file-excel"
+                                         ajax="false"
+                                         styleClass="ui-button-success"
+                                         style="margin-left:10px">
+                            <p:dataExporter type="xlsx"
+                                            target="tblVentas"
+                                            fileName="reporte_ventas_#{reporteVentasDiariasFrm.fecha}"
+                                            pageOnly="false"/>
+                        </p:commandButton>
+                    </p:toolbarGroup>
+                </p:toolbar>
+            </h:panelGroup>
+
+            <!-- Panel de Resumen del Día -->
+            <h:panelGroup id="pnlResumen" rendered="#{reporteVentasDiariasFrm.ventas != null and not empty reporteVentasDiariasFrm.ventas}">
+                <p:panel header="Resumen del Día" style="margin-bottom:1rem">
+                    <h:panelGrid columns="4" cellpadding="10" style="width:100%">
+                        <p:panel header="Total Ventas" style="text-align:center;background:#e3f2fd">
+                            <h:outputText value="#{reporteVentasDiariasFrm.ventas.size()}"
+                                          style="font-size:2em;font-weight:bold;color:#1976d2"/>
+                        </p:panel>
+
+                        <p:panel header="Total del Día" style="text-align:center;background:#e8f5e9">
+                            <h:outputText value="#{reporteVentasDiariasFrm.calcularTotalDia()}"
+                                          style="font-size:2em;font-weight:bold;color:#388e3c">
+                                <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                            </h:outputText>
+                        </p:panel>
+
+                        <p:panel header="Ventas en Efectivo" style="text-align:center;background:#fff3e0">
+                            <h:outputText value="#{reporteVentasDiariasFrm.contarVentasEfectivo()}"
+                                          style="font-size:2em;font-weight:bold;color:#f57c00"/>
+                        </p:panel>
+
+                        <p:panel header="Total Efectivo" style="text-align:center;background:#f3e5f5">
+                            <h:outputText value="#{reporteVentasDiariasFrm.calcularTotalEfectivo()}"
+                                          style="font-size:2em;font-weight:bold;color:#7b1fa2">
+                                <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                            </h:outputText>
+                        </p:panel>
+                    </h:panelGrid>
+                </p:panel>
+            </h:panelGroup>
+
             <p:dataTable id="tblVentas" value="#{reporteVentasDiariasFrm.ventas}" var="v"
-                         paginator="true" rows="10" reflow="true">
-                <p:column headerText="Fecha">
-                    <h:outputText value="#{v.fechaVenta}"/>
+                         paginator="true" rows="10" reflow="true"
+                         rowKey="#{v.id}"
+                         emptyMessage="No se encontraron ventas para la fecha seleccionada">
+
+                <!-- Columna de expansión para ver detalle de productos (no se exporta) -->
+                <p:column style="width:50px" exportable="false">
+                    <p:rowToggler/>
                 </p:column>
+
+                <p:column headerText="Fecha" sortBy="#{v.fecha}">
+                    <h:outputText value="#{v.fecha}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
+                    </h:outputText>
+                </p:column>
+
                 <p:column headerText="Cliente">
-                    <h:outputText value="#{v.idCliente != null ? v.idCliente.nombre : ''}"/>
+                    <h:outputText value="#{v.idCliente != null ? v.idCliente.nombre : 'Sin cliente'}"/>
                 </p:column>
-                <p:column headerText="Total">
-                    <h:outputText value="#{v.total}"/>
+
+                <p:column headerText="Total Venta" style="text-align:right">
+                    <h:outputText value="#{reporteVentasDiariasFrm.obtenerTotalFormateado(v)}"
+                                  style="font-weight:bold"/>
                 </p:column>
+
+                <p:column headerText="Método Pago">
+                    <h:outputText value="#{reporteVentasDiariasFrm.obtenerMetodoPago(v)}"
+                                  style="#{reporteVentasDiariasFrm.obtenerMetodoPago(v) eq 'EFECTIVO' ? 'color:#28a745;font-weight:bold' : 'color:#007bff'}"/>
+                </p:column>
+
                 <p:column headerText="Estado">
-                    <h:outputText value="#{v.estado}"/>
+                    <h:outputText value="#{v.estado}"
+                                  style="color:#{v.estado eq 'ACTIVA' ? '#28a745' : '#dc3545'}"/>
                 </p:column>
+
+                <!-- Detalle expandible de productos -->
+                <p:rowExpansion>
+                    <h5 style="margin:10px 0">Detalle de Productos Vendidos</h5>
+                    <p:dataTable value="#{reporteVentasDiariasFrm.obtenerDetalles(v)}" var="detalle"
+                                 emptyMessage="No hay productos en esta venta">
+                        <p:column headerText="Producto">
+                            <h:outputText value="#{detalle.idProducto != null ? detalle.idProducto.nombreProducto : 'N/A'}"/>
+                        </p:column>
+                        <p:column headerText="Cantidad" style="text-align:center">
+                            <h:outputText value="#{detalle.cantidad}">
+                                <f:convertNumber minFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Precio Unitario" style="text-align:right">
+                            <h:outputText value="#{detalle.precio}">
+                                <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Subtotal" style="text-align:right">
+                            <h:outputText value="#{detalle.cantidad.multiply(detalle.precio)}"
+                                          style="font-weight:bold">
+                                <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Observaciones">
+                            <h:outputText value="#{detalle.observaciones}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+
+                <!-- Footer con total del día -->
+                <p:columnGroup type="footer">
+                    <p:row>
+                        <p:column footerText="" exportable="false"/>
+                        <p:column footerText="TOTAL DEL DÍA:" style="text-align:right;font-weight:bold"/>
+                        <p:column footerText="#{reporteVentasDiariasFrm.ventas.size()} ventas" style="text-align:right;font-weight:bold"/>
+                        <p:column footerText="#{reporteVentasDiariasFrm.obtenerTotalDiaFormateado()}" style="text-align:right;font-weight:bold;font-size:1.3em;color:#28a745"/>
+                        <p:column footerText="" style="text-align:center"/>
+                        <p:column footerText="" style="text-align:center"/>
+                    </p:row>
+                </p:columnGroup>
             </p:dataTable>
         </h:form>
     </ui:define>
