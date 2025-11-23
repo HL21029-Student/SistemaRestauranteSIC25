@@ -312,6 +312,7 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
             detalleLibroMayor.setId(UUID.randomUUID());
             detalleLibroMayor.setSaldo(saldo);
             detalleLibroMayor.setIdLibroMayor(libroMayor);
+            detalleLibroMayor.setNombreCuenta(nombreCuenta != null ? nombreCuenta.trim() : null);
 
             em.persist(detalleLibroMayor);
             em.flush();
