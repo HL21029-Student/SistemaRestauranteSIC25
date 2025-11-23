@@ -11,15 +11,13 @@ import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.LibroMayor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Stateless
 @LocalBean
-public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLibroMayor, Object> implements Serializable {
+public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLibroMayor, Object> implements Serializable {
     @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
@@ -39,9 +37,9 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
         return DetalleLibroMayor.class;
     }
 
-    //obtener detalles_libro_mayor por id libro mayor
-    public List<DetalleLibroMayor> findByLibroMayorId(Long libroMayorId, int first, int max){
-        if(libroMayorId!=null){
+    // Obtener detalles_libro_mayor por id libro mayor
+    public List<DetalleLibroMayor> findByLibroMayorId(Long libroMayorId, int first, int max) {
+        if (libroMayorId != null) {
             try {
                 TypedQuery<DetalleLibroMayor> q = em.createNamedQuery("DetalleLibroMayor.findByLibroMayorId", DetalleLibroMayor.class);
 
@@ -49,220 +47,258 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
                 q.setFirstResult(first);
                 q.setMaxResults(max);
                 return q.getResultList();
-            }catch (Exception e){
+            } catch (Exception e) {
                 Logger.getLogger(DetalleLibroMayorDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
             }
         }
         return Collections.emptyList();
     }
 
-    //funcion para calcular el saldo de correspondiente a una cuenta contable
-    //con respcto a la naturaleza de la cuenta y los montos en debe y haber
-
-    /*
-    /**
-     * Mayoriza iterativamente para una cuenta (por nombre) dentro de un LibroDiario.
-     * - Trae los DetalleLibroDiario del libro indicado.
-     * - Filtra por nombre de cuenta contable coincidente.
-     * - Itera calculando saldo según reglas por tipo de cuenta.
-     * - Persiste un DetalleLibroMayor con el saldo resultante asociado al LibroMayor dado.
-     *
-     * @param libroDiarioId id del LibroDiario (Long)
-     * @param nombreCuenta nombre de la cuenta contable a mayorizar (String)
-     * @param idLibroMayor id del LibroMayor donde se creará el detalle (Long)
-     * @return el DetalleLibroMayor creado con el saldo calculado, o null en error
-     */
-    /*
-    public DetalleLibroMayor mayorizarYCrearDetalle(final Long libroDiarioId, final String nombreCuenta, final Long idLibroMayor) {
-        if (libroDiarioId == null || nombreCuenta == null || nombreCuenta.isBlank() || idLibroMayor == null) {
-            LOG.log(Level.WARNING, "Parámetros inválidos para mayorizar");
-            return null;
-        }
-
+    public boolean existeCuentaEnLibroMayor(Long libroMayorId, String codigoCuenta) {
         try {
-            // 1) Traer detalles del libro diario
-            TypedQuery<DetalleLibroDiario> q = em.createNamedQuery("DetalleLibroDiario.findByLibroDiarioId", DetalleLibroDiario.class);
-            q.setParameter("libroDiarioId", libroDiarioId);
-            List<DetalleLibroDiario> detalles = q.getResultList();
+            String queryStr = "SELECT COUNT(d) FROM DetalleLibroMayor d " +
+                    "WHERE d.idLibroMayor.id = :libroMayorId " +
+                    "AND d.nombreCuenta LIKE :codigoCuentaPattern";
 
-            // 2) Iterar y calcular saldo
-            BigDecimal saldo = BigDecimal.ZERO;
-            String buscado = nombreCuenta.trim().toLowerCase();
+            Long count = em.createQuery(queryStr, Long.class)
+                    .setParameter("libroMayorId", libroMayorId)
+                    .setParameter("codigoCuentaPattern", codigoCuenta + "%")
+                    .getSingleResult();
 
-            for (DetalleLibroDiario d : detalles) {
-                if (d == null || d.getIdCuentaContable() == null || d.getIdCuentaContable().getNombre() == null) {
-                    continue;
-                }
-                String nombreFila = d.getIdCuentaContable().getNombre().trim().toLowerCase();
-                if (!nombreFila.equals(buscado)) {
-                    continue; // sólo procesar filas que coincidan
-                }
-
-                BigDecimal monto = d.getMonto() != null ? d.getMonto() : BigDecimal.ZERO;
-                boolean esDebe = Boolean.TRUE.equals(d.getDebe());
-                // delta = +monto si es debe, -monto si es haber
-                BigDecimal delta = esDebe ? monto : monto.negate();
-
-                // obtener tipo de cuenta (intentar nombre o código)
-                String tipoCuentaTxt = "";
-                try {
-                    if (d.getIdCuentaContable().getIdTipoCuenta() != null) {
-                        // se asume que TipoCuenta tiene getNombre() o getCodigo()
-                        try {
-                            tipoCuentaTxt = (String) d.getIdCuentaContable().getIdTipoCuenta().getClass()
-                                    .getMethod("getNombre").invoke(d.getIdCuentaContable().getIdTipoCuenta());
-                        } catch (NoSuchMethodException nsme) {
-                            try {
-                                tipoCuentaTxt = (String) d.getIdCuentaContable().getIdTipoCuenta().getClass()
-                                        .getMethod("getCodigo").invoke(d.getIdCuentaContable().getIdTipoCuenta());
-                            } catch (NoSuchMethodException ignore) {
-                                tipoCuentaTxt = "";
-                            }
-                        }
-                    }
-                } catch (Exception ex) {
-                    LOG.log(Level.FINE, "No se pudo leer tipo de cuenta, se usará vacío", ex);
-                    tipoCuentaTxt = "";
-                }
-                tipoCuentaTxt = tipoCuentaTxt == null ? "" : tipoCuentaTxt.trim().toLowerCase();
-
-                // Reglas:
-                // grupoA: activo, gasto, resultado deudora, cuenta de orden => saldo = saldo + (debe - haber)  (es decir +delta)
-                // grupoB: pasivo, patrimonio, ingreso, resultado acreedor => saldo = saldo - (debe) + (haber)  (es decir -delta)
-                //poner en mayusculas para evitar errores
-                boolean perteneceGrupoA = tipoCuentaTxt.contains("activo")
-                        || tipoCuentaTxt.contains("gasto")
-                        || tipoCuentaTxt.contains("resultado deudora")
-                        || tipoCuentaTxt.contains("orden"); // cuenta de orden
-                boolean perteneceGrupoB = tipoCuentaTxt.contains("pasivo")
-                        || tipoCuentaTxt.contains("patrimonio")
-                        || tipoCuentaTxt.contains("ingreso")
-                        || tipoCuentaTxt.contains("resultado acreedor");
-
-                if (perteneceGrupoA || tipoCuentaTxt.isBlank()) {
-                    // si no se puede determinar, se deja en comportamiento por defecto de grupo A
-                    saldo = saldo.add(delta);
-                } else if (perteneceGrupoB) {
-                    saldo = saldo.subtract(delta);
-                } else {
-                    // por seguridad, aplicar mismo comportamiento que grupo A
-                    saldo = saldo.add(delta);
-                }
-            }
-
-            // 3) Persistir DetalleLibroMayor con el saldo resultante
-            LibroMayor libroMayor = em.find(LibroMayor.class, idLibroMayor);
-            if (libroMayor == null) {
-                LOG.log(Level.WARNING, "LibroMayor no encontrado con id {0}", idLibroMayor);
-                return null;
-            }
-
-            DetalleLibroMayor dlm = new DetalleLibroMayor();
-            dlm.setId(UUID.randomUUID());
-            dlm.setSaldo(saldo);
-            dlm.setIdLibroMayor(libroMayor);
-
-            em.persist(dlm);
-            em.flush();
-
-            return dlm;
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Error al mayorizar", ex);
-            return null;
+            return count > 0;
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error al verificar cuenta mayorizada", e);
+            return false;
         }
     }
 
-     */
-
-
     /**
-     * Mayoriza iterativamente para cada cuenta contable especifica dentro de un LibroDiario.
-     * Solo procesa los detalles que coinciden con el nombre de cuenta contable especificado
-     * @param libroDiarioId id del LibroDiario
-     * @param nombreCuenta  nombre de la cuenta contable a mayorizar
-     * @param idLibroMayor id del libro mayor creado con el saldo calculado, o null en error
-     * @return
+     * ✅ VERSIÓN COMPLETAMENTE CORREGIDA: Mayoriza por partidas contables
      */
-    public DetalleLibroMayor mayorizarYCrearDetalle(final Long libroDiarioId, final String nombreCuenta, final Long idLibroMayor ){
+    public DetalleLibroMayor mayorizarYCrearDetalle(final Long libroDiarioId, final String nombreCuenta, final Long idLibroMayor) {
         if (libroDiarioId == null || nombreCuenta == null || nombreCuenta.isBlank() || idLibroMayor == null) {
             LOG.log(Level.WARNING, "Parámetros inválidos para mayorizar: libroDiarioId={0}, nombreCuenta={1}, idLibroMayor={2}",
                     new Object[]{libroDiarioId, nombreCuenta, idLibroMayor});
             return null;
         }
-        try{
-            // 1 Traer detalles del libro diario
-            TypedQuery<DetalleLibroDiario> q= em.createQuery(
-                    "SELECT d FROM DetalleLibroDiario d " +
-                            "WHERE d.libroDiario.id = :libroDiarioId " +
-                            "AND LOWER(TRIM(d.idCuentaContable.nombre)) = LOWER(TRIM(:nombreCuenta))",
-                    DetalleLibroDiario.class
-            );
-            q.setParameter("libroDiarioId", libroDiarioId);
-            q.setParameter("nombreCuenta", nombreCuenta);
-            List<DetalleLibroDiario> detalles = q.getResultList();
 
-            // 2 Si no hay detalles que coincidan , retornara null
-            if(detalles.isEmpty()){
-                LOG.log(Level.INFO,"No se encontraron detalles  para la cuenta: {0} en el libro diario: {1} ",
+        try {
+            // Validar equilibrio contable
+            if (!validarPartidaDoble(libroDiarioId)) {
+                LOG.log(Level.WARNING, "No se puede mayorizar debido a desbalance contable en libro diario: {0}", libroDiarioId);
+                return null;
+            }
+
+            // ✅ OBTENER PARTIDAS ÚNICAS QUE INVOLUCRAN ESTA CUENTA
+            List<Long> partidasIds = obtenerPartidasConCuenta(libroDiarioId, nombreCuenta);
+
+            if (partidasIds.isEmpty()) {
+                LOG.log(Level.INFO, "No se encontraron partidas para la cuenta: {0} en el libro diario: {1}",
                         new Object[]{nombreCuenta, libroDiarioId});
                 return null;
             }
 
-            // 3 Iterando y calculado saldo - inicio saldo 0
-            BigDecimal saldo = BigDecimal.ZERO;
+            LOG.log(Level.INFO, "Iniciando mayorización para cuenta: {0} con {1} partidas",
+                    new Object[]{nombreCuenta, partidasIds.size()});
 
-            for (DetalleLibroDiario detalle : detalles) {
-                //Validando que el detalle tenga los datos necesarios
-                if(detalle.getMonto() == null){
-                    continue;
-                }
+            // ✅ PROCESAR POR PARTIDAS COMPLETAS
+            BigDecimal saldoFinal = BigDecimal.ZERO;
+            int partidasProcesadas = 0;
 
-                //Obteniendo Montos (filtrados para la cuenta seleccionada)
-                BigDecimal montoDebe =Boolean.TRUE.equals(detalle.getMonto()) ? detalle.getMonto() : BigDecimal.ZERO;
-                BigDecimal montoHaber = Boolean.FALSE.equals(detalle.getDebe()) ? detalle.getMonto() : BigDecimal.ZERO;
+            for (Long partidaId : partidasIds) {
+                BigDecimal saldoPartida = procesarPartidaCompleta(partidaId, nombreCuenta, saldoFinal);
+                saldoFinal = saldoPartida;
+                partidasProcesadas++;
 
-                //Obteniendo el tipo de cuenta
-                String tipoCuenta = obtenerTipoCuenta(detalle);
-
-                //Aplicando reglas contables segun el tipo de cuenta
-                switch (tipoCuenta.toLowerCase()) {
-                    case "activo":
-                    case "gasto":
-                    case "resultado deudora":
-                    case "cuenta de orden":
-                        // saldo + debe - haber = saldo
-                        saldo = saldo.add(montoDebe).subtract(montoHaber);
-                        LOG.log(Level.FINE, "Procesado [Grupo A]: Debe={0}, Haber={1}, SaldoAcumulado={2}",
-                                new Object[]{montoDebe, montoHaber, saldo});
-                        break;
-
-                    case "pasivo":
-                    case "patrimonio":
-                    case "ingreso":
-                    case "resultado acreedor":
-                        // saldo - debe + haber = saldo
-                        saldo = saldo.subtract(montoDebe).add(montoHaber);
-                        LOG.log(Level.FINE, "Procesado [Grupo B]: Debe={0}, Haber={1}, SaldoAcumulado={2}",
-                                new Object[]{montoDebe, montoHaber, saldo});
-                        break;
-
-                    default:
-                        // Por defecto, aplicar regla de activo/gasto
-                        saldo = saldo.add(montoDebe).subtract(montoHaber);
-                        LOG.log(Level.WARNING, "Tipo de cuenta no reconocido: {0}. Aplicando regla por defecto", tipoCuenta);
-                        break;
-                }
+                LOG.log(Level.FINE, "Partida {0} procesada - Saldo acumulado: {1}",
+                        new Object[]{partidaId, saldoFinal});
             }
-            return  crearDetalleLibroMayor(saldo,idLibroMayor,nombreCuenta);
-        }catch (Exception ex){
-            LOG.log(Level.SEVERE, "Error al mayorizar para cuenta: " + nombreCuenta + " en libro diario: " + libroDiarioId, ex);
+
+            LOG.log(Level.INFO, "✅ Mayorización completada - Cuenta: {0}, Partidas: {1}, Saldo Final: {2}",
+                    new Object[]{nombreCuenta, partidasProcesadas, saldoFinal});
+
+            return crearDetalleLibroMayor(saldoFinal, idLibroMayor, nombreCuenta);
+
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "❌ Error al mayorizar para cuenta: " + nombreCuenta + " en libro diario: " + libroDiarioId, ex);
             return null;
         }
     }
+
     /**
-     * Metodo auxiliar DetalleLibroMayor con el saldo resultante
-     * */
+     * ✅ Obtener IDs de partidas que involucran la cuenta específica
+     */
+    private List<Long> obtenerPartidasConCuenta(Long libroDiarioId, String nombreCuenta) {
+        try {
+            TypedQuery<Long> query = em.createQuery(
+                    "SELECT DISTINCT d.numeroPartida FROM DetalleLibroDiario d " +
+                            "WHERE d.libroDiario.id = :libroDiarioId " +
+                            "AND LOWER(TRIM(d.idCuentaContable.nombre)) = LOWER(TRIM(:nombreCuenta)) " +
+                            "ORDER BY d.numeroPartida",
+                    Long.class
+            );
+            query.setParameter("libroDiarioId", libroDiarioId);
+            query.setParameter("nombreCuenta", nombreCuenta);
+
+            return query.getResultList();
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al obtener partidas para cuenta: " + nombreCuenta, ex);
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * ✅ Procesar una partida completa y calcular su efecto en el saldo
+     */
+    private BigDecimal procesarPartidaCompleta(Long numeroPartida, String nombreCuenta, BigDecimal saldoActual) {
+        try {
+            // Obtener todos los detalles de esta partida para la cuenta específica
+            TypedQuery<DetalleLibroDiario> query = em.createQuery(
+                    "SELECT d FROM DetalleLibroDiario d " +
+                            "WHERE d.numeroPartida = :numeroPartida " +
+                            "AND LOWER(TRIM(d.idCuentaContable.nombre)) = LOWER(TRIM(:nombreCuenta)) " +
+                            "ORDER BY d.id",
+                    DetalleLibroDiario.class
+            );
+            query.setParameter("numeroPartida", numeroPartida);
+            query.setParameter("nombreCuenta", nombreCuenta);
+
+            List<DetalleLibroDiario> detalles = query.getResultList();
+
+            if (detalles.isEmpty()) {
+                return saldoActual;
+            }
+
+            BigDecimal saldoPartida = saldoActual;
+
+            // Procesar cada detalle de la partida para esta cuenta específica
+            for (DetalleLibroDiario detalle : detalles) {
+                if (detalle.getMonto() == null || detalle.getDebe() == null) {
+                    LOG.log(Level.WARNING, "Detalle omitido en partida {0} - Datos incompletos", numeroPartida);
+                    continue;
+                }
+
+                BigDecimal montoDebe = Boolean.TRUE.equals(detalle.getDebe()) ? detalle.getMonto() : BigDecimal.ZERO;
+                BigDecimal montoHaber = Boolean.FALSE.equals(detalle.getDebe()) ? detalle.getMonto() : BigDecimal.ZERO;
+
+                String tipoCuenta = obtenerTipoCuenta(detalle);
+
+                // ✅ APLICAR REGLAS CONTABLES CORRECTAMENTE
+                saldoPartida = aplicarReglaContable(saldoPartida, montoDebe, montoHaber, tipoCuenta, detalle.getId());
+            }
+
+            return saldoPartida;
+
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al procesar partida: " + numeroPartida + " para cuenta: " + nombreCuenta, ex);
+            return saldoActual;
+        }
+    }
+
+    /**
+     * ✅ Aplicar reglas contables de forma centralizada
+     */
+    private BigDecimal aplicarReglaContable(BigDecimal saldoActual, BigDecimal montoDebe, BigDecimal montoHaber,
+                                            String tipoCuenta, UUID detalleId) {
+
+        BigDecimal saldoAnterior = saldoActual;
+        BigDecimal saldoNuevo;
+
+        if (tipoCuenta == null || tipoCuenta.isBlank()) {
+            tipoCuenta = "default";
+        }
+
+        switch (tipoCuenta.toLowerCase()) {
+            case "activo":
+            case "gasto":
+            case "resultado deudora":
+            case "cuenta de orden":
+                // ✅ REGLA: saldo + debe - haber
+                saldoNuevo = saldoActual.add(montoDebe).subtract(montoHaber);
+                LOG.log(Level.FINEST, "Detalle {0} [Grupo A]: Debe={1}, Haber={2}, Saldo {3} -> {4}",
+                        new Object[]{detalleId, montoDebe, montoHaber, saldoAnterior, saldoNuevo});
+                break;
+
+            case "pasivo":
+            case "patrimonio":
+            case "ingreso":
+            case "resultado acreedor":
+                // ✅ REGLA: saldo - debe + haber
+                saldoNuevo = saldoActual.subtract(montoDebe).add(montoHaber);
+                LOG.log(Level.FINEST, "Detalle {0} [Grupo B]: Debe={1}, Haber={2}, Saldo {3} -> {4}",
+                        new Object[]{detalleId, montoDebe, montoHaber, saldoAnterior, saldoNuevo});
+                break;
+
+            default:
+                // ✅ REGLA POR DEFECTO: saldo + debe - haber
+                saldoNuevo = saldoActual.add(montoDebe).subtract(montoHaber);
+                LOG.log(Level.WARNING, "Detalle {0} [Default]: Tipo cuenta '{1}' no reconocido. Debe={2}, Haber={3}, Saldo {4} -> {5}",
+                        new Object[]{detalleId, tipoCuenta, montoDebe, montoHaber, saldoAnterior, saldoNuevo});
+                break;
+        }
+
+        return saldoNuevo;
+    }
+
+    /**
+     * ✅ Validar partida doble
+     */
+    private boolean validarPartidaDoble(Long libroDiarioId) {
+        try {
+            String query = "SELECT " +
+                    "COALESCE(SUM(CASE WHEN d.debe = true THEN d.monto ELSE 0 END), 0), " +
+                    "COALESCE(SUM(CASE WHEN d.debe = false THEN d.monto ELSE 0 END), 0) " +
+                    "FROM DetalleLibroDiario d WHERE d.libroDiario.id = :libroDiarioId";
+
+            Object[] resultado = em.createQuery(query, Object[].class)
+                    .setParameter("libroDiarioId", libroDiarioId)
+                    .getSingleResult();
+
+            BigDecimal totalDebe = (BigDecimal) resultado[0];
+            BigDecimal totalHaber = (BigDecimal) resultado[1];
+
+            boolean balanceado = totalDebe.compareTo(totalHaber) == 0;
+
+            if (!balanceado) {
+                LOG.log(Level.WARNING, "⚠️ DESBALANCE CONTABLE - LibroDiario ID: {0}", libroDiarioId);
+                LOG.log(Level.WARNING, "Total Débito: {0}, Total Crédito: {1}, Diferencia: {2}",
+                        new Object[]{totalDebe, totalHaber, totalDebe.subtract(totalHaber).abs()});
+            } else {
+                LOG.log(Level.INFO, "✓ Partida doble validada - LibroDiario ID: {0}, Débito: {1}, Crédito: {2}",
+                        new Object[]{libroDiarioId, totalDebe, totalHaber});
+            }
+
+            return balanceado;
+
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al validar partida doble para libro diario: " + libroDiarioId, ex);
+            return false;
+        }
+    }
+
+    /**
+     * ✅ Obtener tipo de cuenta
+     */
     private String obtenerTipoCuenta(DetalleLibroDiario detalle) {
+        try {
+            if (detalle == null || detalle.getIdCuentaContable() == null) {
+                return "default";
+            }
+
+            String tipoCuenta = obtenerTipoCuentaReflection(detalle);
+            return tipoCuenta != null ? tipoCuenta.trim() : "default";
+
+        } catch (Exception ex) {
+            LOG.log(Level.WARNING, "Error al obtener tipo de cuenta para detalle ID: {0}",
+                    detalle != null ? detalle.getId() : "null");
+            return "default";
+        }
+    }
+
+    /**
+     * Método auxiliar para obtener tipo de cuenta usando reflection
+     */
+    private String obtenerTipoCuentaReflection(DetalleLibroDiario detalle) {
         if (detalle == null || detalle.getIdCuentaContable() == null ||
                 detalle.getIdCuentaContable().getIdTipoCuenta() == null) {
             return "";
@@ -279,7 +315,7 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
                     return ((String) resultado).trim();
                 }
             } catch (NoSuchMethodException e) {
-                //Iterando  el metodo  getCodigo() si getNombre no existe
+                // Intentar el metodo getCodigo() si getNombre no existe
                 try {
                     java.lang.reflect.Method metodoGetCodigo = tipoCuenta.getClass().getMethod("getCodigo");
                     Object resultado = metodoGetCodigo.invoke(tipoCuenta);
@@ -298,29 +334,34 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
     }
 
     /**
-     * Metodo auxiliar para crear y persistir el DetalleLibroMayor
+     * ✅ Crear detalle con validaciones adicionales
      */
     private DetalleLibroMayor crearDetalleLibroMayor(BigDecimal saldo, Long idLibroMayor, String nombreCuenta) {
         try {
-            LibroMayor libroMayor = em.find(LibroMayor.class, idLibroMayor);
-            if (libroMayor == null) {
-                LOG.log(Level.WARNING, "LibroMayor no encontrado con id {0}", idLibroMayor);
+            if (saldo == null || idLibroMayor == null || nombreCuenta == null) {
+                LOG.log(Level.WARNING, "No se puede crear detalle - parámetros inválidos");
                 return null;
             }
 
-            DetalleLibroMayor detalleLibroMayor = new DetalleLibroMayor();
-            detalleLibroMayor.setId(UUID.randomUUID());
-            detalleLibroMayor.setSaldo(saldo);
-            detalleLibroMayor.setIdLibroMayor(libroMayor);
-            detalleLibroMayor.setNombreCuenta(nombreCuenta != null ? nombreCuenta.trim() : null);
+            LibroMayor libroMayor = em.find(LibroMayor.class, idLibroMayor);
+            if (libroMayor == null) {
+                LOG.log(Level.WARNING, "No se encontró LibroMayor con ID: {0}", idLibroMayor);
+                return null;
+            }
 
-            em.persist(detalleLibroMayor);
-            em.flush();
+            DetalleLibroMayor detalle = new DetalleLibroMayor();
+            detalle.setId(UUID.randomUUID());
+            detalle.setSaldo(saldo);
+            detalle.setIdLibroMayor(libroMayor);
+            detalle.setNombreCuenta(nombreCuenta);
 
-            LOG.log(Level.INFO, "DetalleLibroMayor creado exitosamente: Cuenta={0}, Saldo={1}",
-                    new Object[]{nombreCuenta, saldo});
+            em.persist(detalle);
 
-            return detalleLibroMayor;
+            LOG.log(Level.INFO, "✓ DetalleLibroMayor creado - Cuenta: {0}, Saldo: {1}, LibroMayor ID: {2}",
+                    new Object[]{nombreCuenta, saldo, idLibroMayor});
+
+            return detalle;
+
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error al crear DetalleLibroMayor", ex);
             return null;
@@ -376,7 +417,7 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
             q.setParameter("libroDiarioId", libroDiarioId);
             return q.getResultList();
         } catch (Exception e) {
-            Logger.getLogger(DetalleLibroDiarioDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+            LOG.log(Level.SEVERE, "Error al obtener cuentas únicas del libro diario", e);
             return Collections.emptyList();
         }
     }
