@@ -312,6 +312,7 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
             detalleLibroMayor.setId(UUID.randomUUID());
             detalleLibroMayor.setSaldo(saldo);
             detalleLibroMayor.setIdLibroMayor(libroMayor);
+            detalleLibroMayor.setNombreCuenta(nombreCuenta != null ? nombreCuenta.trim() : null);
 
             em.persist(detalleLibroMayor);
             em.flush();
@@ -323,6 +324,60 @@ public class DetalleLibroMayorDAO extends  InventarioDefaultDataAccess<DetalleLi
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error al crear DetalleLibroMayor", ex);
             return null;
+        }
+    }
+
+    /**
+     * Actualizar un detalle de libro mayor
+     */
+    public void edit(DetalleLibroMayor detalle) {
+        try {
+            if (detalle != null) {
+                em.merge(detalle);
+                em.flush();
+                LOG.log(Level.INFO, "DetalleLibroMayor actualizado: {0}", detalle.getId());
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al actualizar DetalleLibroMayor", ex);
+            throw new RuntimeException("Error al actualizar detalle", ex);
+        }
+    }
+
+    /**
+     * Eliminar un detalle de libro mayor
+     */
+    public void remove(DetalleLibroMayor detalle) {
+        try {
+            if (detalle != null) {
+                if (!em.contains(detalle)) {
+                    detalle = em.merge(detalle);
+                }
+                em.remove(detalle);
+                em.flush();
+                LOG.log(Level.INFO, "DetalleLibroMayor eliminado: {0}", detalle.getId());
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al eliminar DetalleLibroMayor", ex);
+            throw new RuntimeException("Error al eliminar detalle", ex);
+        }
+    }
+
+    /**
+     * Encuentra todas las cuentas contables únicas en un libro diario
+     */
+    public List<String> findCuentasUnicasByLibroDiario(Long libroDiarioId) {
+        try {
+            TypedQuery<String> q = em.createQuery(
+                    "SELECT DISTINCT d.idCuentaContable.nombre FROM DetalleLibroDiario d " +
+                            "WHERE d.libroDiario.id = :libroDiarioId " +
+                            "AND d.idCuentaContable.nombre IS NOT NULL",
+                    String.class
+            );
+            q.setParameter("libroDiarioId", libroDiarioId);
+            return q.getResultList();
+        } catch (Exception e) {
+            Logger.getLogger(DetalleLibroDiarioDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+            return Collections.emptyList();
         }
     }
 }
