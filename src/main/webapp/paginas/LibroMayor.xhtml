@@ -219,7 +219,8 @@
                       resizable="false"
                       width="900"
                       height="600"
-                      closable="true">
+                      closable="true"
+                      onShow="ocultarSeccionesDetalle()">
 
                 <h:form id="frmDialogo">
                     <h:panelGrid columns="1" style="width: 100%;" cellpadding="10">
@@ -236,7 +237,8 @@
                         <!-- BÚSQUEDA DE CUENTA CONTABLE -->
                         <h:panelGrid columns="3" style="width: 100%; margin-bottom: 20px;">
                             <p:outputLabel value="Buscar Cuenta Contable:" style="font-weight: bold;"/>
-                            <p:inputText value="#{libroMayorFrm.filtroCuenta}"
+                            <p:inputText id="filtroCuenta"
+                                         value="#{libroMayorFrm.filtroCuenta}"
                                          placeholder="Ingrese nombre de cuenta (ej: ACTIVOS CORRIENTES)"
                                          style="width: 300px;">
                                 <p:ajax event="keyup"
@@ -250,7 +252,7 @@
                                              styleClass="ui-button-primary"/>
                         </h:panelGrid>
 
-                        <!-- TABLA DE CUENTAS CONTABLES - CORREGIDA CON ROWKEY -->
+                        <!-- TABLA DE CUENTAS CONTABLES -->
                         <p:dataTable id="tblCuentas"
                                      value="#{libroMayorFrm.cuentasContables}"
                                      var="cuenta"
@@ -279,30 +281,31 @@
                             <p:column headerText="Seleccionar" width="100">
                                 <p:commandButton value="Seleccionar"
                                                  action="#{libroMayorFrm.prepararDetallesCuenta}"
-                                                 update="pnlDetallesCuenta txtCuentaSeleccionada txtSaldoFinal btnCrearMayorizacion"
-                                                 process="@this">
+                                                 update=":frmDialogo:seccionCuentaSeleccionada :frmDialogo:seccionDetallesCuenta :frmDialogo:seccionCrearMayorizacion"
+                                                 process="@this"
+                                                 oncomplete="mostrarSeccionesDetalle()">
                                     <f:setPropertyActionListener target="#{libroMayorFrm.cuentaSeleccionadaObj}" value="#{cuenta}" />
                                 </p:commandButton>
                             </p:column>
 
                             <p:ajax event="rowSelect"
                                     listener="#{libroMayorFrm.onCuentaSelect}"
-                                    update="pnlDetallesCuenta txtCuentaSeleccionada txtSaldoFinal btnCrearMayorizacion"/>
+                                    update=":frmDialogo:seccionCuentaSeleccionada :frmDialogo:seccionDetallesCuenta :frmDialogo:seccionCrearMayorizacion"
+                                    oncomplete="mostrarSeccionesDetalle()"/>
                         </p:dataTable>
 
-                        <!-- CUENTA SELECCIONADA -->
-                        <h:panelGrid columns="2" style="width: 100%; margin: 20px 0;"
-                                     rendered="#{libroMayorFrm.cuentaSeleccionadaObj != null}">
-                            <p:outputLabel value="Cuenta Seleccionada:" style="font-weight: bold;"/>
-                            <p:inputText id="txtCuentaSeleccionada"
-                                         value="#{libroMayorFrm.cuentaSeleccionada}"
-                                         readonly="true"
-                                         style="width: 100%; font-weight: bold; color: #2E86AB;"/>
-                        </h:panelGrid>
+                        <!-- SECCIÓN DE CUENTA SELECCIONADA - SIEMPRE EN EL DOM -->
+                        <h:panelGroup id="seccionCuentaSeleccionada" style="display: none; width: 100%; margin: 20px 0;">
+                            <h:panelGrid columns="2" style="width: 100%;">
+                                <p:outputLabel value="Cuenta Seleccionada:" style="font-weight: bold;"/>
+                                <p:inputText value="#{libroMayorFrm.cuentaSeleccionada}"
+                                             readonly="true"
+                                             style="width: 100%; font-weight: bold; color: #2E86AB;"/>
+                            </h:panelGrid>
+                        </h:panelGroup>
 
-                        <!-- DETALLES DE LA CUENTA CONTABLE - CORREGIDO -->
-                        <h:panelGroup id="pnlDetallesCuenta"
-                                      rendered="#{libroMayorFrm.cuentaSeleccionadaObj != null}">
+                        <!-- SECCIÓN DE DETALLES DE MOVIMIENTOS - SIEMPRE EN EL DOM -->
+                        <h:panelGroup id="seccionDetallesCuenta" style="display: none; width: 100%;">
                             <p:panel header="Movimientos de la Cuenta" style="margin-bottom: 20px;">
                                 <p:dataTable value="#{libroMayorFrm.detallesCuentaContable}"
                                              var="movimiento"
@@ -344,23 +347,23 @@
                                     </p:column>
                                 </p:dataTable>
                             </p:panel>
+                        </h:panelGroup>
 
-                            <!-- SALDO FINAL Y BOTÓN CREAR -->
+                        <!-- SECCIÓN PARA CREAR MAYORIZACIÓN - SIEMPRE EN EL DOM -->
+                        <h:panelGroup id="seccionCrearMayorizacion" style="display: none; width: 100%;">
                             <h:panelGrid columns="3" style="width: 100%; margin-top: 20px;">
                                 <p:outputLabel value="Saldo Final de Mayorización:" style="font-weight: bold;"/>
-                                <p:inputText id="txtSaldoFinal"
-                                             value="#{libroMayorFrm.saldoFinal}"
+                                <p:inputText value="#{libroMayorFrm.saldoFinal}"
                                              readonly="true"
                                              style="font-weight: bold; color: #2E86AB; text-align: right;">
                                     <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
                                 </p:inputText>
-                                <p:commandButton id="btnCrearMayorizacion"
-                                                 value="Crear Mayorización"
+                                <p:commandButton value="Crear Mayorización"
                                                  action="#{libroMayorFrm.crearMayorizacion}"
                                                  icon="pi pi-check"
                                                  update=":frmMayorizacion:tblDetalles :messagesTop"
                                                  process="@this"
-                                                 oncomplete="if(!args.validationFailed) PF('dlgDetalle').hide()"
+                                                 oncomplete="if(!args.validationFailed) { PF('dlgDetalle').hide(); ocultarSeccionesDetalle(); }"
                                                  styleClass="ui-button-success"/>
                             </h:panelGrid>
                         </h:panelGroup>
@@ -370,12 +373,39 @@
                             <p:commandButton value="Cancelar"
                                              icon="pi pi-times"
                                              process="@none"
-                                             onclick="PF('dlgDetalle').hide()"
+                                             onclick="PF('dlgDetalle').hide(); ocultarSeccionesDetalle();"
                                              styleClass="ui-button-secondary"/>
                         </h:panelGroup>
 
                     </h:panelGrid>
                 </h:form>
+
+                <!-- SCRIPTS PARA CONTROLAR VISIBILIDAD -->
+                <script type="text/javascript">
+                    function mostrarSeccionesDetalle() {
+                        console.log('Mostrando secciones de detalle...');
+                        // Mostrar todas las secciones cuando hay una cuenta seleccionada
+                        var seccionCuenta = document.getElementById('frmDialogo:seccionCuentaSeleccionada');
+                        var seccionDetalles = document.getElementById('frmDialogo:seccionDetallesCuenta');
+                        var seccionCrear = document.getElementById('frmDialogo:seccionCrearMayorizacion');
+
+                        if (seccionCuenta) seccionCuenta.style.display = 'block';
+                        if (seccionDetalles) seccionDetalles.style.display = 'block';
+                        if (seccionCrear) seccionCrear.style.display = 'block';
+                    }
+
+                    function ocultarSeccionesDetalle() {
+                        console.log('Ocultando secciones de detalle...');
+                        // Ocultar todas las secciones cuando no hay cuenta seleccionada
+                        var seccionCuenta = document.getElementById('frmDialogo:seccionCuentaSeleccionada');
+                        var seccionDetalles = document.getElementById('frmDialogo:seccionDetallesCuenta');
+                        var seccionCrear = document.getElementById('frmDialogo:seccionCrearMayorizacion');
+
+                        if (seccionCuenta) seccionCuenta.style.display = 'none';
+                        if (seccionDetalles) seccionDetalles.style.display = 'none';
+                        if (seccionCrear) seccionCrear.style.display = 'none';
+                    }
+                </script>
 
             </p:dialog>
 

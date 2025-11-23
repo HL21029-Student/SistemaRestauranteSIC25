@@ -5,6 +5,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.event.NodeSelectEvent;
@@ -740,7 +741,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
-
     public void onCuentaSelect(SelectEvent event) {
         try {
             System.out.println("=== onCuentaSelect INICIADO ===");
@@ -749,7 +749,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             this.cuentaSeleccionadaObj = cuentaSeleccionada;
 
             System.out.println("Objeto recibido: " + cuentaSeleccionada);
-            System.out.println("Tipo del objeto: " + (cuentaSeleccionada != null ? cuentaSeleccionada.getClass().getName() : "null"));
 
             if (cuentaSeleccionada instanceof Map) {
                 Map<String, Object> cuentaMap = (Map<String, Object>) cuentaSeleccionada;
@@ -757,25 +756,20 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                 String nombre = (String) cuentaMap.get("nombre");
                 Double saldo = (Double) cuentaMap.get("saldo");
 
-                this.cuentaSeleccionada = codigo + " - " + nombre;
+                this.cuentaSeleccionada = (codigo != null ? codigo : "SIN CÓDIGO") + " - " + (nombre != null ? nombre : "SIN NOMBRE");
                 this.saldoFinal = saldo != null ? saldo : 0.0;
 
-                System.out.println("Cuenta seleccionada - Código: " + codigo + ", Nombre: " + nombre + ", Saldo: " + saldo);
-                System.out.println("cuentaSeleccionada asignada: " + this.cuentaSeleccionada);
-                System.out.println("saldoFinal asignado: " + this.saldoFinal);
+                System.out.println("Cuenta seleccionada: " + this.cuentaSeleccionada);
+                System.out.println("Saldo: " + this.saldoFinal);
 
-            } else {
-                System.out.println("ERROR: El objeto no es un Map, es: " + (cuentaSeleccionada != null ? cuentaSeleccionada.getClass().getName() : "null"));
-                this.cuentaSeleccionada = "Cuenta seleccionada";
-                this.saldoFinal = 0.0;
+                // Cargar detalles automáticamente
+                cargarDetallesCuentaContable();
+
+                // Forzar actualización de todas las secciones
+                PrimeFaces.current().executeScript("mostrarSeccionesDetalle()");
             }
 
             System.out.println("=== onCuentaSelect COMPLETADO ===");
-            System.out.println("cuentaSeleccionada: " + this.cuentaSeleccionada);
-            System.out.println("saldoFinal: " + this.saldoFinal);
-            System.out.println("cuentaSeleccionadaObj != null: " + (this.cuentaSeleccionadaObj != null));
-
-            addMessage("Cuenta seleccionada", "Cuenta: " + this.cuentaSeleccionada + " | Saldo preliminar: $" + this.saldoFinal);
 
         } catch (Exception ex) {
             System.out.println("ERROR en onCuentaSelect: " + ex.getMessage());
@@ -788,27 +782,14 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         try {
             System.out.println("=== PREPARAR DETALLES CUENTA ===");
 
-            actualizarCampoCuenta();
-
             if (this.cuentaSeleccionadaObj != null) {
                 cargarDetallesCuentaContable();
 
-                System.out.println("Detalles cargados para confirmación: " +
-                        (this.detallesCuentaContable != null ? this.detallesCuentaContable.size() : "null"));
-
-                if (this.cuentaSeleccionada == null && this.cuentaSeleccionadaObj instanceof Map) {
-                    Map<String, Object> cuentaMap = (Map<String, Object>) this.cuentaSeleccionadaObj;
-                    String codigo = (String) cuentaMap.get("codigo");
-                    String nombre = (String) cuentaMap.get("nombre");
-                    this.cuentaSeleccionada = codigo + " - " + nombre;
-                    System.out.println("Campo forzado en prepararDetallesCuenta: " + this.cuentaSeleccionada);
-                }
+                // Actualizar y mostrar secciones
+                PrimeFaces.current().executeScript("mostrarSeccionesDetalle()");
 
                 addMessage("Detalles cargados",
                         "Se cargaron " + this.detallesCuentaContable.size() + " movimientos para: " + this.cuentaSeleccionada);
-            } else {
-                System.out.println("ERROR: No hay cuenta seleccionada para preparar detalles");
-                addMessage("Error", "No hay cuenta seleccionada", true);
             }
 
         } catch (Exception ex) {
@@ -1032,6 +1013,49 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             }
         } catch (Exception ex) {
             System.out.println("ERROR en actualizarCampoCuenta: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Método para editar registro (necesario para el botón Editar)
+     */
+    public void editarRegistro() {
+        try {
+            if (this.selectedNode != null && this.selectedNode.getData() instanceof LibroMayor) {
+                LibroMayor libroSeleccionado = (LibroMayor) this.selectedNode.getData();
+                this.registro = libroMayorDAO.findById(libroSeleccionado.getId());
+                this.estado = ESTADO_CRUD.MODIFICAR;
+                this.libroDiarioSeleccionado = this.registro.getIdLibroDiario();
+
+                if (this.libroDiarioSeleccionado != null) {
+                    this.libroDiarioIdSeleccionado = this.libroDiarioSeleccionado.getId();
+                } else {
+                    this.libroDiarioIdSeleccionado = null;
+                }
+
+                cargarDetallesLibroMayor();
+                addMessage("Modo edición", "Editando libro mayor: " + this.registro.getObservacion());
+            }
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error al editar registro", ex);
+            addMessage("Error", "No se pudo cargar el registro para editar", true);
+        }
+    }
+
+    /**
+     * Método para forzar la actualización de los componentes del diálogo
+     */
+    public void actualizarComponentesDialogo() {
+        try {
+            PrimeFaces.current().ajax().update(
+                    "frmDialogo:pnlCuentaSeleccionada",
+                    "frmDialogo:txtCuentaSeleccionada",
+                    "frmDialogo:pnlDetallesCuenta",
+                    "frmDialogo:txtSaldoFinal",
+                    "frmDialogo:btnCrearMayorizacion"
+            );
+        } catch (Exception e) {
+            System.out.println("Error al actualizar componentes del diálogo: " + e.getMessage());
         }
     }
 }
