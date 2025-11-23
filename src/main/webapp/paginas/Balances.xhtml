@@ -8,12 +8,192 @@
 
     <!-- TITULO SUPERIOR -->
     <ui:define name="header">
-        <h1>Balance de Comprobación</h1>
+        <h1>Balances</h1>
     </ui:define>
 
-    <!-- CONTENIDO PRINCIPAL (Solo tabla, sin formularios) -->
     <ui:define name="contenido-tabla">
 
+        <!-- seleccionamos el libro diario -->
+        <h:form id="frmSeleccionLibro">
+
+            <p:panel header="Seleccionar Libro Diario">
+
+                <p:selectOneMenu value="#{balanceInicialFrm.idLibroDiarioSeleccionado}">
+                    <f:selectItem itemLabel="Seleccione un libro..." itemValue="#{null}" />
+
+                    <f:selectItems value="#{balanceInicialFrm.listaLibros}"
+                                   var="l"
+                                   itemValue="#{l.id}"
+                                   itemLabel="#{l.nombre}" />
+                </p:selectOneMenu>
+
+
+                <p:commandButton value="Generar Balance Inicial"
+                                 actionListener="#{balanceInicialFrm.cargarBalanceInicial}"
+                                 update="frmBalanceInicial" />
+            </p:panel>
+
+        </h:form>
+
+        <!--balance inicial-->
+        <h:form id="frmBalanceInicial">
+
+            <p:panel header="Balance Inicial">
+
+                <p:splitter layout="horizontal">
+
+                    <!-- panel izquierdo activo -->
+                    <p:splitterPanel size="50">
+
+                        <h3 style="text-align:center; font-weight:bold;">ACTIVO</h3>
+
+                        <!-- activo corriente-->
+                        <h4>Activo Corriente</h4>
+
+                        <p:dataTable value="#{balanceInicialFrm.partida1}" var="d">
+
+                            <p:column headerText="Código"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 1
+                                          and d.idCuentaContable.idSubTipoCuenta.id == 2}">
+                                <h:outputText value="#{d.idCuentaContable.codigo}" />
+                            </p:column>
+
+                            <p:column headerText="Cuenta"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 1
+                                          and d.idCuentaContable.idSubTipoCuenta.id == 2}">
+                                <h:outputText value="#{d.idCuentaContable.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="Debe"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 1
+                                          and d.idCuentaContable.idSubTipoCuenta.id == 2}">
+                                <h:outputText value="#{d.debe ? d.monto : ''}" />
+                            </p:column>
+
+                            <p:column headerText="Haber"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 1
+                                          and d.idCuentaContable.idSubTipoCuenta.id == 2}">
+                                <h:outputText value="#{!d.debe ? d.monto : ''}" />
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <h4>Total Activo Corriente: #{balanceInicialFrm.totalActivoCorriente}</h4>
+
+                        <!-- activo no corriente -->
+                        <h4>Activo No Corriente</h4>
+
+                        <p:dataTable value="#{balanceInicialFrm.partida1}" var="d">
+
+                            <p:column headerText="Código"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 1
+                                          and d.idCuentaContable.idSubTipoCuenta.id == 1}">
+                                <h:outputText value="#{d.idCuentaContable.codigo}" />
+                            </p:column>
+
+                            <p:column headerText="Cuenta"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 1
+                                          and d.idCuentaContable.idSubTipoCuenta.id == 1}">
+                                <h:outputText value="#{d.idCuentaContable.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="Debe"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 1
+                                          and d.idCuentaContable.idSubTipoCuenta.id == 1}">
+                                <h:outputText value="#{d.debe ? d.monto : ''}" />
+                            </p:column>
+
+                            <p:column headerText="Haber"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 1
+                                          and d.idCuentaContable.idSubTipoCuenta.id == 1}">
+                                <h:outputText value="#{!d.debe ? d.monto : ''}" />
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <h4>Total Activo No Corriente: #{balanceInicialFrm.totalActivoNoCorriente}</h4>
+
+                        <h3 style="color:#1a237e; font-weight:bold;">
+                            TOTAL ACTIVO: $#{balanceInicialFrm.totalActivo}
+                        </h3>
+
+                    </p:splitterPanel>
+
+                    <!-- panel derecho-->
+                    <p:splitterPanel size="50">
+
+                        <!--pasivo -->
+                        <h3 style="text-align:center; font-weight:bold;">PASIVO</h3>
+
+                        <p:dataTable value="#{balanceInicialFrm.partida1}" var="d">
+
+                            <p:column headerText="Código"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 2}">
+                                <h:outputText value="#{d.idCuentaContable.codigo}" />
+                            </p:column>
+
+                            <p:column headerText="Cuenta"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 2}">
+                                <h:outputText value="#{d.idCuentaContable.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="Debe"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 2}">
+                                <h:outputText value="#{d.debe ? d.monto : ''}" />
+                            </p:column>
+
+                            <p:column headerText="Haber"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 2}">
+                                <h:outputText value="#{!d.debe ? d.monto : ''}" />
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <h4>Total Pasivo: #{balanceInicialFrm.totalPasivo}</h4>
+
+
+                        <!-- patrimonio -->
+                        <h3 style="text-align:center; font-weight:bold;">PATRIMONIO</h3>
+
+                        <p:dataTable value="#{balanceInicialFrm.partida1}" var="d">
+
+                            <p:column headerText="Código"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 3}">
+                                <h:outputText value="#{d.idCuentaContable.codigo}" />
+                            </p:column>
+
+                            <p:column headerText="Cuenta"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 3}">
+                                <h:outputText value="#{d.idCuentaContable.nombre}" />
+                            </p:column>
+
+                            <p:column headerText="Debe"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 3}">
+                                <h:outputText value="#{d.debe ? d.monto : ''}" />
+                            </p:column>
+
+                            <p:column headerText="Haber"
+                                      rendered="#{d.idCuentaContable.idTipoCuenta.id == 3}">
+                                <h:outputText value="#{!d.debe ? d.monto : ''}" />
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <h4>Total Patrimonio: #{balanceInicialFrm.totalPatrimonio}</h4>
+
+                        <h3 style="color:#1a237e; font-weight:bold;">
+                            TOTAL PASIVO + PATRIMONIO: $#{balanceInicialFrm.totalPasivoPatrimonio}
+                        </h3>
+
+                    </p:splitterPanel>
+
+                </p:splitter>
+
+            </p:panel>
+
+        </h:form>
+
+        <!-- balane de comprobacion -->
         <h:form id="frmBalance">
 
             <p:panel header="Balance de Comprobación" style="margin-top:20px;">
