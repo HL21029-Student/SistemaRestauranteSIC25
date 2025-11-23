@@ -66,7 +66,7 @@ public class AlmacenFrm extends DefaultFrm<Almacen> implements Serializable {
                 Integer buscado = Integer.valueOf(id);
                 return this.modelo.getWrappedData().stream().filter(r->r.getId().equals(buscado)).findFirst().orElse(null);
             }catch(Exception e){
-                Logger.getLogger(AlmacenFrm.class.getName()).log(Level.SEVERE, null, e);
+                Logger.getLogger(AlmacenFrm.class.getName()).log(Level.SEVERE, e.getMessage(), e);
             }
         }
         return null;

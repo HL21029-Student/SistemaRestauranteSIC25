@@ -55,15 +55,12 @@ public class MenuFrm implements Serializable {
 
             DefaultSubMenu tipos = DefaultSubMenu.builder().label(labelTipos).expanded(false).build();
             tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoAlmacen") : "Bodega", "pi pi-building", "TipoAlmacen.jsf"));
-            tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoProducto") : "Producto", "pi pi-th-large", "TipoProducto.jsf"));
-            tipos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.tipoUnidadMedida") : "Unidad de Medida", "pi pi-calculator", "TipoUnidadMedida.jsf"));
 
             DefaultSubMenu especificos = DefaultSubMenu.builder().label(labelEspecificos).expanded(false).build();
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.almacen") : "Almacén", "pi pi-warehouse", "Almacen.jsf"));
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.producto") : "Producto", "pi pi-box", "Producto.jsf"));
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.cliente") : "Cliente", "pi pi-user", "Cliente.jsf"));
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.proveedor") : "Proveedor", "pi pi-briefcase", "Proveedor.jsf"));
-            especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.caracteristicas") : "Características", "pi pi-tags", "Caracteristica.jsf"));
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.compras") : "Compras", "pi pi-shopping-cart", "Compras.jsf"));
             especificos.getElements().add(crearItem(bundle != null ? bundle.getString("menu.ventas") : "Ventas", "pi pi-dollar", "Ventas.jsf"));
 
@@ -73,11 +70,11 @@ public class MenuFrm implements Serializable {
 
             DefaultSubMenu adminCuentas = DefaultSubMenu.builder().label(labelAdminCuentas).expanded(false).build();
             adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.manualCuentas") : "Manual de cuentas", "pi pi-book", "ManualCuentas.jsf"));
+            adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.cuentaContable") : "Cuenta contable", "pi pi-list", "CuentaContable.jsf"));
             adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.factura") : "Factura", "pi pi-file", "Factura.jsf"));
             adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.reporteVentasDiarias") : "Reporte de ventas diarias", "pi pi-chart-line", "ReporteVentasDiarias.jsf"));
 
             DefaultSubMenu adminUsuarios = DefaultSubMenu.builder().label(labelAdminUsuarios).expanded(false).build();
-            adminUsuarios.getElements().add(crearItem(bundle != null ? bundle.getString("menu.cuentaContable") : "Cuenta contable", "pi pi-list", "CuentaContable.jsf"));
             adminUsuarios.getElements().add(crearItem(bundle != null ? bundle.getString("menu.usuario") : "Usuarios", "pi pi-users", "Usuario.jsf"));
 
             model.getElements().add(tipos);
