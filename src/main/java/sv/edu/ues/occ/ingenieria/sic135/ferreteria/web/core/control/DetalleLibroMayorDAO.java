@@ -73,7 +73,7 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
     }
 
     /**
-     * ✅ VERSIÓN COMPLETAMENTE CORREGIDA: Mayoriza por partidas contables
+     * Metodo para mayoriza por partidas contables
      */
     public DetalleLibroMayor mayorizarYCrearDetalle(final Long libroDiarioId, final String nombreCuenta, final Long idLibroMayor) {
         if (libroDiarioId == null || nombreCuenta == null || nombreCuenta.isBlank() || idLibroMayor == null) {
@@ -89,7 +89,6 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
                 return null;
             }
 
-            // ✅ OBTENER PARTIDAS ÚNICAS QUE INVOLUCRAN ESTA CUENTA
             List<Long> partidasIds = obtenerPartidasConCuenta(libroDiarioId, nombreCuenta);
 
             if (partidasIds.isEmpty()) {
@@ -101,7 +100,6 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
             LOG.log(Level.INFO, "Iniciando mayorización para cuenta: {0} con {1} partidas",
                     new Object[]{nombreCuenta, partidasIds.size()});
 
-            // ✅ PROCESAR POR PARTIDAS COMPLETAS
             BigDecimal saldoFinal = BigDecimal.ZERO;
             int partidasProcesadas = 0;
 
@@ -126,7 +124,7 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
     }
 
     /**
-     * ✅ Obtener IDs de partidas que involucran la cuenta específica
+     * Metodo para obtener IDs de partidas que involucran la cuenta específica
      */
     private List<Long> obtenerPartidasConCuenta(Long libroDiarioId, String nombreCuenta) {
         try {
@@ -148,11 +146,10 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
     }
 
     /**
-     * ✅ Procesar una partida completa y calcular su efecto en el saldo
+     * Metodo para procesar una partida completa y calcular su efecto en el saldo
      */
     private BigDecimal procesarPartidaCompleta(Long numeroPartida, String nombreCuenta, BigDecimal saldoActual) {
         try {
-            // Obtener todos los detalles de esta partida para la cuenta específica
             TypedQuery<DetalleLibroDiario> query = em.createQuery(
                     "SELECT d FROM DetalleLibroDiario d " +
                             "WHERE d.numeroPartida = :numeroPartida " +
@@ -182,8 +179,6 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
                 BigDecimal montoHaber = Boolean.FALSE.equals(detalle.getDebe()) ? detalle.getMonto() : BigDecimal.ZERO;
 
                 String tipoCuenta = obtenerTipoCuenta(detalle);
-
-                // ✅ APLICAR REGLAS CONTABLES CORRECTAMENTE
                 saldoPartida = aplicarReglaContable(saldoPartida, montoDebe, montoHaber, tipoCuenta, detalle.getId());
             }
 
@@ -196,7 +191,7 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
     }
 
     /**
-     * ✅ Aplicar reglas contables de forma centralizada
+     * Metodo para aplicar reglas contables de forma centralizada
      */
     private BigDecimal aplicarReglaContable(BigDecimal saldoActual, BigDecimal montoDebe, BigDecimal montoHaber,
                                             String tipoCuenta, UUID detalleId) {
@@ -213,7 +208,7 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
             case "gasto":
             case "resultado deudora":
             case "cuenta de orden":
-                // ✅ REGLA: saldo + debe - haber
+                // saldo + debe - haber
                 saldoNuevo = saldoActual.add(montoDebe).subtract(montoHaber);
                 LOG.log(Level.FINEST, "Detalle {0} [Grupo A]: Debe={1}, Haber={2}, Saldo {3} -> {4}",
                         new Object[]{detalleId, montoDebe, montoHaber, saldoAnterior, saldoNuevo});
@@ -223,14 +218,14 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
             case "patrimonio":
             case "ingreso":
             case "resultado acreedor":
-                // ✅ REGLA: saldo - debe + haber
+                // : saldo - debe + haber
                 saldoNuevo = saldoActual.subtract(montoDebe).add(montoHaber);
                 LOG.log(Level.FINEST, "Detalle {0} [Grupo B]: Debe={1}, Haber={2}, Saldo {3} -> {4}",
                         new Object[]{detalleId, montoDebe, montoHaber, saldoAnterior, saldoNuevo});
                 break;
 
             default:
-                // ✅ REGLA POR DEFECTO: saldo + debe - haber
+                // saldo + debe - haber
                 saldoNuevo = saldoActual.add(montoDebe).subtract(montoHaber);
                 LOG.log(Level.WARNING, "Detalle {0} [Default]: Tipo cuenta '{1}' no reconocido. Debe={2}, Haber={3}, Saldo {4} -> {5}",
                         new Object[]{detalleId, tipoCuenta, montoDebe, montoHaber, saldoAnterior, saldoNuevo});
@@ -241,7 +236,7 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
     }
 
     /**
-     * ✅ Validar partida doble
+     * Metodo para validar partida doble
      */
     private boolean validarPartidaDoble(Long libroDiarioId) {
         try {
@@ -260,7 +255,7 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
             boolean balanceado = totalDebe.compareTo(totalHaber) == 0;
 
             if (!balanceado) {
-                LOG.log(Level.WARNING, "⚠️ DESBALANCE CONTABLE - LibroDiario ID: {0}", libroDiarioId);
+                LOG.log(Level.WARNING, " DESBALANCE CONTABLE - LibroDiario ID: {0}", libroDiarioId);
                 LOG.log(Level.WARNING, "Total Débito: {0}, Total Crédito: {1}, Diferencia: {2}",
                         new Object[]{totalDebe, totalHaber, totalDebe.subtract(totalHaber).abs()});
             } else {
@@ -277,7 +272,7 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
     }
 
     /**
-     * ✅ Obtener tipo de cuenta
+     * Metodo para obtener tipo de cuenta
      */
     private String obtenerTipoCuenta(DetalleLibroDiario detalle) {
         try {
@@ -296,7 +291,7 @@ public class DetalleLibroMayorDAO extends InventarioDefaultDataAccess<DetalleLib
     }
 
     /**
-     * Método auxiliar para obtener tipo de cuenta usando reflection
+     * Metodo auxiliar para obtener tipo de cuenta usando relection
      */
     private String obtenerTipoCuentaReflection(DetalleLibroDiario detalle) {
         if (detalle == null || detalle.getIdCuentaContable() == null ||
