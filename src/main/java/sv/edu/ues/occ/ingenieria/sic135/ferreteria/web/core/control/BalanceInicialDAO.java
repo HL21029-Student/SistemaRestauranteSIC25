@@ -21,9 +21,7 @@ public class BalanceInicialDAO implements Serializable {
     @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
-    /**
-     * Obtener la partida 1 del libro diario especificado
-     */
+    //la partida 1 del libro diario elegido
     public List<DetalleLibroDiario> obtenerPartida1(Long idLibro) {
 
         if (idLibro == null) {
@@ -33,7 +31,7 @@ public class BalanceInicialDAO implements Serializable {
         try {
             TypedQuery<DetalleLibroDiario> query = em.createQuery(
                     "SELECT d FROM DetalleLibroDiario d " +
-                            "WHERE d.libroDiario.idLibroDiario = :idLibro " +
+                            "WHERE d.libroDiario.id = :idLibro " +
                             "AND d.numeroPartida = 1 " +
                             "ORDER BY d.idCuentaContable.codigo ASC",
                     DetalleLibroDiario.class

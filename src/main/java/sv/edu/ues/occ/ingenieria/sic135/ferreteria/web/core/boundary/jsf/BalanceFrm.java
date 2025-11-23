@@ -14,26 +14,25 @@ import java.util.List;
 @ViewScoped
 public class BalanceFrm implements Serializable {
 
-    @Inject
+   @Inject
     BalanceDAO balanceDAO;
 
     private List<BalanceDTO> lista;
-
     private double totalDeudor;
     private double totalAcreedor;
 
-    @PostConstruct
-    public void init() {
-        lista = balanceDAO.obtenerBalance();
+     @PostConstruct
+   public void init() {
+     lista = balanceDAO.obtenerBalance();
 
-        totalDeudor = lista.stream()
-                .filter(BalanceDTO::isDeudor)
-                .mapToDouble(BalanceDTO::getSaldo)
+       totalDeudor = lista.stream()
+               .filter(BalanceDTO::isDeudor)
+              .mapToDouble(BalanceDTO::getSaldo)
                 .sum();
 
         totalAcreedor = lista.stream()
                 .filter(BalanceDTO::isAcreedor)
-                .mapToDouble(BalanceDTO::getSaldo)
+               .mapToDouble(BalanceDTO::getSaldo)
                 .sum();
     }
 
@@ -42,10 +41,10 @@ public class BalanceFrm implements Serializable {
     }
 
     public double getTotalDeudor() {
-        return totalDeudor;
+       return totalDeudor;
     }
 
     public double getTotalAcreedor() {
-        return totalAcreedor;
+         return totalAcreedor;
     }
-}
+    }
