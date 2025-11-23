@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -377,6 +378,22 @@ public class CuentaContableDAO extends InventarioDefaultDataAccess<CuentaContabl
                 .getResultList();
     }
 
+    /**
+     * Busca cuentas contables por nombre (búsqueda parcial)
+     */
+    public List<CuentaContable> findByNombreContaining(String nombre) {
+        try {
+            TypedQuery<CuentaContable> q = em.createQuery(
+                    "SELECT c FROM CuentaContable c WHERE LOWER(c.nombre) LIKE LOWER(:nombre)",
+                    CuentaContable.class
+            );
+            q.setParameter("nombre", "%" + nombre + "%");
+            return q.getResultList();
+        } catch (Exception e) {
+            Logger.getLogger(CuentaContableDAO.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
 
     /**
      * Comprueba si una cuenta contable puede ser eliminada por su id.

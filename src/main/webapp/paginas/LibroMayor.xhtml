@@ -5,16 +5,411 @@
         xmlns:h="jakarta.faces.html"
         xmlns:p="http://primefaces.org/ui"
         xmlns:ues="jakarta.faces.composite/ues"
-        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns="http://www.w3.org/1999/xhtml">
 
->
     <ui:define name="header">
         <h1>#{defaultfrm['page.LibroMayor']}</h1>
     </ui:define>
 
     <ui:define name="contenido-tabla">
+        <h:panelGrid columns="1">
+            <h:form id="frmTop">
+                <p:treeTable id="tabla-top"
+                             rendered="#{libroMayorFrm.estado == 'NADA'}"
+                             styleClass="tabla-crud"
+                             value="#{libroMayorFrm.root}"
+                             var="reg"
+                             selectionMode="single"
+                             selection="#{libroMayorFrm.selectedNode}">
+                    <p:ajax event="select"
+                            listener="#{libroMayorFrm.onNodeSelect}"
+                            update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"/>
 
+                    <p:column headerText="ID">
+                        <h:outputText value="#{reg.id}"/>
+                    </p:column>
+                    <p:column headerText="Observación">
+                        <h:outputText value="#{reg.observacion}"/>
+                    </p:column>
+                    <p:column headerText="Libro Diario">
+                        <h:outputText value="#{reg.idLibroDiario.nombre}" rendered="#{reg.idLibroDiario != null}"/>
+                        <h:outputText value="Sin referencia" rendered="#{reg.idLibroDiario == null}" style="color: #999;"/>
+                    </p:column>
+                </p:treeTable>
+
+                <ues:botones-top formulario="#{libroMayorFrm}" actualizar=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"/>
+
+            </h:form>
+            <p:messages id="messagesTop" showSummary="true" showDetail="true" autoUpdate="true"/>
+        </h:panelGrid>
     </ui:define>
 
+    <ui:define name="contenido-detalle">
+        <h:panelGroup id="libroMayorDetalle">
+            <p:tabView id="tabLibroMayor"
+                       cache="false"
+                       dynamic="true"
+                       rendered="#{libroMayorFrm.estado != 'NADA'}"
+                       activeIndex="0">
+
+                <!-- TAB 1: INFORMACIÓN DEL LIBRO MAYOR -->
+                <p:tab id="tabInformacion"
+                       closable="false"
+                       title="#{libroMayorFrm.estado == 'CREAR' ? 'Crear Libro Mayor' : 'Editar Libro Mayor'}">
+                    <h:form id="frmDetalle">
+                        <p:panel header="Información del Libro Mayor">
+                            <h:panelGrid columns="2" cellpadding="5" style="width: 100%">
+
+                                <!-- ID -->
+                                <p:outputLabel for="txtId" value="ID:" style="font-weight: bold;"/>
+                                <p:inputText id="txtId"
+                                             value="#{libroMayorFrm.registro.id}"
+                                             readonly="true"
+                                             disabled="true"
+                                             style="width: 300px;"
+                                             placeholder="Se generará automáticamente"/>
+
+                                <!-- LIBRO DIARIO -->
+                                <p:outputLabel for="cmbLibroDiario"
+                                               value="Libro Diario:"
+                                               style="font-weight: bold;"/>
+                                <p:selectOneMenu id="cmbLibroDiario"
+                                                 value="#{libroMayorFrm.libroDiarioIdSeleccionado}"
+                                                 style="width: 300px;">
+                                    <f:selectItem itemLabel="-- Ninguno (Tipo Raíz) --" itemValue="#{null}"/>
+                                    <f:selectItems value="#{libroMayorFrm.librosDiariosDisponibles}"
+                                                   var="libroDiario"
+                                                   itemLabel="#{libroDiario.nombre}"
+                                                   itemValue="#{libroDiario.id}"/>
+                                    <p:ajax event="change"
+                                            listener="#{libroMayorFrm.actualizarLibroDiarioDesdeId}"
+                                            update="@this"/>
+                                </p:selectOneMenu>
+
+                                <!-- OBSERVACIÓN -->
+                                <p:outputLabel for="txtObservacion"
+                                               value="Observación *:"
+                                               style="font-weight: bold;"/>
+                                <h:panelGroup>
+                                    <p:inputTextarea id="txtObservacion"
+                                                     value="#{libroMayorFrm.registro.observacion}"
+                                                     required="true"
+                                                     requiredMessage="La observación es obligatoria"
+                                                     rows="4"
+                                                     style="width: 300px;"
+                                                     placeholder="Ingrese la observación del libro mayor"
+                                                     maxlength="500"/>
+                                    <p:message for="txtObservacion" display="icon"/>
+                                </h:panelGroup>
+
+                            </h:panelGrid>
+                        </p:panel>
+
+                        <!-- BOTONES -->
+                        <h:panelGrid columns="3" style="margin-top: 20px; text-align: center;">
+                            <p:commandButton value="#{libroMayorFrm.estado == 'CREAR' ? 'Crear' : 'Guardar'}"
+                                             action="#{libroMayorFrm.guardarOSalvarRegistro}"
+                                             icon="pi pi-check"
+                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                             process="@form"
+                                             styleClass="ui-button-success"/>
+
+                            <p:commandButton value="Cancelar"
+                                             action="#{libroMayorFrm.cancelarCreacion}"
+                                             icon="pi pi-times"
+                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"
+                                             process="@none"
+                                             styleClass="ui-button-secondary"
+                                             immediate="true"/>
+
+                            <p:commandButton value="Eliminar"
+                                             action="#{libroMayorFrm.eliminarLibroMayor}"
+                                             icon="pi pi-trash"
+                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                             process="@this"
+                                             rendered="#{libroMayorFrm.estado == 'MODIFICAR' and libroMayorFrm.registro.id != null}"
+                                             styleClass="ui-button-danger"
+                                             onclick="return confirm('¿Está seguro de que desea eliminar este Libro Mayor?')"/>
+                        </h:panelGrid>
+
+                        <!-- BOTÓN LIMPIAR -->
+                        <h:panelGrid columns="1" style="margin-top: 10px; text-align: center;">
+                            <p:commandButton value="Limpiar"
+                                             action="#{libroMayorFrm.limpiarFormulario}"
+                                             icon="pi pi-refresh"
+                                             update="frmDetalle"
+                                             process="@none"
+                                             rendered="#{libroMayorFrm.estado == 'CREAR'}"
+                                             styleClass="ui-button-warning"/>
+                        </h:panelGrid>
+
+                    </h:form>
+                </p:tab>
+
+                <!-- TAB 2: MAYORIZACIÓN -->
+                <p:tab id="tabMayorizacion"
+                       title="Mayorización"
+                       disabled="#{libroMayorFrm.estado != 'MODIFICAR' or libroMayorFrm.registro.id == null}">
+                    <h:form id="frmMayorizacion">
+                        <p:panel header="Detalles de Mayorización">
+
+                            <!-- BOTÓN PARA CREAR NUEVO DETALLE -->
+                            <h:panelGrid columns="2" style="margin-bottom: 20px;">
+                                <p:commandButton value="Buscar Cuenta para Mayorizar"
+                                                 action="#{libroMayorFrm.prepararNuevoDetalle}"
+                                                 icon="pi pi-search"
+                                                 update="@form"
+                                                 process="@this"
+                                                 oncomplete="PF('dlgDetalle').show()"
+                                                 styleClass="ui-button-primary"/>
+
+                                <p:outputLabel value="Total detalles: #{libroMayorFrm.detallesCount}"
+                                               style="font-weight: bold; text-align: right;"/>
+                            </h:panelGrid>
+
+                            <!-- TABLA DE DETALLES -->
+                            <p:dataTable id="tblDetalles"
+                                         value="#{libroMayorFrm.detallesLibroMayor}"
+                                         var="detalle"
+                                         emptyMessage="No hay detalles de mayorización"
+                                         styleClass="tabla-crud"
+                                         paginator="true"
+                                         rows="10"
+                                         rowKey="#{detalle.id}">
+
+                                <p:column headerText="ID Detalle" width="200">
+                                    <h:outputText value="#{detalle.id}"/>
+                                </p:column>
+
+                                <p:column headerText="Cuenta Mayorizada" width="250">
+                                    <h:outputText value="#{detalle.nombreCuenta != null ? detalle.nombreCuenta : 'Cuenta ID: ' + detalle.id.toString().substring(0,8)}"/>
+                                </p:column>
+
+                                <p:column headerText="Saldo" width="150">
+                                    <h:outputText value="#{detalle.saldo}">
+                                        <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="Acciones" width="120">
+                                    <p:commandButton icon="pi pi-trash"
+                                                     title="Eliminar"
+                                                     styleClass="ui-button-danger"
+                                                     update="tblDetalles :messagesTop"
+                                                     process="@this"
+                                                     action="#{libroMayorFrm.eliminarDetalle}"
+                                                     onclick="return confirm('¿Eliminar este detalle?')">
+                                        <f:setPropertyActionListener target="#{libroMayorFrm.detalleSeleccionado}" value="#{detalle}" />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+
+                        </p:panel>
+
+                    </h:form>
+                </p:tab>
+
+            </p:tabView>
+
+            <!-- DIÁLOGO FUERA DEL TABVIEW PARA EVITAR PROBLEMAS DE REFERENCIAS -->
+            <p:dialog id="dlgDetalle"
+                      header="Crear Mayorización - Seleccionar Cuenta Contable"
+                      widgetVar="dlgDetalle"
+                      modal="true"
+                      resizable="false"
+                      width="900"
+                      height="600"
+                      closable="true"
+                      onShow="ocultarSeccionesDetalle()">
+
+                <h:form id="frmDialogo">
+                    <h:panelGrid columns="1" style="width: 100%;" cellpadding="10">
+
+                        <!-- INFORMACIÓN BÁSICA -->
+                        <h:panelGrid columns="2" style="width: 100%; margin-bottom: 20px;">
+                            <p:outputLabel value="ID Detalle:" style="font-weight: bold;"/>
+                            <h:panelGroup>
+                                <p:outputLabel value="Se generará automáticamente"
+                                               style="color: #999;"/>
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                        <!-- BÚSQUEDA DE CUENTA CONTABLE -->
+                        <h:panelGrid columns="3" style="width: 100%; margin-bottom: 20px;">
+                            <p:outputLabel value="Buscar Cuenta Contable:" style="font-weight: bold;"/>
+                            <p:inputText id="filtroCuenta"
+                                         value="#{libroMayorFrm.filtroCuenta}"
+                                         placeholder="Ingrese nombre de cuenta (ej: ACTIVOS CORRIENTES)"
+                                         style="width: 300px;">
+                                <p:ajax event="keyup"
+                                        listener="#{libroMayorFrm.buscarCuentas}"
+                                        update="tblCuentas"
+                                        delay="500"/>
+                            </p:inputText>
+                            <p:commandButton value="Buscar"
+                                             action="#{libroMayorFrm.buscarCuentas}"
+                                             update="tblCuentas"
+                                             styleClass="ui-button-primary"/>
+                        </h:panelGrid>
+
+                        <!-- TABLA DE CUENTAS CONTABLES -->
+                        <p:dataTable id="tblCuentas"
+                                     value="#{libroMayorFrm.cuentasContables}"
+                                     var="cuenta"
+                                     emptyMessage="No se encontraron cuentas contables"
+                                     styleClass="tabla-crud"
+                                     paginator="true"
+                                     rows="5"
+                                     selection="#{libroMayorFrm.cuentaSeleccionadaObj}"
+                                     selectionMode="single"
+                                     rowKey="#{cuenta.codigo}">
+
+                            <p:column headerText="Código" width="100">
+                                <h:outputText value="#{cuenta.codigo}"/>
+                            </p:column>
+
+                            <p:column headerText="Nombre" width="300">
+                                <h:outputText value="#{cuenta.nombre}"/>
+                            </p:column>
+
+                            <p:column headerText="Saldo" width="150">
+                                <h:outputText value="#{cuenta.saldo}">
+                                    <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Seleccionar" width="100">
+                                <p:commandButton value="Seleccionar"
+                                                 action="#{libroMayorFrm.prepararDetallesCuenta}"
+                                                 update=":frmDialogo:seccionCuentaSeleccionada :frmDialogo:seccionDetallesCuenta :frmDialogo:seccionCrearMayorizacion"
+                                                 process="@this"
+                                                 oncomplete="mostrarSeccionesDetalle()">
+                                    <f:setPropertyActionListener target="#{libroMayorFrm.cuentaSeleccionadaObj}" value="#{cuenta}" />
+                                </p:commandButton>
+                            </p:column>
+
+                            <p:ajax event="rowSelect"
+                                    listener="#{libroMayorFrm.onCuentaSelect}"
+                                    update=":frmDialogo:seccionCuentaSeleccionada :frmDialogo:seccionDetallesCuenta :frmDialogo:seccionCrearMayorizacion"
+                                    oncomplete="mostrarSeccionesDetalle()"/>
+                        </p:dataTable>
+
+                        <!-- SECCIÓN DE CUENTA SELECCIONADA - SIEMPRE EN EL DOM -->
+                        <h:panelGroup id="seccionCuentaSeleccionada" style="display: none; width: 100%; margin: 20px 0;">
+                            <h:panelGrid columns="2" style="width: 100%;">
+                                <p:outputLabel value="Cuenta Seleccionada:" style="font-weight: bold;"/>
+                                <p:inputText value="#{libroMayorFrm.cuentaSeleccionada}"
+                                             readonly="true"
+                                             style="width: 100%; font-weight: bold; color: #2E86AB;"/>
+                            </h:panelGrid>
+                        </h:panelGroup>
+
+                        <!-- SECCIÓN DE DETALLES DE MOVIMIENTOS - SIEMPRE EN EL DOM -->
+                        <h:panelGroup id="seccionDetallesCuenta" style="display: none; width: 100%;">
+                            <p:panel header="Movimientos de la Cuenta" style="margin-bottom: 20px;">
+                                <p:dataTable value="#{libroMayorFrm.detallesCuentaContable}"
+                                             var="movimiento"
+                                             emptyMessage="No hay movimientos para esta cuenta"
+                                             styleClass="tabla-crud"
+                                             paginator="true"
+                                             rows="5">
+
+                                    <p:column headerText="Fecha" width="100">
+                                        <h:outputText value="#{movimiento.fecha}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Concepto" width="200">
+                                        <h:outputText value="#{movimiento.concepto}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Partida #" width="100">
+                                        <h:outputText value="#{movimiento.numeroPartida}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Debe" width="100">
+                                        <h:outputText value="#{movimiento.montoDebe}">
+                                            <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                        </h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Haber" width="100">
+                                        <h:outputText value="#{movimiento.montoHaber}">
+                                            <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                        </h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Saldo Parcial" width="100">
+                                        <h:outputText value="#{movimiento.montoTotal}">
+                                            <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                        </h:outputText>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+                        </h:panelGroup>
+
+                        <!-- SECCIÓN PARA CREAR MAYORIZACIÓN - SIEMPRE EN EL DOM -->
+                        <h:panelGroup id="seccionCrearMayorizacion" style="display: none; width: 100%;">
+                            <h:panelGrid columns="3" style="width: 100%; margin-top: 20px;">
+                                <p:outputLabel value="Saldo Final de Mayorización:" style="font-weight: bold;"/>
+                                <p:inputText value="#{libroMayorFrm.saldoFinal}"
+                                             readonly="true"
+                                             style="font-weight: bold; color: #2E86AB; text-align: right;">
+                                    <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
+                                </p:inputText>
+                                <p:commandButton value="Crear Mayorización"
+                                                 action="#{libroMayorFrm.crearMayorizacion}"
+                                                 icon="pi pi-check"
+                                                 update=":frmMayorizacion:tblDetalles :messagesTop"
+                                                 process="@this"
+                                                 oncomplete="if(!args.validationFailed) { PF('dlgDetalle').hide(); ocultarSeccionesDetalle(); }"
+                                                 styleClass="ui-button-success"/>
+                            </h:panelGrid>
+                        </h:panelGroup>
+
+                        <!-- BOTÓN CANCELAR -->
+                        <h:panelGroup style="text-align: center; margin-top: 20px;">
+                            <p:commandButton value="Cancelar"
+                                             icon="pi pi-times"
+                                             process="@none"
+                                             onclick="PF('dlgDetalle').hide(); ocultarSeccionesDetalle();"
+                                             styleClass="ui-button-secondary"/>
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+                </h:form>
+
+                <!-- SCRIPTS PARA CONTROLAR VISIBILIDAD -->
+                <script type="text/javascript">
+                    function mostrarSeccionesDetalle() {
+                        console.log('Mostrando secciones de detalle...');
+                        // Mostrar todas las secciones cuando hay una cuenta seleccionada
+                        var seccionCuenta = document.getElementById('frmDialogo:seccionCuentaSeleccionada');
+                        var seccionDetalles = document.getElementById('frmDialogo:seccionDetallesCuenta');
+                        var seccionCrear = document.getElementById('frmDialogo:seccionCrearMayorizacion');
+
+                        if (seccionCuenta) seccionCuenta.style.display = 'block';
+                        if (seccionDetalles) seccionDetalles.style.display = 'block';
+                        if (seccionCrear) seccionCrear.style.display = 'block';
+                    }
+
+                    function ocultarSeccionesDetalle() {
+                        console.log('Ocultando secciones de detalle...');
+                        // Ocultar todas las secciones cuando no hay cuenta seleccionada
+                        var seccionCuenta = document.getElementById('frmDialogo:seccionCuentaSeleccionada');
+                        var seccionDetalles = document.getElementById('frmDialogo:seccionDetallesCuenta');
+                        var seccionCrear = document.getElementById('frmDialogo:seccionCrearMayorizacion');
+
+                        if (seccionCuenta) seccionCuenta.style.display = 'none';
+                        if (seccionDetalles) seccionDetalles.style.display = 'none';
+                        if (seccionCrear) seccionCrear.style.display = 'none';
+                    }
+                </script>
+
+            </p:dialog>
+
+        </h:panelGroup>
+    </ui:define>
 
 </ui:composition>

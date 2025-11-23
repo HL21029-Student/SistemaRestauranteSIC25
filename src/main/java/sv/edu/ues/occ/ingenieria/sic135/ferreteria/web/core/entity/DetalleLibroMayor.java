@@ -25,6 +25,11 @@ public class DetalleLibroMayor {
     @JoinColumn(name = "id_libro_mayor")
     private LibroMayor idLibroMayor;
 
+    @Column(name = "nombre_cuenta")
+    private String nombreCuenta;
+
+    public DetalleLibroMayor() {}
+
     public UUID getId() {
         return id;
     }
@@ -47,5 +52,13 @@ public class DetalleLibroMayor {
 
     public void setIdLibroMayor(LibroMayor idLibroMayor) {
         this.idLibroMayor = idLibroMayor;
+    }
+
+    public String getNombreCuenta() {
+        return nombreCuenta;
+    }
+
+    public void setNombreCuenta(String nombreCuenta) {
+        this.nombreCuenta = nombreCuenta;
     }
 }
