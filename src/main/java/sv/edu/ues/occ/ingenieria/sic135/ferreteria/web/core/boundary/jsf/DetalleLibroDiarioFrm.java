@@ -225,6 +225,4 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
     public void setLibroDiarioFrm(LibroDiarioFrm libroDiarioFrm) {
         this.libroDiarioFrm = libroDiarioFrm;
     }
-
-
 }
