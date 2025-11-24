@@ -67,10 +67,12 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
     protected FacesContext getFacesContext() {
         return facesContext;
     }
+
     @Override
     protected InventarioDAOInterface<LibroMayor, Object> getDao() {
         return libroMayorDAO;
     }
+
     @Override
     protected String getIdAsText(LibroMayor r) {
         if (r != null && r.getId() != null) {
@@ -78,6 +80,7 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
         return null;
     }
+
     @Override
     protected LibroMayor getIdByText(String id) {
         if (id != null && !id.isBlank() && this.modelo.getWrappedData() != null) {
@@ -93,6 +96,7 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
         return null;
     }
+
     @PostConstruct
     @Override
     public void inicializar() {
@@ -116,23 +120,19 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         try {
             System.out.println("=== INICIALIZAR ÁRBOL INICIADO ===");
 
-            // ✅ CREAR NODO ROOT CON TIPO CORRECTO
             this.root = new DefaultTreeNode("Libros Mayores", null);
             System.out.println("Nodo root creado");
 
-            // ✅ VERIFICAR QUE EL DAO ESTÉ DISPONIBLE
             if (libroMayorDAO == null) {
                 System.out.println("ERROR: libroMayorDAO es null");
                 LOG.log(Level.SEVERE, "libroMayorDAO es null - no se puede cargar datos");
                 return;
             }
 
-            // ✅ OBTENER LIBROS MAYORES
             List<LibroMayor> librosMayores = libroMayorDAO.findRange(0, 100);
 
             if (librosMayores == null || librosMayores.isEmpty()) {
                 System.out.println("No se encontraron libros mayores - lista vacía");
-                // Crear nodo de ejemplo para mostrar
                 TreeNode nodoEjemplo = new DefaultTreeNode(new LibroMayor() {{
                     setObservacion("No hay libros mayores disponibles");
                 }}, root);
@@ -141,12 +141,10 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
 
             System.out.println("Libros mayores encontrados: " + librosMayores.size());
 
-            // ✅ CREAR NODOS PARA CADA LIBRO MAYOR
             int nodosCreados = 0;
             for (LibroMayor libroMayor : librosMayores) {
                 try {
                     if (libroMayor != null) {
-                        // ✅ USAR DefaultTreeNode CON EL OBJETO COMO DATA
                         TreeNode nodoLibro = new DefaultTreeNode("libroMayor", libroMayor, root);
                         nodosCreados++;
 
@@ -166,13 +164,9 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             System.out.println("ERROR CRÍTICO en inicializarArbol: " + ex.getMessage());
             ex.printStackTrace();
             LOG.log(Level.SEVERE, "Error crítico al inicializar árbol", ex);
-
-            // ✅ CREAR ROOT DE FALLBACK
             this.root = new DefaultTreeNode("Error al cargar datos", null);
         }
     }
-
-
 
     public void crearNuevoRegistro() {
         try {
@@ -207,15 +201,17 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         try {
             System.out.println("=== onNodeSelect INICIADO ===");
 
-            // ✅ OBTENER EL NODO SELECCIONADO CORRECTAMENTE
+            if (facesContext.getExternalContext().getSession(false) == null) {
+                System.out.println("Sesión expirada en onNodeSelect");
+                addMessage("Sesión Expirada", "Por favor, recargue la página", true);
+                return;
+            }
+
             this.selectedNode = event.getTreeNode();
-            System.out.println("Nodo seleccionado: " + (selectedNode != null ? selectedNode.getData() : "null"));
 
             if (selectedNode != null && selectedNode.getData() instanceof LibroMayor) {
                 LibroMayor libroSeleccionado = (LibroMayor) selectedNode.getData();
-                System.out.println("Libro mayor seleccionado - ID: " + libroSeleccionado.getId());
 
-                // ✅ CARGAR DESDE LA BASE DE DATOS
                 this.registro = libroMayorDAO.findById(libroSeleccionado.getId());
 
                 if (this.registro == null) {
@@ -233,20 +229,22 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                     this.libroDiarioIdSeleccionado = null;
                 }
 
-                // ✅ FORZAR CARGA DE DETALLES
                 this.detallesLibroMayor = null;
                 cargarDetallesLibroMayor();
 
-                System.out.println("Nodo procesado correctamente - Estado: " + this.estado);
+                System.out.println("Nodo seleccionado - ID: " + this.registro.getId());
+                System.out.println("Detalles cargados: " + this.detallesLibroMayor.size());
 
-            } else {
-                System.out.println("Nodo no contiene LibroMayor válido");
-                addMessage("Advertencia", "Seleccione un libro mayor válido", true);
             }
         } catch (Exception ex) {
             System.out.println("ERROR en onNodeSelect: " + ex.getMessage());
             ex.printStackTrace();
-            addMessage("Error", "No se pudo procesar la selección: " + ex.getMessage(), true);
+
+            if (ex.getCause() instanceof ViewExpiredException) {
+                addMessage("Sesión Expirada", "Por favor, recargue la página", true);
+            } else {
+                addMessage("Error", "No se pudo cargar el libro mayor: " + ex.getMessage(), true);
+            }
         }
     }
 
@@ -305,7 +303,7 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             this.registro = null;
             this.selectedNode = null;
             this.libroDiarioSeleccionado = null;
-            this.libroDiarioIdSeleccionado = null; // Limpiar la nueva propiedad
+            this.libroDiarioIdSeleccionado = null;
             this.detallesLibroMayor = null;
             this.detalleSeleccionado = null;
             this.nombreCuentaTemporal = null;
@@ -327,7 +325,7 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             if (ESTADO_CRUD.CREAR.equals(this.estado)) {
                 this.registro = nuevoRegistro();
                 this.libroDiarioSeleccionado = null;
-                this.libroDiarioIdSeleccionado = null; // Limpiar la nueva propiedad
+                this.libroDiarioIdSeleccionado = null;
                 this.nombreCuentaTemporal = null;
                 addMessage("Formulario limpiado", "Todos los campos han sido restablecidos");
             }
@@ -392,10 +390,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
-
-    /***
-     * Metodo para actualizar desde el ID
-     */
     public void actualizarLibroDiarioDesdeId() {
         try {
             if (this.libroDiarioIdSeleccionado != null) {
@@ -425,7 +419,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         try {
             System.out.println("=== CARGAR DETALLES LIBRO MAYOR ===");
 
-            // ✅ VERIFICACIONES DE SEGURIDAD
             if (facesContext == null) {
                 System.out.println("ERROR: FacesContext es null");
                 this.detallesLibroMayor = new ArrayList<>();
@@ -438,7 +431,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                 return;
             }
 
-            // ✅ CARGAR DESDE DAO
             this.detallesLibroMayor = detalleLibroMayorDAO.findByLibroMayorId(
                     this.registro.getId(), 0, 1000
             );
@@ -447,7 +439,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                     (this.detallesLibroMayor != null ? this.detallesLibroMayor.size() : "null") +
                     " para libro mayor ID: " + this.registro.getId());
 
-            // ✅ ASEGURAR QUE NO SEA NULL
             if (this.detallesLibroMayor == null) {
                 this.detallesLibroMayor = new ArrayList<>();
             }
@@ -509,7 +500,7 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             if (detalleSeleccionado != null && detalleSeleccionado.getId() != null) {
                 detalleLibroMayorDAO.remove(detalleSeleccionado);
                 cargarDetallesLibroMayor();
-                this.detalleSeleccionado = null; // Limpiar después de eliminar
+                this.detalleSeleccionado = null;
                 addMessage("Éxito", "Detalle eliminado correctamente");
             } else {
                 addMessage("Error", "No hay detalle seleccionado para eliminar", true);
@@ -542,7 +533,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
-
     public List<LibroDiario> getLibrosDiariosDisponibles() {
         return librosDiariosDisponibles;
     }
@@ -551,12 +541,7 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         this.librosDiariosDisponibles = librosDiariosDisponibles;
     }
 
-    // ✅ GETTERS Y SETTERS CON TIPOS CORRECTOS
     public TreeNode getRoot() {
-        if (root == null) {
-            System.out.println("Root es null - inicializando árbol");
-            inicializarArbol();
-        }
         return root;
     }
 
@@ -572,6 +557,10 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         this.selectedNode = selectedNode;
     }
 
+    public LibroDiario getLibroDiarioSeleccionado() {
+        return libroDiarioSeleccionado;
+    }
+
     public void setLibroDiarioSeleccionado(LibroDiario libroDiarioSeleccionado) {
         this.libroDiarioSeleccionado = libroDiarioSeleccionado;
     }
@@ -580,7 +569,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         try {
             System.out.println("=== GETTER getDetallesLibroMayor llamado ===");
 
-            // ✅ VERIFICAR SESIÓN Y CONTEXTO
             if (facesContext == null || facesContext.getExternalContext() == null) {
                 System.out.println("Contexto de Faces no disponible - retornando lista vacía");
                 return new ArrayList<>();
@@ -591,12 +579,10 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                 return new ArrayList<>();
             }
 
-            // ✅ INICIALIZAR SI ES NULL
             if (detallesLibroMayor == null) {
                 System.out.println("detallesLibroMayor es null - inicializando nueva lista");
                 detallesLibroMayor = new ArrayList<>();
 
-                // Solo cargar si tenemos un registro válido
                 if (this.registro != null && this.registro.getId() != null) {
                     System.out.println("Cargando detalles para registro ID: " + this.registro.getId());
                     cargarDetallesLibroMayor();
@@ -701,6 +687,10 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         return detallesLibroMayor != null ? detallesLibroMayor.size() : 0;
     }
 
+
+    /***
+     * Metodo para buscar una cuenta en concreto en libro diairo selecionado
+     */
     public void buscarCuentas() {
         try {
             System.out.println("=== BUSCAR CUENTAS INICIADO ===");
@@ -750,7 +740,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                         " | Saldo: " + cuentaInfo.get("saldo"));
             }
 
-            // ✅ VERIFICAR CUENTAS YA MAYORIZADAS
             System.out.println("=== VERIFICANDO CUENTAS YA MAYORIZADAS ===");
             int cuentasYaMayorizadas = 0;
 
@@ -793,6 +782,9 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
+    /**
+     * Metodo para eliminar registro de libro mayor
+     * */
     public String eliminarLibroMayor() {
         try {
             if (this.registro == null || this.registro.getId() == null) {
@@ -854,6 +846,10 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
+    /***
+     * Metodo para selecion de cuentas al momento de buscar
+     * @param event
+     */
     public void onCuentaSelect(SelectEvent event) {
         try {
             System.out.println("=== onCuentaSelect INICIADO ===");
@@ -875,10 +871,8 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                 System.out.println("Cuenta seleccionada: " + this.cuentaSeleccionada);
                 System.out.println("Saldo: " + this.saldoFinal);
 
-                // Cargar detalles automáticamente
                 cargarDetallesCuentaContable();
 
-                // Forzar actualización de todas las secciones
                 PrimeFaces.current().executeScript("mostrarSeccionesDetalle()");
             }
 
@@ -891,6 +885,9 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
+    /***
+     * Metodo para preparar detalles en vista
+     */
     public void prepararDetallesCuenta() {
         try {
             System.out.println("=== PREPARAR DETALLES CUENTA ===");
@@ -898,7 +895,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             if (this.cuentaSeleccionadaObj != null) {
                 cargarDetallesCuentaContable();
 
-                // Actualizar y mostrar secciones
                 PrimeFaces.current().executeScript("mostrarSeccionesDetalle()");
 
                 addMessage("Detalles cargados",
@@ -913,52 +909,12 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
     }
 
     /**
-     * Metodo para forzar actualizacion de la tabla de detalles
-     *
-     */
-    public void actualizarTablaDetalles() {
-        try {
-            System.out.println("=== ACTUALIZAR TABLA DETALLES ===");
-            System.out.println("Detalles cuenta contable: " +
-                    (this.detallesCuentaContable != null ? this.detallesCuentaContable.size() : "null"));
-        } catch (Exception ex) {
-            System.out.println("ERROR en actualizarTablaDetalles: " + ex.getMessage());
-        }
-    }
-
-    /**
-     * Metodo para diagnostico de la seleccion
-     */
-    public void diagnosticoSeleccion() {
-        try {
-            System.out.println("=== DIAGNÓSTICO SELECCIÓN ===");
-            System.out.println("cuentaSeleccionadaObj: " + this.cuentaSeleccionadaObj);
-            System.out.println("cuentaSeleccionada: " + this.cuentaSeleccionada);
-            System.out.println("saldoFinal: " + this.saldoFinal);
-            System.out.println("cuentasContables size: " + (this.cuentasContables != null ? this.cuentasContables.size() : "null"));
-
-            if (this.cuentaSeleccionadaObj != null && this.cuentaSeleccionadaObj instanceof Map) {
-                Map<String, Object> cuentaMap = (Map<String, Object>) this.cuentaSeleccionadaObj;
-                System.out.println("Map keys: " + cuentaMap.keySet());
-                System.out.println("Código: " + cuentaMap.get("codigo"));
-                System.out.println("Nombre: " + cuentaMap.get("nombre"));
-                System.out.println("Saldo: " + cuentaMap.get("saldo"));
-            }
-
-        } catch (Exception ex) {
-            System.out.println("ERROR en diagnosticoSeleccion: " + ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * Metodo  para cargar detalles de cuenta contable
+     * Metodo para cargar detalles de cuenta contable
      */
     private void cargarDetallesCuentaContable() {
         try {
             System.out.println("=== cargarDetallesCuentaContable INICIADO ===");
 
-            // Asegurar que la lista esté inicializada
             if (this.detallesCuentaContable == null) {
                 this.detallesCuentaContable = new ArrayList<>();
             }
@@ -976,10 +932,13 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             }
 
             String codigoCuenta = null;
+            String nombreCuenta = null;
+
             if (this.cuentaSeleccionadaObj instanceof Map) {
                 Map<String, Object> cuentaMap = (Map<String, Object>) this.cuentaSeleccionadaObj;
                 codigoCuenta = (String) cuentaMap.get("codigo");
-                System.out.println("Buscando movimientos para cuenta: " + codigoCuenta);
+                nombreCuenta = (String) cuentaMap.get("nombre");
+                System.out.println("Buscando movimientos para cuenta: " + codigoCuenta + " - " + nombreCuenta);
             }
 
             if (codigoCuenta != null && !codigoCuenta.trim().isEmpty()) {
@@ -991,34 +950,41 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
 
                 this.detallesCuentaContable.clear();
 
+                double saldoAcumulado = 0.0;
+
                 for (Object[] movimiento : movimientos) {
                     Map<String, Object> detalle = new HashMap<>();
 
-                    detalle.put("fecha", movimiento[0]); // Fecha
+                    detalle.put("fecha", movimiento[0]);
                     detalle.put("concepto", movimiento[1] != null ? movimiento[1].toString() : "Sin concepto");
                     detalle.put("numeroPartida", movimiento[2] != null ? movimiento[2].toString() : "N/A");
 
-                    detalle.put("debe", movimiento[3] != null ? movimiento[3] : Boolean.FALSE);
-                    detalle.put("haber", movimiento[4] != null ? movimiento[4] : Boolean.FALSE);
+                    Boolean esDebe = (Boolean) movimiento[3];
+                    Double monto = movimiento[4] != null ? ((Number)movimiento[4]).doubleValue() : 0.0;
+                    String nombreCuentaMov = movimiento[5] != null ? movimiento[5].toString() : nombreCuenta;
 
-                    detalle.put("montoDebe", movimiento[5] != null ? ((Number)movimiento[5]).doubleValue() : 0.0);
-                    detalle.put("montoHaber", movimiento[6] != null ? ((Number)movimiento[6]).doubleValue() : 0.0);
+                    System.out.println("Procesando movimiento - Partida: " + detalle.get("numeroPartida") +
+                            ", EsDebe: " + esDebe + ", Monto: " + monto);
 
-                    double montoDebe = (Double) detalle.get("montoDebe");
-                    double montoHaber = (Double) detalle.get("montoHaber");
-                    detalle.put("montoTotal", montoDebe - montoHaber);
+                    double montoDebe = Boolean.TRUE.equals(esDebe) ? monto : 0.0;
+                    double montoHaber = Boolean.FALSE.equals(esDebe) ? monto : 0.0;
+
+                    detalle.put("montoDebe", montoDebe);
+                    detalle.put("montoHaber", montoHaber);
+
+                    saldoAcumulado = calcularSaldoAcumuladoSimplificado(saldoAcumulado, montoDebe, montoHaber, nombreCuentaMov);
+                    detalle.put("saldoParcial", saldoAcumulado);
 
                     this.detallesCuentaContable.add(detalle);
 
-                    System.out.println("Detalle agregado - Fecha: " + detalle.get("fecha") +
-                            ", Concepto: " + detalle.get("concepto") +
-                            ", Débito: " + detalle.get("montoDebe") +
-                            ", Crédito: " + detalle.get("montoHaber"));
+                    System.out.println("Resultado - Débito: " + montoDebe + ", Crédito: " + montoHaber +
+                            ", Saldo Acumulado: " + saldoAcumulado);
                 }
 
-                calcularSaldoFinal();
+                this.saldoFinal = saldoAcumulado;
 
-                System.out.println("Total detalles cargados: " + this.detallesCuentaContable.size());
+                System.out.println("Total detalles cargados: " + this.detallesCuentaContable.size() +
+                        ", Saldo Final: " + this.saldoFinal);
 
             } else {
                 System.out.println("ERROR: Código de cuenta es null o vacío");
@@ -1033,51 +999,86 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
     }
 
     /**
-     * Metodo para calcular saldo final
+     * Metodo para calcular saldo acumulado segun tipo de cuenta
      */
-    private void calcularSaldoFinal() {
+    private double calcularSaldoAcumuladoSimplificado(double saldoActual, double montoDebe, double montoHaber, String nombreCuenta) {
         try {
-            if (detallesCuentaContable == null || detallesCuentaContable.isEmpty()) {
-                this.saldoFinal = 0.0;
-                return;
+            if (nombreCuenta == null) {
+                return saldoActual + montoDebe - montoHaber;
             }
 
-            double totalDebe = 0.0;
-            double totalHaber = 0.0;
+            String tipoCuenta = inferirTipoCuenta(nombreCuenta);
 
-            for (Object detalleObj : detallesCuentaContable) {
-                if (detalleObj instanceof Map) {
-                    Map<String, Object> detalle = (Map<String, Object>) detalleObj;
-                    Double montoDebe = (Double) detalle.get("montoDebe");
-                    Double montoHaber = (Double) detalle.get("montoHaber");
+            System.out.println("Calculando saldo - Tipo: " + tipoCuenta +
+                    ", Saldo Actual: " + saldoActual +
+                    ", Débito: " + montoDebe + ", Crédito: " + montoHaber);
 
-                    if (montoDebe != null) {
-                        totalDebe += montoDebe;
-                    }
-                    if (montoHaber != null) {
-                        totalHaber += montoHaber;
-                    }
-                }
+            switch (tipoCuenta.toLowerCase()) {
+                case "activo":
+                case "gasto":
+                case "costo":
+                case "resultado deudora":
+                    return saldoActual + montoDebe - montoHaber;
+
+                case "pasivo":
+                case "patrimonio":
+                case "ingreso":
+                case "resultado acreedor":
+                    return saldoActual - montoDebe + montoHaber;
+
+                default:
+                    return saldoActual + montoDebe - montoHaber;
             }
-
-            this.saldoFinal = totalDebe - totalHaber;
-
-            System.out.println("Saldo final calculado - Débito: " + totalDebe +
-                    ", Crédito: " + totalHaber + ", Saldo: " + saldoFinal);
-
-            LOG.log(Level.INFO, "Saldo final calculado - Débito: {0}, Crédito: {1}, Saldo: {2}",
-                    new Object[]{totalDebe, totalHaber, saldoFinal});
-
-        } catch (Exception ex) {
-            System.out.println("ERROR en calcularSaldoFinal: " + ex.getMessage());
-            LOG.log(Level.SEVERE, "Error al calcular saldo final", ex);
-            this.saldoFinal = 0.0;
+        } catch (Exception e) {
+            System.out.println("Error en cálculo de saldo: " + e.getMessage());
+            return saldoActual + montoDebe - montoHaber;
         }
     }
 
+    /**
+     * Metodo para tipo de cuenta inferior
+     */
+    private String inferirTipoCuenta(String nombreCuenta) {
+        if (nombreCuenta == null) {
+            return "activo";
+        }
+
+        String nombreLower = nombreCuenta.toLowerCase();
+
+        if (nombreLower.contains("activo") || nombreLower.contains("caja") ||
+                nombreLower.contains("banco") || nombreLower.contains("inventario") ||
+                nombreLower.contains("cuentas por cobrar") || nombreLower.contains("propiedad")) {
+            return "activo";
+        }
+
+        if (nombreLower.contains("pasivo") || nombreLower.contains("cuentas por pagar") ||
+                nombreLower.contains("prestamo") || nombreLower.contains("deuda")) {
+            return "pasivo";
+        }
+
+        if (nombreLower.contains("patrimonio") || nombreLower.contains("capital") ||
+                nombreLower.contains("utilidad") || nombreLower.contains("perdida")) {
+            return "patrimonio";
+        }
+
+        if (nombreLower.contains("ingreso") || nombreLower.contains("venta") ||
+                nombreLower.contains("ingresos") || nombreLower.contains("renta")) {
+            return "ingreso";
+        }
+
+        if (nombreLower.contains("gasto") || nombreLower.contains("costo") ||
+                nombreLower.contains("egreso") || nombreLower.contains("gastos")) {
+            return "gasto";
+        }
+        return "activo";
+    }
+
+    /***
+     *Metodo para crear la mayorixacion
+     */
+
     public void crearMayorizacion() {
         try {
-            // VALIDACIONES BÁSICAS
             if (cuentaSeleccionadaObj == null) {
                 addMessage("Error", "Debe seleccionar una cuenta válida", true);
                 return;
@@ -1088,7 +1089,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                 return;
             }
 
-            // OBTENER DATOS DE LA CUENTA
             Map<String, Object> cuentaMap = (Map<String, Object>) this.cuentaSeleccionadaObj;
             String codigoCuenta = (String) cuentaMap.get("codigo");
             String nombreCuenta = (String) cuentaMap.get("nombre");
@@ -1096,17 +1096,11 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
             Double totalHaber = (Double) cuentaMap.get("totalHaber");
             Double saldoCalculado = (Double) cuentaMap.get("saldo");
 
-            // VALIDAR DATOS CONTABLES
             if (totalDebe == null || totalHaber == null) {
                 addMessage("Error", "No se pueden obtener los totales contables", true);
                 return;
             }
 
-            // ✅ **VALIDAR PARTIDA DOBLE**
-            // En una mayorización correcta, la suma de débitos debe igualar a la suma de créditos
-            // a nivel del libro diario completo (no por cuenta individual)
-
-            // VERIFICAR SI LA CUENTA YA FUE MAYORIZADA
             boolean cuentaYaMayorizada = detalleLibroMayorDAO.existeCuentaEnLibroMayor(
                     this.registro.getId(), codigoCuenta);
 
@@ -1115,28 +1109,24 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
                 return;
             }
 
-            // ✅ **CREAR DETALLE CON INFORMACIÓN EN EL NOMBRE**
             DetalleLibroMayor nuevoDetalle = new DetalleLibroMayor();
             nuevoDetalle.setIdLibroMayor(this.registro);
             nuevoDetalle.setSaldo(BigDecimal.valueOf(saldoCalculado != null ? saldoCalculado : 0.0));
 
-            // ✅ **INCLUIR TODA LA INFORMACIÓN EN EL NOMBRE** (ya que no tenemos campos separados)
             String nombreCompleto = String.format("%s - %s (D: $%.2f, C: $%.2f)",
                     codigoCuenta, nombreCuenta, totalDebe, totalHaber);
             nuevoDetalle.setNombreCuenta(nombreCompleto);
 
             nuevoDetalle.setId(UUID.randomUUID());
 
-            // GUARDAR
             detalleLibroMayorDAO.create(nuevoDetalle);
 
-            // LIMPIAR Y ACTUALIZAR
             cargarDetallesLibroMayor();
             resetearFormularioMayorizacion();
 
             addMessage("Éxito",
                     "Mayorización creada para: " + nombreCuenta +
-                            " | Saldo: $" + saldoCalculado);
+                            " | Saldo: $" + (saldoCalculado != null ? saldoCalculado : 0.0));
 
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Error al crear mayorización", ex);
@@ -1173,9 +1163,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
-    /**
-     * Método para editar registro (necesario para el botón Editar)
-     */
     public void editarRegistro() {
         try {
             if (this.selectedNode != null && this.selectedNode.getData() instanceof LibroMayor) {
@@ -1200,8 +1187,41 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
     }
 
     /**
-     * Método para forzar la actualización de los componentes del diálogo
+     * Método mejorado para actualizar mayorizaciones - con update forzado
      */
+    public void actualizarMayorizaciones() {
+        try {
+            System.out.println("=== ACTUALIZAR MAYORIZACIONES INICIADO ===");
+
+            if (this.registro == null || this.registro.getId() == null) {
+                addMessage("Error", "No hay libro mayor seleccionado", true);
+                return;
+            }
+
+            System.out.println("Recargando detalles para libro mayor ID: " + this.registro.getId());
+
+            // Forzar recarga desde la base de datos
+            this.detallesLibroMayor = null;
+            cargarDetallesLibroMayor();
+
+            // Forzar actualización del contador
+            int count = detallesLibroMayor != null ? detallesLibroMayor.size() : 0;
+
+            System.out.println("Detalles recargados: " + count + " registros");
+
+            addMessage("Éxito",
+                    "Mayorizaciones actualizadas correctamente - " + count + " detalles cargados");
+
+            // ✅ CORREGIDO: Forzar actualización de la tabla
+            // Esto asegura que la tabla se refresque incluso si hay caché
+            PrimeFaces.current().executeScript("setTimeout(function() { PF('tblDetallesWidget').filter(); }, 100);");
+
+        } catch (Exception ex) {
+            System.out.println("ERROR en actualizarMayorizaciones: " + ex.getMessage());
+            ex.printStackTrace();
+            addMessage("Error", "No se pudieron actualizar las mayorizaciones: " + ex.getMessage(), true);
+        }
+    }
     public void actualizarComponentesDialogo() {
         try {
             PrimeFaces.current().ajax().update(
