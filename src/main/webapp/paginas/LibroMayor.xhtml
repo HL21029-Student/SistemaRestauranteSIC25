@@ -14,6 +14,8 @@
     <ui:define name="contenido-tabla">
         <h:panelGrid columns="1">
             <h:form id="frmTop">
+
+                <!-- TREE TABLE PARA CONSULTA/MODIFICACIÓN -->
                 <p:treeTable id="tabla-top"
                              rendered="#{libroMayorFrm.estado == 'NADA'}"
                              styleClass="tabla-crud"
@@ -37,7 +39,10 @@
                     </p:column>
                 </p:treeTable>
 
-                <ues:botones-top formulario="#{libroMayorFrm}" actualizar=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"/>
+                <!-- BOTONES SUPERIORES -->
+                <ues:botones-top formulario="#{libroMayorFrm}"
+                                 actualizar=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"
+                                 rendered="#{libroMayorFrm.estado == 'NADA'}"/>
 
             </h:form>
             <p:messages id="messagesTop" showSummary="true" showDetail="true" autoUpdate="true"/>
@@ -71,23 +76,35 @@
                                                  placeholder="Se generará automáticamente"/>
                                 </h:panelGroup>
 
-                                <!-- LIBRO DIARIO -->
+                                <!-- LIBRO DIARIO - AHORA EN EL FORMULARIO PRINCIPAL -->
                                 <h:panelGroup style="margin-bottom: 15px;">
                                     <p:outputLabel for="cmbLibroDiario"
                                                    value="Libro Diario:"
                                                    style="font-weight: bold; display: block; margin-bottom: 5px;"/>
-                                    <p:selectOneMenu id="cmbLibroDiario"
-                                                     value="#{libroMayorFrm.libroDiarioIdSeleccionado}"
-                                                     style="width: 300px;">
-                                        <f:selectItem itemLabel="-- Ninguno (Tipo Raíz) --" itemValue="#{null}"/>
-                                        <f:selectItems value="#{libroMayorFrm.librosDiariosDisponibles}"
-                                                       var="libroDiario"
-                                                       itemLabel="#{libroDiario.nombre}"
-                                                       itemValue="#{libroDiario.id}"/>
-                                        <p:ajax event="change"
-                                                listener="#{libroMayorFrm.actualizarLibroDiarioDesdeId}"
-                                                update="@this"/>
-                                    </p:selectOneMenu>
+                                    <h:panelGroup>
+                                        <p:selectOneMenu id="cmbLibroDiario"
+                                                         value="#{libroMayorFrm.libroDiarioIdSeleccionado}"
+                                                         style="width: 300px;"
+                                                         required="#{libroMayorFrm.estado == 'CREAR'}"
+                                                         requiredMessage="Seleccione un libro diario para la mayorización">
+                                            <f:selectItem itemLabel="-- Seleccione un Libro Diario --" itemValue="#{null}"/>
+                                            <f:selectItems value="#{libroMayorFrm.librosDiariosDisponibles}"
+                                                           var="libroDiario"
+                                                           itemLabel="#{libroDiario.nombre} (ID: #{libroDiario.id})"
+                                                           itemValue="#{libroDiario.id}"/>
+                                            <p:ajax event="change"
+                                                    listener="#{libroMayorFrm.onLibroDiarioSelect}"
+                                                    update=":frmDetalle:txtObservacion :messagesTop"/>
+                                        </p:selectOneMenu>
+                                        <p:message for="cmbLibroDiario" display="icon"/>
+                                    </h:panelGroup>
+
+                                    <!-- MENSAJE INFORMATIVO SOLO EN MODO CREACIÓN -->
+                                    <h:panelGroup rendered="#{libroMayorFrm.estado == 'CREAR' and libroMayorFrm.libroDiarioIdSeleccionado != null}">
+                                        <p:message severity="info"
+                                                   summary="Libro diario seleccionado: #{libroMayorFrm.libroDiarioSeleccionado.nombre}"
+                                                   style="margin-top: 5px; display: block;"/>
+                                    </h:panelGroup>
                                 </h:panelGroup>
 
                                 <!-- OBSERVACIÓN -->
@@ -106,28 +123,58 @@
                                                          maxlength="500"/>
                                         <p:message for="txtObservacion" display="icon"/>
                                     </h:panelGroup>
+
+                                    <!-- SUGERENCIA DE OBSERVACIÓN AUTOMÁTICA -->
+                                    <h:panelGroup rendered="#{libroMayorFrm.estado == 'CREAR' and libroMayorFrm.libroDiarioIdSeleccionado != null and (libroMayorFrm.registro.observacion == null or libroMayorFrm.registro.observacion.isBlank())}">
+                                        <p:message severity="info"
+                                                   summary="Sugerencia: La observación se puede generar automáticamente basada en el libro diario seleccionado"
+                                                   style="margin-top: 5px; display: block; font-style: italic;"/>
+                                    </h:panelGroup>
                                 </h:panelGroup>
 
                             </h:panelGrid>
                         </p:panel>
 
-                        <!-- BOTONES -->
-                        <h:panelGrid columns="3" style="margin-top: 20px; text-align: center;">
-                            <p:commandButton value="#{libroMayorFrm.estado == 'CREAR' ? 'Crear' : 'Guardar'}"
-                                             action="#{libroMayorFrm.guardarOSalvarRegistro}"
+                        <!-- BOTONES MEJORADOS -->
+                        <h:panelGrid columns="4" style="margin-top: 20px; text-align: center;">
+
+                            <!-- En modo CREAR: Botón para crear y proceder a mayorización -->
+                            <p:commandButton value="Crear e Ir a Mayorización"
+                                             action="#{libroMayorFrm.crearYProcederAMayorizacion}"
                                              icon="pi pi-check"
                                              update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
                                              process="@form"
+                                             rendered="#{libroMayorFrm.estado == 'CREAR'}"
                                              styleClass="ui-button-success"/>
 
+                            <!-- En modo CREAR: Botón normal de crear -->
+                            <p:commandButton value="Solo Crear"
+                                             action="#{libroMayorFrm.crearLibroMayor}"
+                                             icon="pi pi-save"
+                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                             process="@form"
+                                             rendered="#{libroMayorFrm.estado == 'CREAR'}"
+                                             styleClass="ui-button-primary"/>
+
+                            <!-- En modo MODIFICAR: Botón guardar -->
+                            <p:commandButton value="Guardar"
+                                             action="#{libroMayorFrm.guardarCambios}"
+                                             icon="pi pi-check"
+                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                             process="@form"
+                                             rendered="#{libroMayorFrm.estado == 'MODIFICAR'}"
+                                             styleClass="ui-button-success"/>
+
+                            <!-- BOTÓN CANCELAR CORREGIDO - CIERRA EL TAB 1 -->
                             <p:commandButton value="Cancelar"
-                                             action="#{libroMayorFrm.cancelarCreacion}"
+                                             action="#{libroMayorFrm.cancelarFormulario}"
                                              icon="pi pi-times"
-                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top"
+                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
                                              process="@none"
                                              styleClass="ui-button-secondary"
                                              immediate="true"/>
 
+                            <!-- Botón eliminar (solo en modificación) -->
                             <p:commandButton value="Eliminar"
                                              action="#{libroMayorFrm.eliminarLibroMayor}"
                                              icon="pi pi-trash"
@@ -138,9 +185,9 @@
                                              onclick="return confirm('¿Está seguro de que desea eliminar este Libro Mayor?')"/>
                         </h:panelGrid>
 
-                        <!-- BOTÓN LIMPIAR -->
+                        <!-- BOTÓN LIMPIAR (solo en creación) -->
                         <h:panelGrid columns="1" style="margin-top: 10px; text-align: center;">
-                            <p:commandButton value="Limpiar"
+                            <p:commandButton value="Limpiar Formulario"
                                              action="#{libroMayorFrm.limpiarFormulario}"
                                              icon="pi pi-refresh"
                                              update="frmDetalle"
@@ -367,7 +414,6 @@
                                     <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
                                 </p:inputText>
 
-                                <!-- ✅ BOTÓN CORREGIDO CON ACTUALIZACIÓN AUTOMÁTICA -->
                                 <p:commandButton value="Crear Mayorización"
                                                  action="#{libroMayorFrm.crearMayorizacion}"
                                                  icon="pi pi-check"
@@ -377,7 +423,7 @@
                                                      PF('dlgDetalle').hide();
                                                      ocultarSeccionesDetalle();
 
-                                                     // ✅ ACTUALIZACIÓN AUTOMÁTICA DE LA TABLA
+                                                     // ACTUALIZACIÓN AUTOMÁTICA DE LA TABLA
                                                      PrimeFaces.current().ajax().update(
                                                          ':frmMayorizacion:tblDetalles',
                                                          ':messagesTop'
@@ -392,12 +438,12 @@
                             </h:panelGrid>
                         </h:panelGroup>
 
-                        <!-- BOTÓN CANCELAR -->
+                        <!-- BOTÓN CANCELAR MEJORADO - SOLUCIÓN 5 -->
                         <h:panelGroup style="text-align: center; margin-top: 20px;">
                             <p:commandButton value="Cancelar"
                                              icon="pi pi-times"
+                                             action="#{libroMayorFrm.cerrarDialogo('dlgDetalle')}"
                                              process="@none"
-                                             onclick="PF('dlgDetalle').hide(); ocultarSeccionesDetalle();"
                                              styleClass="ui-button-secondary"/>
                         </h:panelGroup>
 
