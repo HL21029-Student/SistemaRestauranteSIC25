@@ -17,7 +17,7 @@ public class SubTipoCuentaDAO extends InventarioDefaultDataAccess<SubTipoCuenta,
      * Manejador de entidades JPA utilizado para ejecutar operaciones
      * de persistencia sobre la base de datos.
      */
-    @PersistenceContext(unitName = "ferreteriaPU")
+    @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
     // Constructor por defecto que inicializa la clase base con el tipo de entidad.

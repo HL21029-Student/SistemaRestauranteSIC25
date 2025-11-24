@@ -9,6 +9,7 @@ import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.CuentaContabl
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.LibroDiario;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,7 +44,6 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
         }
     }
 
-    //findDiarioAjusteHijos
     public List<LibroDiario> findDiarioAjusteHijos(Long idPadre) {
         try {
             return em.createNamedQuery("LibroDiario.findDiarioAjusteHijos", LibroDiario.class)
@@ -55,7 +55,6 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
         }
     }
 
-    //findByNameLike
     public List<LibroDiario> findByNameLike(String nombre, int first, int max) {
         try{
             if(nombre!=null && !nombre.isBlank() && first<=0 && max>0){
@@ -125,60 +124,72 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
     }
 
     /**
-     * Encuentra todos los movimientos de una cuenta específica en un libro diario - CON LOGS
+     * Metdod para encontrar movimientos por cuenta especifica utilizando JPQL
      */
     public List<Object[]> findMovimientosByCuenta(Long libroDiarioId, String codigoCuenta) {
         try {
-            System.out.println("=== DAO findMovimientosByCuenta ===");
-            System.out.println("libroDiarioId: " + libroDiarioId + ", codigoCuenta: " + codigoCuenta);
-
-            // Usando JPQL en lugar de SQL nativo para mejor compatibilidad
             String jpql = """
-            SELECT 
-                d.fecha,
-                d.concepto,
-                d.numeroPartida,
-                d.debe,
-                CASE WHEN d.debe = true THEN d.monto ELSE 0 END,
-                CASE WHEN d.debe = false THEN d.monto ELSE 0 END,
-                d.monto
-            FROM DetalleLibroDiario d
-            JOIN d.idCuentaContable cc
-            WHERE d.libroDiario.id = :libroDiarioId 
-            AND cc.codigo = :codigoCuenta
-            ORDER BY d.fecha, d.id
-            """;
+                SELECT 
+                    d.fecha, 
+                    d.concepto, 
+                    d.numeroPartida, 
+                    d.debe, 
+                    d.monto,
+                    c.nombre
+                FROM DetalleLibroDiario d 
+                JOIN d.idCuentaContable c 
+                WHERE d.libroDiario.id = :libroDiarioId 
+                AND c.codigo = :codigoCuenta 
+                ORDER BY d.fecha, d.numeroPartida
+                """;
 
-            TypedQuery<Object[]> query = em.createQuery(jpql, Object[].class);
-            query.setParameter("libroDiarioId", libroDiarioId);
-            query.setParameter("codigoCuenta", codigoCuenta);
+            List<Object[]> resultados = em.createQuery(jpql, Object[].class)
+                    .setParameter("libroDiarioId", libroDiarioId)
+                    .setParameter("codigoCuenta", codigoCuenta)
+                    .getResultList();
 
-            List<Object[]> resultados = query.getResultList();
-            System.out.println("Resultados encontrados en BD: " + resultados.size());
-
-            for (Object[] resultado : resultados) {
-                System.out.println("Resultado BD - Fecha: " + resultado[0] +
-                        ", Concepto: " + resultado[1] +
-                        ", Débe: " + resultado[3] +
-                        ", Monto Débe: " + resultado[4] +
-                        ", Monto Haber: " + resultado[5]);
-            }
+            Logger.getLogger(LibroDiarioDAO.class.getName())
+                    .log(Level.INFO, "Encontrados {0} movimientos para cuenta {1} en libro diario {2}",
+                            new Object[]{resultados.size(), codigoCuenta, libroDiarioId});
 
             return resultados;
 
-        } catch (Exception ex) {
-            System.out.println("ERROR en DAO: " + ex.getMessage());
-            ex.printStackTrace();
-            Logger.getLogger(LibroDiarioDAO.class.getName()).log(Level.SEVERE,
-                    "Error al buscar movimientos para cuenta " + codigoCuenta + " en libro diario: " + libroDiarioId, ex);
-            return List.of();
+        } catch (Exception e) {
+            Logger.getLogger(LibroDiarioDAO.class.getName())
+                    .log(Level.SEVERE, "Error al buscar movimientos por cuenta: " + codigoCuenta + " en libro diario: " + libroDiarioId, e);
+            return Collections.emptyList();
         }
     }
 
     /**
-     * Metdo para verificar que hayan datos en detalle libro diario
+     * Metdodo de verificacion de existencia de datos en el libro diario
      */
     public List<Object[]> verificarDatosDetalleLibroDiario(Long libroDiarioId) {
+        try {
+            String jpql = """
+                SELECT 
+                    COUNT(d),
+                    MIN(d.fecha),
+                    MAX(d.fecha)
+                FROM DetalleLibroDiario d 
+                WHERE d.libroDiario.id = :libroDiarioId
+                """;
+
+            return em.createQuery(jpql, Object[].class)
+                    .setParameter("libroDiarioId", libroDiarioId)
+                    .getResultList();
+
+        } catch (Exception e) {
+            Logger.getLogger(LibroDiarioDAO.class.getName())
+                    .log(Level.SEVERE, "Error al verificar datos del libro diario: " + libroDiarioId, e);
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Metodo para veridicar datos detallasdos con informacion especifica
+     */
+    public List<Object[]> verificarDatosDetalladosLibroDiario(Long libroDiarioId) {
         try {
             String sql = """
             SELECT 
@@ -235,4 +246,34 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
         }
     }
 
+    /**
+     * Metodo para calcular saldo por tipo de cuenta
+     */
+    public Double calcularSaldoPorTipoCuenta(String codigoCuenta, String tipoCuenta) {
+        try {
+            String jpql = """
+                SELECT 
+                    CASE 
+                        WHEN :tipoCuenta IN ('activo', 'gasto', 'costo') 
+                        THEN (SUM(CASE WHEN d.debe = true THEN d.monto ELSE 0.0 END) - 
+                              SUM(CASE WHEN d.debe = false THEN d.monto ELSE 0.0 END))
+                        ELSE (SUM(CASE WHEN d.debe = false THEN d.monto ELSE 0.0 END) - 
+                              SUM(CASE WHEN d.debe = true THEN d.monto ELSE 0.0 END))
+                    END
+                FROM DetalleLibroDiario d 
+                JOIN d.idCuentaContable c 
+                WHERE c.codigo = :codigoCuenta
+                """;
+
+            return (Double) em.createQuery(jpql)
+                    .setParameter("codigoCuenta", codigoCuenta)
+                    .setParameter("tipoCuenta", tipoCuenta)
+                    .getSingleResult();
+
+        } catch (Exception e) {
+            Logger.getLogger(LibroDiarioDAO.class.getName())
+                    .log(Level.SEVERE, "Error al calcular saldo para cuenta: " + codigoCuenta, e);
+            return 0.0;
+        }
+    }
 }

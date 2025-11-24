@@ -15,7 +15,7 @@ import java.util.Optional;
 @LocalBean
 public class TipoCuentaDAO extends InventarioDefaultDataAccess<TipoCuenta, Object> implements Serializable {
 
-    @PersistenceContext(unitName = "ferreteriaPU")
+    @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
     public TipoCuentaDAO() {
