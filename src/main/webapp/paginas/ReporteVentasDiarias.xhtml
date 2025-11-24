@@ -19,40 +19,43 @@
                 <p:commandButton value="Buscar"
                                  icon="pi pi-search"
                                  actionListener="#{reporteVentasDiariasFrm.cargarVentas}"
-                                 update="pnlResumen tblVentas pnlBotones"
+                                 update=":frmReporteVentas:pnlResumen :frmReporteVentas:tblVentas :frmReporteVentas:pnlBotones :frmReporteVentas:msgDebug"
                                  styleClass="ui-button-success"/>
             </h:panelGrid>
 
-            <!-- Botones de Exportación -->
-            <h:panelGroup id="pnlBotones" rendered="#{reporteVentasDiariasFrm.ventas != null and not empty reporteVentasDiariasFrm.ventas}">
-                <p:toolbar style="margin-bottom:1rem">
-                    <p:toolbarGroup>
-                        <p:commandButton value="Exportar PDF"
-                                         icon="pi pi-file-pdf"
-                                         ajax="false"
-                                         styleClass="ui-button-danger">
-                            <p:dataExporter type="pdf"
-                                            target="tblVentas"
-                                            fileName="reporte_ventas_#{reporteVentasDiariasFrm.fecha}"
-                                            pageOnly="false"/>
-                        </p:commandButton>
-
-                        <p:commandButton value="Exportar Excel"
-                                         icon="pi pi-file-excel"
-                                         ajax="false"
-                                         styleClass="ui-button-success"
-                                         style="margin-left:10px">
-                            <p:dataExporter type="xlsx"
-                                            target="tblVentas"
-                                            fileName="reporte_ventas_#{reporteVentasDiariasFrm.fecha}"
-                                            pageOnly="false"/>
-                        </p:commandButton>
-                    </p:toolbarGroup>
-                </p:toolbar>
+            <!-- Mensaje de depuración (temporal) -->
+            <h:panelGroup id="msgDebug" style="margin-bottom:1rem;padding:10px;background:#f0f0f0;border:1px solid #ccc">
+                <h:outputText value="Hay ventas: #{reporteVentasDiariasFrm.hayVentas}, Total: #{reporteVentasDiariasFrm.ventas.size()}"
+                              style="color:#333;font-weight:bold"/>
             </h:panelGroup>
 
+            <!-- Botones de Exportación -->
+            <p:panel id="pnlBotones" header="Exportar Reporte" style="margin-bottom:1rem"
+                     rendered="#{reporteVentasDiariasFrm.hayVentas}">
+                <p:commandButton value="Exportar PDF"
+                                 icon="pi pi-file-pdf"
+                                 ajax="false"
+                                 styleClass="ui-button-danger">
+                    <p:dataExporter type="pdf"
+                                    target="tblVentas"
+                                    fileName="reporte_ventas_#{reporteVentasDiariasFrm.fecha}"
+                                    pageOnly="false"/>
+                </p:commandButton>
+
+                <p:commandButton value="Exportar Excel"
+                                 icon="pi pi-file-excel"
+                                 ajax="false"
+                                 styleClass="ui-button-success"
+                                 style="margin-left:10px">
+                    <p:dataExporter type="xlsx"
+                                    target="tblVentas"
+                                    fileName="reporte_ventas_#{reporteVentasDiariasFrm.fecha}"
+                                    pageOnly="false"/>
+                </p:commandButton>
+            </p:panel>
+
             <!-- Panel de Resumen del Día -->
-            <h:panelGroup id="pnlResumen" rendered="#{reporteVentasDiariasFrm.ventas != null and not empty reporteVentasDiariasFrm.ventas}">
+            <h:panelGroup id="pnlResumen" rendered="#{reporteVentasDiariasFrm.hayVentas}">
                 <p:panel header="Resumen del Día" style="margin-bottom:1rem">
                     <h:panelGrid columns="4" cellpadding="10" style="width:100%">
                         <p:panel header="Total Ventas" style="text-align:center;background:#e3f2fd">

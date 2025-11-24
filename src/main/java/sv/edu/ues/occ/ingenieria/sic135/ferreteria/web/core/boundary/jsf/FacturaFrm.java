@@ -50,6 +50,9 @@ public class FacturaFrm extends DefaultFrm<Factura> implements Serializable {
     private transient ClienteDAO clienteDAO;
 
     @Inject
+    private transient sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.service.AsientoContableService asientoContableService;
+
+    @Inject
     private transient ProductoDAO productoDAO;
 
     @Inject
@@ -362,6 +365,23 @@ public class FacturaFrm extends DefaultFrm<Factura> implements Serializable {
                 // 6. Guardar la factura
                 facturaDAO.create(this.registro);
                 LOGGER.log(Level.INFO, "Factura creada con ID: " + this.registro.getId());
+
+                // 7. Crear SOLO encabezado de libro diario (SIN detalles)
+                LOGGER.log(Level.INFO, "========================================");
+                LOGGER.log(Level.INFO, "CREANDO ENCABEZADO DE LIBRO DIARIO");
+                LOGGER.log(Level.INFO, "========================================");
+                try {
+                    if (asientoContableService == null) {
+                        LOGGER.log(Level.WARNING, "asientoContableService es NULL - No se creará encabezado");
+                    } else {
+                        LOGGER.log(Level.INFO, "Creando solo encabezado de libro diario...");
+                        asientoContableService.crearEncabezadoLibroDiario(venta, this.registro);
+                        LOGGER.log(Level.INFO, "✓ Encabezado de libro diario creado para factura: " + this.registro.getNumeroFactura());
+                    }
+                } catch (Exception exAsiento) {
+                    LOGGER.log(Level.WARNING, "No se pudo crear encabezado de libro diario", exAsiento);
+                    // No interrumpimos el proceso si falla el encabezado
+                }
 
                 enviarMensaje("Factura, venta y productos guardados exitosamente", FacesMessage.SEVERITY_INFO);
 

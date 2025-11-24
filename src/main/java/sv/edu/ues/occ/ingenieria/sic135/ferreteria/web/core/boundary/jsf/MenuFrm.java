@@ -70,8 +70,8 @@ public class MenuFrm implements Serializable {
 
             DefaultSubMenu adminCuentas = DefaultSubMenu.builder().label(labelAdminCuentas).expanded(false).build();
             adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.manualCuentas") : "Manual de cuentas", "pi pi-book", "ManualCuentas.jsf"));
-            adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.cuentaContable") : "Cuenta contable", "pi pi-list", "CuentaContable.jsf"));
-            adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.factura") : "Factura", "pi pi-file", "Factura.jsf"));
+            adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.cuentaContable") : "Catalogo de cuentas", "pi pi-list", "CuentaContable.jsf"));
+            // Línea de Factura eliminada - se mantiene solo Facturación Integrada
             adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.facturaIntegrada") : "Facturación Integrada", "pi pi-file-edit", "FacturaIntegrada.jsf"));
             adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.reporteVentasDiarias") : "Reporte de ventas diarias", "pi pi-chart-line", "ReporteVentasDiarias.jsf"));
 

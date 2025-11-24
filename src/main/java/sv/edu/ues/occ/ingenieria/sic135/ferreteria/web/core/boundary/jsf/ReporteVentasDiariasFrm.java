@@ -38,7 +38,7 @@ public class ReporteVentasDiariasFrm implements Serializable {
     private EntityManager em;
 
     private LocalDate fecha;
-    private List<Venta> ventas;
+    private List<Venta> ventas = new ArrayList<>();
 
     @PostConstruct
     public void init() {
@@ -208,6 +208,16 @@ public class ReporteVentasDiariasFrm implements Serializable {
 
     public List<Venta> getVentas() {
         return ventas;
+    }
+
+    /**
+     * Verifica si hay ventas disponibles para mostrar
+     */
+    public boolean isHayVentas() {
+        boolean resultado = ventas != null && !ventas.isEmpty();
+        LOGGER.log(Level.INFO, "isHayVentas: {0}, cantidad de ventas: {1}",
+            new Object[]{resultado, ventas != null ? ventas.size() : 0});
+        return resultado;
     }
 }
 
