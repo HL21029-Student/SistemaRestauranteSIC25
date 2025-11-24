@@ -19,19 +19,14 @@
                 <p:commandButton value="Buscar"
                                  icon="pi pi-search"
                                  actionListener="#{reporteVentasDiariasFrm.cargarVentas}"
-                                 update=":frmReporteVentas:pnlResumen :frmReporteVentas:tblVentas :frmReporteVentas:pnlBotones :frmReporteVentas:msgDebug"
+                                 update="pnlResumen tblVentas pnlBotones"
                                  styleClass="ui-button-success"/>
             </h:panelGrid>
 
-            <!-- Mensaje de depuración (temporal) -->
-            <h:panelGroup id="msgDebug" style="margin-bottom:1rem;padding:10px;background:#f0f0f0;border:1px solid #ccc">
-                <h:outputText value="Hay ventas: #{reporteVentasDiariasFrm.hayVentas}, Total: #{reporteVentasDiariasFrm.ventas.size()}"
-                              style="color:#333;font-weight:bold"/>
-            </h:panelGroup>
-
             <!-- Botones de Exportación -->
-            <p:panel id="pnlBotones" header="Exportar Reporte" style="margin-bottom:1rem"
-                     rendered="#{reporteVentasDiariasFrm.hayVentas}">
+            <p:outputPanel id="pnlBotones">
+                <p:panel header="Exportar Reporte" style="margin-bottom:1rem"
+                         rendered="#{not empty reporteVentasDiariasFrm.ventas}">
                 <p:commandButton value="Exportar PDF"
                                  icon="pi pi-file-pdf"
                                  ajax="false"
@@ -52,10 +47,11 @@
                                     fileName="reporte_ventas_#{reporteVentasDiariasFrm.fecha}"
                                     pageOnly="false"/>
                 </p:commandButton>
-            </p:panel>
+                </p:panel>
+            </p:outputPanel>
 
             <!-- Panel de Resumen del Día -->
-            <h:panelGroup id="pnlResumen" rendered="#{reporteVentasDiariasFrm.hayVentas}">
+            <h:panelGroup id="pnlResumen" rendered="#{not empty reporteVentasDiariasFrm.ventas}">
                 <p:panel header="Resumen del Día" style="margin-bottom:1rem">
                     <h:panelGrid columns="4" cellpadding="10" style="width:100%">
                         <p:panel header="Total Ventas" style="text-align:center;background:#e3f2fd">
