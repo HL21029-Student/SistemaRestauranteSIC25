@@ -22,19 +22,24 @@ public class BalanceFrm implements Serializable {
     private double totalAcreedor;
 
      @PostConstruct
-   public void init() {
-     lista = balanceDAO.obtenerBalance();
+     public void init() {
+         try {
+             lista = balanceDAO.obtenerBalance();
+         } catch (Exception e) {
+             lista = List.of();       // ← VISTA SIEMPRE CARGA
+         }
 
-       totalDeudor = lista.stream()
-               .filter(BalanceDTO::isDeudor)
-              .mapToDouble(BalanceDTO::getSaldo)
-                .sum();
+         totalDeudor = lista.stream()
+                 .filter(BalanceDTO::isDeudor)
+                 .mapToDouble(BalanceDTO::getSaldo)
+                 .sum();
 
-        totalAcreedor = lista.stream()
-                .filter(BalanceDTO::isAcreedor)
-               .mapToDouble(BalanceDTO::getSaldo)
-                .sum();
-    }
+         totalAcreedor = lista.stream()
+                 .filter(BalanceDTO::isAcreedor)
+                 .mapToDouble(BalanceDTO::getSaldo)
+                 .sum();
+     }
+
 
     public List<BalanceDTO> getLista() {
         return lista;
@@ -47,4 +52,4 @@ public class BalanceFrm implements Serializable {
     public double getTotalAcreedor() {
          return totalAcreedor;
     }
-    }
+}
