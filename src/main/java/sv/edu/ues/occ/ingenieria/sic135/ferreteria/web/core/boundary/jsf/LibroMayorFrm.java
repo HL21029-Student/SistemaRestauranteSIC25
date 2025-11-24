@@ -1186,6 +1186,42 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
+    /**
+     * Método mejorado para actualizar mayorizaciones - con update forzado
+     */
+    public void actualizarMayorizaciones() {
+        try {
+            System.out.println("=== ACTUALIZAR MAYORIZACIONES INICIADO ===");
+
+            if (this.registro == null || this.registro.getId() == null) {
+                addMessage("Error", "No hay libro mayor seleccionado", true);
+                return;
+            }
+
+            System.out.println("Recargando detalles para libro mayor ID: " + this.registro.getId());
+
+            // Forzar recarga desde la base de datos
+            this.detallesLibroMayor = null;
+            cargarDetallesLibroMayor();
+
+            // Forzar actualización del contador
+            int count = detallesLibroMayor != null ? detallesLibroMayor.size() : 0;
+
+            System.out.println("Detalles recargados: " + count + " registros");
+
+            addMessage("Éxito",
+                    "Mayorizaciones actualizadas correctamente - " + count + " detalles cargados");
+
+            // ✅ CORREGIDO: Forzar actualización de la tabla
+            // Esto asegura que la tabla se refresque incluso si hay caché
+            PrimeFaces.current().executeScript("setTimeout(function() { PF('tblDetallesWidget').filter(); }, 100);");
+
+        } catch (Exception ex) {
+            System.out.println("ERROR en actualizarMayorizaciones: " + ex.getMessage());
+            ex.printStackTrace();
+            addMessage("Error", "No se pudieron actualizar las mayorizaciones: " + ex.getMessage(), true);
+        }
+    }
     public void actualizarComponentesDialogo() {
         try {
             PrimeFaces.current().ajax().update(
