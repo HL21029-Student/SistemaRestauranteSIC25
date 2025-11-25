@@ -92,6 +92,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     @Override
     protected DetalleLibroDiario nuevoRegistro() {
+        System.out.println("para agregar cambios");
         DetalleLibroDiario detalleLibroDiario = new DetalleLibroDiario();
         detalleLibroDiario.setId(UUID.randomUUID());
         detalleLibroDiario.setFecha(new Date());
@@ -171,6 +172,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
         return 0;
     }
 
+
     public List<CuentaContable> buscarCuentaContablePorNombre(final String nombre) {
         try {
             if (nombre != null && !nombre.isBlank()) {
@@ -180,6 +182,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
             LOG.log(Level.SEVERE, "Error al buscar cuenta contable: " + e.getMessage(), e);
         }
         return List.of();
+
     }
 
     /**
