@@ -282,61 +282,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         }
     }
 
-    /**
-     * Metodo para crear y proceder directamente a mayorizar
-     * */
-    public String crearYProcederAMayorizacion() {
-        try {
-            System.out.println("=== CREAR Y PROCEDER A MAYORIZACIÓN ===");
-
-            // Validaciones básicas
-            if (registro.getObservacion() == null || registro.getObservacion().isBlank()) {
-                addMessage("Error", "La observación del libro mayor es obligatoria", true);
-                return null;
-            }
-
-            // Crear el libro mayor
-            libroMayorDAO.create(registro);
-
-            // Recargar el registro para obtener el ID generado
-            if (this.libroDiarioSeleccionado != null) {
-                // Buscar el libro mayor recién creado
-                List<LibroMayor> librosRecientes = libroMayorDAO.findRange(0, 10);
-                LibroMayor libroCreado = librosRecientes.stream()
-                        .filter(lm -> lm.getObservacion().equals(registro.getObservacion()) &&
-                                (lm.getIdLibroDiario() == null ||
-                                        (libroDiarioSeleccionado != null &&
-                                                lm.getIdLibroDiario().getId().equals(libroDiarioSeleccionado.getId()))))
-                        .findFirst()
-                        .orElse(null);
-
-                if (libroCreado != null) {
-                    this.registro = libroCreado;
-                    this.estado = ESTADO_CRUD.MODIFICAR;
-
-                    // Actualizar el árbol
-                    inicializarArbol();
-
-                    addMessage("Éxito",
-                            "Libro mayor creado correctamente. Ahora puede proceder con la mayorización.");
-
-                    System.out.println("Libro mayor creado con ID: " + libroCreado.getId());
-
-                    // Forzar actualización de la interfaz
-                    PrimeFaces.current().executeScript("setTimeout(function() { location.reload(); }, 1000);");
-
-                } else {
-                    addMessage("Error", "Libro mayor creado pero no se pudo cargar para edición", true);
-                }
-            }
-
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Error al crear libro mayor", ex);
-            addMessage("Error", "No se pudo crear el libro mayor: " + ex.getMessage(), true);
-        }
-        return null;
-    }
-
     public String crearLibroMayor() {
         try {
             actualizarLibroDiarioDesdeSeleccion();
@@ -1084,7 +1029,7 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         return "activo";
     }
 
-    /***
+    /**
      *Metodo para crear la mayorixacion
      */
 
@@ -1152,107 +1097,6 @@ public class LibroMayorFrm extends DefaultFrm<LibroMayor> implements Serializabl
         this.filtroCuenta = null;
         this.cuentaSeleccionadaObj = null;
         this.detalleSeleccionado = null;
-    }
-
-    public void actualizarCampoCuenta() {
-        try {
-            System.out.println("=== ACTUALIZAR CAMPO CUENTA ===");
-            System.out.println("cuentaSeleccionada: " + this.cuentaSeleccionada);
-            System.out.println("cuentaSeleccionadaObj: " + (this.cuentaSeleccionadaObj != null));
-
-            if (this.cuentaSeleccionadaObj != null && this.cuentaSeleccionada == null) {
-                if (this.cuentaSeleccionadaObj instanceof Map) {
-                    Map<String, Object> cuentaMap = (Map<String, Object>) this.cuentaSeleccionadaObj;
-                    String codigo = (String) cuentaMap.get("codigo");
-                    String nombre = (String) cuentaMap.get("nombre");
-                    this.cuentaSeleccionada = codigo + " - " + nombre;
-                    System.out.println("Campo forzado a: " + this.cuentaSeleccionada);
-                }
-            }
-        } catch (Exception ex) {
-            System.out.println("ERROR en actualizarCampoCuenta: " + ex.getMessage());
-        }
-    }
-
-    public void editarRegistro() {
-        try {
-            if (this.selectedNode != null && this.selectedNode.getData() instanceof LibroMayor) {
-                LibroMayor libroSeleccionado = (LibroMayor) this.selectedNode.getData();
-                this.registro = libroMayorDAO.findById(libroSeleccionado.getId());
-                this.estado = ESTADO_CRUD.MODIFICAR;
-                this.libroDiarioSeleccionado = this.registro.getIdLibroDiario();
-
-                if (this.libroDiarioSeleccionado != null) {
-                    this.libroDiarioIdSeleccionado = this.libroDiarioSeleccionado.getId();
-                } else {
-                    this.libroDiarioIdSeleccionado = null;
-                }
-
-                cargarDetallesLibroMayor();
-                addMessage("Modo edición", "Editando libro mayor: " + this.registro.getObservacion());
-            }
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Error al editar registro", ex);
-            addMessage("Error", "No se pudo cargar el registro para editar", true);
-        }
-    }
-
-    /**
-     * Metodo para cancelar
-     */
-    public String cancelarFormulario() {
-        try {
-            System.out.println("=== CANCELAR FORMULARIO ===");
-
-            // Limpiar todo el estado
-            this.estado = ESTADO_CRUD.NADA;
-            this.registro = null;
-            this.selectedNode = null;
-            this.libroDiarioSeleccionado = null;
-            this.libroDiarioIdSeleccionado = null;
-            this.detallesLibroMayor = null;
-            this.detalleSeleccionado = null;
-            this.nombreCuentaTemporal = null;
-            this.cuentaSeleccionada = null;
-            this.filtroCuenta = null;
-            this.cuentasContables = null;
-            this.detallesCuentaContable = null;
-            this.saldoFinal = null;
-            this.cuentaSeleccionadaObj = null;
-
-            addMessage("Operación cancelada", "El formulario ha sido cerrado");
-            System.out.println("Formulario cancelado - Estado: NADA");
-
-        } catch (Exception ex) {
-            System.out.println("ERROR en cancelarFormulario: " + ex.getMessage());
-            LOG.log(Level.SEVERE, "Error al cancelar formulario", ex);
-            addMessage("Error", "No se pudo cancelar la operación", true);
-        }
-        return null;
-    }
-
-    /**
-     * Metodo para limpiar formulario
-     */
-    public String limpiarFormulario() {
-        try {
-            if (ESTADO_CRUD.CREAR.equals(this.estado)) {
-                System.out.println("=== LIMPIAR FORMULARIO ===");
-
-                // Crear nuevo registro vacío
-                this.registro = nuevoRegistro();
-                this.libroDiarioSeleccionado = null;
-                this.libroDiarioIdSeleccionado = null;
-                this.nombreCuentaTemporal = null;
-
-                addMessage("Formulario limpiado", "Todos los campos han sido restablecidos");
-                System.out.println("Formulario limpiado - campos reseteados");
-            }
-        } catch (Exception ex) {
-            System.out.println("ERROR en limpiarFormulario: " + ex.getMessage());
-            LOG.log(Level.SEVERE, "Error al limpiar formulario", ex);
-        }
-        return null;
     }
 
 
