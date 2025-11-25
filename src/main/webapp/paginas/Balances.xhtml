@@ -256,7 +256,94 @@
 
         </h:form>
 
+        <h:form id="formER">
+
+            <!-- PANEL DE SELECCIÓN DEL LIBRO MAYOR  -->
+            <p:panel header="Generar Estado de Resultados" style="margin-bottom:20px">
+
+                <h:panelGrid columns="3" columnClasses="label,value,button" style="width:100%">
+
+                    <!-- Selección del libro mayor -->
+                    <h:outputText value="Seleccione Libro Mayor:" />
+
+                    <p:selectOneMenu id="slm" style="width:100%"
+                                     value="#{estadoResultadoFrm.idLibroMayorSeleccionado}">
+                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                        <f:selectItems value="#{estadoResultadoFrm.librosMayor}"
+                                       var="lm"
+                                       itemValue="#{lm.id}"
+                                       itemLabel="Libro Mayor #{lm.id} - #{lm.observacion}" />
+                    </p:selectOneMenu>
+
+                    <!-- Botón generar -->
+                    <p:commandButton value="Generar"
+                                     action="#{estadoResultadoFrm.generar}"
+                                     update="resultadoPanel"
+                                     process="@this slm" />
+                </h:panelGrid>
+
+                <!-- Tasa de ISR opcional -->
+                <h:panelGrid columns="2" style="margin-top:10px">
+                    <h:outputText value="Tasa ISR:" />
+                    <p:inputNumber value="#{estadoResultadoFrm.tasaISR}"
+                                   symbol="%"
+                                   decimalPlaces="2"
+                                   minValue="0"
+                                   maxValue="1" />
+                </h:panelGrid>
+
+            </p:panel>
+
+            <!-- RESULTADO DEL ESTADO DE RESULTADOS-->
+            <p:panel id="resultadoPanel" header="Estado de Resultados"
+                     rendered="#{not empty estadoResultadoFrm.estado}"
+                     style="font-size:15px">
+
+                <h:panelGrid columns="2" columnClasses="label,value" style="width:60%">
+
+                    <h:outputText value="Ingresos por ventas:" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.ingresos}" />
+
+                    <h:outputText value="Costo de ventas:" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.costoVentas}" />
+
+                    <h:outputText value="Utilidad bruta:" styleClass="bold" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.utilidadBruta}" styleClass="bold" />
+
+                    <h:outputText value="Gastos de venta:" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.gastoVenta}" />
+
+                    <h:outputText value="Gastos administrativos:" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.gastoAdministracion}" />
+
+                    <h:outputText value="Utilidad operativa:" styleClass="bold" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.utilidadOperativa}" styleClass="bold" />
+
+                    <h:outputText value="Gastos financieros:" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.gastoFinanciero}" />
+
+                    <h:outputText value="Otros gastos:" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.otrosGastos}" />
+
+                    <h:outputText value="Utilidad antes de ISR:" styleClass="bold" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.utilidadAntesISR}" styleClass="bold" />
+
+                    <h:outputText value="Impuesto sobre la renta:" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.impuestoRenta}" />
+
+                    <h:outputText value="UTILIDAD NETA:" styleClass="bold" />
+                    <h:outputText value="#{estadoResultadoFrm.estado.utilidadNeta}"/>
+
+                </h:panelGrid>
+
+            </p:panel>
+
+        </h:form>
+
+
+
     </ui:define>
+
 
     <!-- ======================================= -->
     <!--           BALANCE GENERAL               -->
