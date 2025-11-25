@@ -54,4 +54,9 @@ public class LibroMayorDAO extends InventarioDefaultDataAccess<LibroMayor, Objec
             throw e;
         }
     }
+    public List<LibroMayor> findAll() {
+        return em.createQuery("SELECT l FROM LibroMayor l ORDER BY l.id ASC", LibroMayor.class)
+                .getResultList();
+    }
+
 }
