@@ -10,35 +10,221 @@
 
 <h:head>
     <meta charset="UTF-8"/>
-    <title>Sistemas de Inventarios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FERRETERIA SIC25 - Sistema de Gestión</title>
     <h:outputStylesheet library="estilos" name="crud.css"/>
 
     <style>
-        html, body { height: 100%; margin: 0; padding: 0; }
-        main.app { display: flex; min-height: 100vh; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        main.app {
+            display: flex;
+            min-height: 100vh;
+            background: #f5f6fa;
+        }
+
+        /* ========== SIDEBAR ========== */
         nav.sidebar {
-            width: 235px;
-            background: rgba(34, 65, 133, 0.45);
-            border-right: 1px solid #ad4726;
-            padding: 1rem;
+            width: 280px;
+            background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+            border-right: none;
+            padding: 0;
             box-sizing: border-box;
             overflow-y: auto;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            height: 100vh;
         }
+
+        nav.sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        nav.sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        nav.sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        /* ========== CONTENT AREA ========== */
         .content {
             flex: 1;
-            padding: 1rem 1.5rem;
+            padding: 0;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            overflow: auto;
+            overflow-x: hidden;
         }
-        header .titulo { margin: 0; }
-        article { flex: 1; }
-        footer { text-align: center; padding: .5rem 0; color: #666; font-size: .9rem; border-top: 1px solid #ad4726; }
-        @media (max-width: 800px) {
-            main.app { flex-direction: column; }
-            nav.sidebar { width: 100%; border-right: none; border-bottom: 1px solid #cdcbcb; }
+
+        /* Top bar con selector de idioma */
+        .top-bar {
+            background: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* Estilos mejorados para el selector de idioma */
+        .top-bar .ui-selectonemenu {
+            min-width: 160px !important;
+        }
+
+        .top-bar .ui-selectonemenu-label {
+            padding: 0.625rem 1rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            color: #2d3748 !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            background: #ffffff !important;
+        }
+
+        .top-bar .ui-selectonemenu:not(.ui-state-disabled):hover .ui-selectonemenu-label {
+            border-color: #F39A3C !important;
+        }
+
+        .top-bar .ui-selectonemenu-trigger {
+            background: transparent !important;
+            border: none !important;
+            color: #718096 !important;
+            width: 2rem !important;
+        }
+
+        .top-bar .ui-selectonemenu-trigger:hover {
+            color: #F39A3C !important;
+        }
+
+        /* Panel desplegable del selector */
+        .ui-selectonemenu-panel {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            margin-top: 0.25rem !important;
+        }
+
+        .ui-selectonemenu-panel .ui-selectonemenu-items {
+            padding: 0.25rem !important;
+        }
+
+        .ui-selectonemenu-panel .ui-selectonemenu-item {
+            padding: 0.625rem 1rem !important;
+            font-size: 0.875rem !important;
+            color: #2d3748 !important;
+            border-radius: 6px !important;
+            margin: 0.125rem 0 !important;
+            transition: all 0.2s !important;
+        }
+
+        .ui-selectonemenu-panel .ui-selectonemenu-item:hover {
+            background: rgba(243, 154, 60, 0.1) !important;
+            color: #F39A3C !important;
+        }
+
+        .ui-selectonemenu-panel .ui-selectonemenu-item.ui-state-highlight {
+            background: linear-gradient(135deg, #F39A3C 0%, #e67e22 100%) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+
+        /* Botón de usuario */
+        .top-bar .ui-button {
+            width: 2.5rem !important;
+            height: 2.5rem !important;
+            border-radius: 50% !important;
+            background: #f7fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            color: #718096 !important;
+        }
+
+        .top-bar .ui-button:hover {
+            background: #F39A3C !important;
+            border-color: #F39A3C !important;
+            color: #ffffff !important;
+        }
+
+        /* Main content wrapper */
+        .content-wrapper {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        header .titulo {
+            margin: 0 0 1.5rem 0;
+            color: #1a202c;
+            font-weight: 600;
+        }
+
+        article {
+            flex: 1;
+        }
+
+        /* Cards wrapper */
+        .card-wrapper {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #718096;
+            font-size: 0.875rem;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            margin-top: auto;
+        }
+
+        @media (max-width: 1024px) {
+            nav.sidebar {
+                width: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            main.app {
+                flex-direction: column;
+            }
+
+            nav.sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .top-bar {
+                padding: 0.75rem 1rem;
+            }
         }
     </style>
 </h:head>
@@ -48,31 +234,56 @@
 
         <main class="app">
 
-            <nav class="sidebar" style="margin:0">
+            <nav class="sidebar">
                 <ui:include src="menu.xhtml"/>
             </nav>
 
             <div class="content">
-                <header>
-                    <ui:insert name="header">
-                        <h1 class="titulo">Sistema de Inventario</h1>
-                    </ui:insert>
-                </header>
+                <!-- Top bar con selector de idioma -->
+                <div class="top-bar">
+                    <h:form id="frmIdiomaTop" style="display: flex; align-items: center; gap: 0.75rem;">
+                        <p:selectOneMenu value="#{sesionUsuarioBean.idiomaSeleccionado}"
+                                         valueChangeListener="#{sesionUsuarioBean.cambiarIdioma}"
+                                         style="min-width: 140px;">
+                            <f:selectItem noSelectionOption="true" itemValue="#{null}" itemLabel="Idioma"/>
+                            <f:selectItems value="#{sesionUsuarioBean.idiomas.entrySet()}"
+                                           var="idioma"
+                                           itemLabel="#{idioma.key}"
+                                           itemValue="#{idioma.key}"/>
+                            <f:ajax execute="@form" render="@all"/>
+                        </p:selectOneMenu>
+                        <p:commandButton type="button" icon="pi pi-user" styleClass="ui-button-rounded secondary"/>
+                    </h:form>
+                </div>
 
-                <article>
-                    <h:panelGroup id="pnlTabla">
-                        <p:growl showSummary="true" showDetail="true" autoUpdate="true" life="5000"/>
-                        <ui:insert name="contenido-tabla"/>
-                    </h:panelGroup>
+                <!-- Main content wrapper -->
+                <div class="content-wrapper">
+                    <header>
+                        <ui:insert name="header">
+                            <h1 class="titulo">Sistema de Gestión</h1>
+                        </ui:insert>
+                    </header>
 
-                    <h:panelGroup id="pnlDetalle">
-                        <ui:insert name="contenido-detalle"/>
-                    </h:panelGroup>
-                </article>
+                    <article>
+                        <div class="card-wrapper">
+                            <h:panelGroup id="pnlTabla">
+                                <p:growl showSummary="true" showDetail="true" autoUpdate="true" life="5000"/>
+                                <ui:insert name="contenido-tabla"/>
+                            </h:panelGroup>
+                        </div>
 
-                <ui:insert name="extra"/>
+                        <div class="card-wrapper">
+                            <h:panelGroup id="pnlDetalle">
+                                <ui:insert name="contenido-detalle"/>
+                            </h:panelGroup>
+                        </div>
+                    </article>
+
+                    <ui:insert name="extra"/>
+                </div>
+
                 <footer>
-                    Todos los derechos reservados - Universidad de El Salvador @2025
+                    © 2025 FERRETERIA SIC25 - Universidad de El Salvador - Todos los derechos reservados
                 </footer>
             </div>
         </main>
