@@ -21,22 +21,67 @@
         </cc:interface>
 
         <cc:implementation>
-            <h:panelGrid>
+            <style>
+                .botones-top-container {
+                    display: flex;
+                    gap: 0.75rem;
+                    margin-top: 1.5rem;
+                }
+
+                .btn-nuevo-registro {
+                    background: #F39A3C !important;
+                    color: #ffffff !important;
+                    border: none !important;
+                    padding: 0.75rem 1.5rem !important;
+                    border-radius: 8px !important;
+                    font-weight: 600 !important;
+                    font-size: 0.9375rem !important;
+                    transition: all 0.2s !important;
+                    box-shadow: 0 2px 8px rgba(243, 154, 60, 0.2) !important;
+                }
+
+                .btn-nuevo-registro:hover {
+                    background: #e68929 !important;
+                    transform: translateY(-2px) !important;
+                    box-shadow: 0 4px 12px rgba(243, 154, 60, 0.3) !important;
+                }
+
+                .btn-cancelar {
+                    background: #718096 !important;
+                    color: #ffffff !important;
+                    border: none !important;
+                    padding: 0.75rem 1.5rem !important;
+                    border-radius: 8px !important;
+                    font-weight: 500 !important;
+                    transition: all 0.2s !important;
+                }
+
+                .btn-cancelar:hover {
+                    background: #4a5568 !important;
+                    transform: translateY(-1px) !important;
+                }
+            </style>
+
+            <div class="botones-top-container">
                 <p:commandButton id="btnNuevo"
                                  ajax="true"
+                                 icon="pi pi-plus"
                                  actionListener="#{cc.attrs.formulario.btnNuevoHandler}"
-                                 value="#{defaultfrm['defaultfrm.new']}"
+                                 value="Nuevo Registro"
+                                 styleClass="btn-nuevo-registro"
                                  rendered="#{cc.attrs.formulario.estado == 'NADA'}"
                                  process="@this" update="#{cc.attrs.actualizar}">
                 </p:commandButton>
                 <p:commandButton id="btnCancelar"
                                  ajax="true"
+                                 icon="pi pi-times"
                                  actionListener="#{cc.attrs.formulario.btnCancelarHandler}"
                                  value="#{defaultfrm['defaultfrm.cancel']}"
+                                 styleClass="btn-cancelar"
                                  rendered="#{cc.attrs.formulario.estado != 'NADA'}"
                                  process="@this" update="#{cc.attrs.actualizar}">
                 </p:commandButton>
-            </h:panelGrid>
+            </div>
         </cc:implementation>
 
     </ui:composition>
