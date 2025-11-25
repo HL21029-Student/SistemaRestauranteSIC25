@@ -311,36 +311,4 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
     public void setLibroDiarioFrm(LibroDiarioFrm libroDiarioFrm) {
         this.libroDiarioFrm = libroDiarioFrm;
     }
-
-    public CuentaContable getCuentaContableTemporal() {
-        return cuentaContableTemporal;
-    }
-
-    public void setCuentaContableTemporal(CuentaContable cuentaContableTemporal) {
-        this.cuentaContableTemporal = cuentaContableTemporal;
-    }
-
-    public List<DetalleLibroDiario> getDetalleLibroDiarios() {
-        return detalleLibroDiarios;
-    }
-
-    public void setDetalleLibroDiarios(List<DetalleLibroDiario> detalleLibroDiarios) {
-        this.detalleLibroDiarios = detalleLibroDiarios;
-    }
-
-    public List<DetalleLibroDiario> getListaDetalleLibroDiarios() {
-        return listaDetalleLibroDiarios;
-    }
-
-    public void setListaDetalleLibroDiarios(List<DetalleLibroDiario> listaDetalleLibroDiarios) {
-        this.listaDetalleLibroDiarios = listaDetalleLibroDiarios;
-    }
-
-    public List<CuentaContable> getCuentaContables() {
-        return cuentaContables;
-    }
-
-    public void setCuentaContables(List<CuentaContable> cuentaContables) {
-        this.cuentaContables = cuentaContables;
-    }
 }

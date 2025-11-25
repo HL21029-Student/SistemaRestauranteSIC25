@@ -3,7 +3,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-
+!**/src/main/liberty/config/server.xml
 
 ### IntelliJ IDEA ###
 # Ignore most .idea files but keep some project configuration

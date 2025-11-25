@@ -1,0 +1,366 @@
+<ui:composition
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        template="../WEB-INF/plantilla/default.xhtml"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
+        xmlns="http://www.w3.org/1999/xhtml"
+>
+
+    <ui:define name="header">
+        <h1>Facturación Integrada</h1>
+    </ui:define>
+
+    <ui:define name="contenido-tabla">
+        <h:form id="frmFacturas">
+            <ues:botones-top formulario="#{facturaFrm}" actualizar=":pnlTabla :pnlDetalle"/>
+
+            <p:dataTable id="tblFacturas" value="#{facturaFrm.modelo}" var="f"
+                         paginator="true" rows="10" reflow="true"
+                         selectionMode="single" selection="#{facturaFrm.registro}"
+                         rowKey="#{f.id}">
+                <p:ajax event="rowSelect" listener="#{facturaFrm.seleccionarRegistro}" update=":pnlDetalle"/>
+
+                <p:column headerText="Número">
+                    <h:outputText value="#{f.numeroFactura}"/>
+                </p:column>
+                <p:column headerText="Fecha">
+                    <h:outputText value="#{facturaFrm.formatearFecha(f.fechaFactura)}"/>
+                </p:column>
+                <p:column headerText="Subtotal">
+                    <h:outputText value="#{f.subtotal}">
+                        <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Descuento">
+                    <h:outputText value="#{f.descuento}">
+                        <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="IVA">
+                    <h:outputText value="#{f.iva ? 'Sí' : 'No'}"/>
+                </p:column>
+                <p:column headerText="Total">
+                    <h:outputText value="#{f.total}">
+                        <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Estado">
+                    <h:outputText value="#{f.estado}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+    <ui:define name="contenido-detalle">
+        <h:form id="frmDetalleFactura" rendered="#{facturaFrm.registro != null}">
+
+            <!-- TabView para organizar el proceso de facturación -->
+            <p:tabView id="tabFactura" dynamic="false" cache="true">
+
+                <!-- Tab 1: Información General y Cliente -->
+                <p:tab title="1. Datos Generales" closable="false">
+                    <h:panelGrid columns="2" cellpadding="5" style="width:100%">
+
+                        <p:outputLabel value="Número de Factura:" for="numero"/>
+                        <p:inputText id="numero" value="#{facturaFrm.registro.numeroFactura}"
+                                     placeholder="Ej: F-2025-001" style="width:300px"/>
+
+                        <p:outputLabel value="Fecha y Hora:" for="fecha"/>
+                        <p:calendar id="fecha" value="#{facturaFrm.registro.fechaFactura}"
+                                    pattern="yyyy-MM-dd'T'HH:mm"
+                                    converter="offsetDateTimeConverter"
+                                    showTime="true" style="width:300px"/>
+
+                        <p:outputLabel value="Cliente:" for="cliente"/>
+                        <h:panelGroup id="pnlCliente">
+                            <p:outputPanel style="display:flex; gap:10px; align-items:center;">
+                                <p:inputText id="cliente"
+                                             value="#{facturaFrm.clienteSeleccionado != null ? facturaFrm.clienteSeleccionado.nombre : 'Sin cliente'}"
+                                             readonly="true" style="width:250px"/>
+                                <p:commandButton value="Seleccionar"
+                                                 icon="pi pi-search"
+                                                 onclick="PF('dlgCliente').show();"
+                                                 type="button"
+                                                 styleClass="ui-button-info"/>
+                                <p:commandButton value="Limpiar"
+                                                 icon="pi pi-times"
+                                                 action="#{facturaFrm.setClienteSeleccionado(null)}"
+                                                 update="pnlCliente"
+                                                 rendered="#{facturaFrm.clienteSeleccionado != null}"
+                                                 styleClass="ui-button-danger"/>
+                            </p:outputPanel>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="Estado:" for="estado"/>
+                        <p:selectOneMenu id="estado" value="#{facturaFrm.registro.estado}" style="width:300px">
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}"/>
+                            <f:selectItem itemLabel="BORRADOR" itemValue="BORRADOR"/>
+                            <f:selectItem itemLabel="ACTIVA" itemValue="ACTIVA"/>
+                            <f:selectItem itemLabel="ANULADA" itemValue="ANULADA"/>
+                            <f:selectItem itemLabel="PAGADA" itemValue="PAGADA"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+
+                    <p:panel header="Información del Cliente" rendered="#{facturaFrm.clienteSeleccionado != null}"
+                             style="margin-top:20px">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <p:outputLabel value="Nombre:"/>
+                            <h:outputText value="#{facturaFrm.clienteSeleccionado.nombre}"/>
+
+                            <p:outputLabel value="DUI:"/>
+                            <h:outputText value="#{facturaFrm.clienteSeleccionado.dui}"/>
+
+                            <p:outputLabel value="NIT:"/>
+                            <h:outputText value="#{facturaFrm.clienteSeleccionado.nit}"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+
+                <!-- Tab 2: Items/Productos -->
+                <p:tab title="2. Productos" closable="false">
+                    <h:panelGroup id="pnlItems">
+
+                        <!-- Botón para agregar nuevo item -->
+                        <p:commandButton value="Agregar Producto"
+                                         icon="pi pi-plus"
+                                         action="#{facturaFrm.nuevoItem()}"
+                                         update=":frmNuevoItem:pnlNuevoItem"
+                                         oncomplete="PF('dlgNuevoItem').show();"
+                                         styleClass="ui-button-success"
+                                         style="margin-bottom:10px"/>
+
+                        <!-- Tabla de items -->
+                        <p:dataTable value="#{facturaFrm.items}" var="item"
+                                     emptyMessage="No hay productos agregados"
+                                     style="margin-top:10px">
+                            <p:column headerText="Producto">
+                                <h:outputText value="#{item.producto.nombreProducto}"/>
+                            </p:column>
+                            <p:column headerText="Cantidad">
+                                <h:outputText value="#{item.cantidad}"/>
+                            </p:column>
+                            <p:column headerText="Precio Unitario">
+                                <h:outputText value="#{item.precio}">
+                                    <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Subtotal">
+                                <h:outputText value="#{item.subtotal}">
+                                    <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Observaciones">
+                                <h:outputText value="#{item.observaciones}"/>
+                            </p:column>
+                            <p:column headerText="Acciones" style="width:100px">
+                                <p:commandButton icon="pi pi-trash"
+                                                 action="#{facturaFrm.eliminarItem(item)}"
+                                                 update="pnlItems :tabFactura:pnlTotales"
+                                                 styleClass="ui-button-danger"
+                                                 title="Eliminar">
+                                    <p:confirm header="Confirmación" message="¿Eliminar este producto?"
+                                               icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:panelGroup>
+                </p:tab>
+
+                <!-- Tab 3: Resumen y Totales -->
+                <p:tab title="3. Resumen y Totales" closable="false">
+                    <h:panelGroup id="pnlTotales">
+                        <h:panelGrid columns="2" cellpadding="5" style="width:100%">
+
+                            <p:outputLabel value="Subtotal:" style="font-weight:bold"/>
+                            <h:outputText value="#{facturaFrm.registro.subtotal}" style="font-size:1.2em">
+                                <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                            </h:outputText>
+
+                            <p:outputLabel value="Descuento:" for="descuento"/>
+                            <h:panelGroup>
+                                <p:inputNumber id="descuento"
+                                               value="#{facturaFrm.registro.descuento}"
+                                               symbol="$ "
+                                               minValue="0">
+                                    <p:ajax event="change"
+                                            listener="#{facturaFrm.aplicarDescuento()}"
+                                            update="pnlTotales"/>
+                                </p:inputNumber>
+                            </h:panelGroup>
+
+                            <p:outputLabel value="Aplicar IVA (13%):" for="iva"/>
+                            <h:panelGroup>
+                                <p:selectBooleanCheckbox id="iva" value="#{facturaFrm.registro.iva}">
+                                    <p:ajax event="change"
+                                            listener="#{facturaFrm.cambiarIVA()}"
+                                            update="pnlTotales"/>
+                                </p:selectBooleanCheckbox>
+                            </h:panelGroup>
+
+                            <p:outputLabel value="Monto IVA:" rendered="#{facturaFrm.registro.iva}"/>
+                            <h:outputText value="#{facturaFrm.montoIVA}"
+                                          rendered="#{facturaFrm.registro.iva}">
+                                <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                            </h:outputText>
+
+                            <p:outputLabel value="TOTAL A PAGAR:" style="font-weight:bold; font-size:1.3em"/>
+                            <h:outputText value="#{facturaFrm.registro.total}"
+                                          style="font-size:1.5em; font-weight:bold; color:#28a745">
+                                <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                            </h:outputText>
+                        </h:panelGrid>
+
+                        <p:panel header="Resumen de Factura" style="margin-top:20px">
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <p:outputLabel value="Cliente:"/>
+                                <h:outputText value="#{facturaFrm.clienteSeleccionado != null ? facturaFrm.clienteSeleccionado.nombre : 'Sin cliente'}"/>
+
+                                <p:outputLabel value="Productos:"/>
+                                <h:outputText value="#{facturaFrm.items.size()} item(s)"/>
+
+                                <p:outputLabel value="Fecha:"/>
+                                <h:outputText value="#{facturaFrm.formatearFecha(facturaFrm.registro.fechaFactura)}"/>
+
+                                <p:outputLabel value="Estado:"/>
+                                <h:outputText value="#{facturaFrm.registro.estado}"
+                                              style="font-weight:bold; color:#{facturaFrm.registro.estado eq 'ACTIVA' ? '#28a745' : '#dc3545'}"/>
+                            </h:panelGrid>
+                        </p:panel>
+                    </h:panelGroup>
+                </p:tab>
+
+            </p:tabView>
+
+            <!-- Botones CRUD al final -->
+            <ues:botones-crud formulario="#{facturaFrm}" actualizar=":pnlTabla :pnlDetalle"/>
+
+        </h:form>
+
+        <!-- Dialog para seleccionar Cliente -->
+        <p:dialog header="Seleccionar Cliente"
+                  widgetVar="dlgCliente"
+                  modal="true"
+                  width="600"
+                  height="400">
+            <h:form id="frmSelCliente">
+                <p:dataTable value="#{facturaFrm.buscarClientes('')}" var="c"
+                             rowKey="#{c.id}"
+                             paginator="true" rows="10">
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{c.nombre}"/>
+                    </p:column>
+                    <p:column headerText="DUI">
+                        <h:outputText value="#{c.dui}"/>
+                    </p:column>
+                    <p:column headerText="NIT">
+                        <h:outputText value="#{c.nit}"/>
+                    </p:column>
+                    <p:column style="width:100px">
+                        <p:commandButton value="Seleccionar"
+                                         action="#{facturaFrm.seleccionarCliente(c)}"
+                                         update=":frmDetalleFactura:tabFactura:pnlCliente"
+                                         oncomplete="PF('dlgCliente').hide();"
+                                         styleClass="ui-button-success"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <!-- Dialog para agregar nuevo Item -->
+        <p:dialog header="Agregar Producto"
+                  widgetVar="dlgNuevoItem"
+                  modal="true"
+                  width="700">
+            <h:form id="frmNuevoItem">
+                <h:panelGroup id="pnlNuevoItem">
+                    <h:panelGrid columns="2" cellpadding="5" rendered="#{facturaFrm.itemActual != null}">
+
+                        <p:outputLabel value="Producto:" for="producto"/>
+                        <h:panelGroup>
+                            <p:outputPanel style="display:flex; gap:10px; align-items:center;">
+                                <p:inputText id="producto"
+                                             value="#{facturaFrm.itemActual.producto != null ? facturaFrm.itemActual.producto.nombreProducto : ''}"
+                                             readonly="true" style="width:300px"/>
+                                <p:commandButton value="Buscar"
+                                                 icon="pi pi-search"
+                                                 onclick="PF('dlgProducto').show();"
+                                                 type="button"/>
+                            </p:outputPanel>
+                        </h:panelGroup>
+
+                        <p:outputLabel value="Cantidad:" for="cantidad"/>
+                        <p:inputNumber id="cantidad"
+                                       value="#{facturaFrm.itemActual.cantidad}"
+                                       minValue="1"
+                                       decimalPlaces="2"/>
+
+                        <p:outputLabel value="Precio Unitario:" for="precio"/>
+                        <p:inputNumber id="precio"
+                                       value="#{facturaFrm.itemActual.precio}"
+                                       symbol="$ "
+                                       minValue="0"
+                                       decimalPlaces="2"/>
+
+                        <p:outputLabel value="Subtotal:"/>
+                        <h:outputText value="#{facturaFrm.itemActual.subtotal}" style="font-weight:bold">
+                            <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                        </h:outputText>
+
+                        <p:outputLabel value="Observaciones:" for="obsItem"/>
+                        <p:inputTextarea id="obsItem"
+                                         value="#{facturaFrm.itemActual.observaciones}"
+                                         rows="3" cols="40"/>
+                    </h:panelGrid>
+
+                    <p:commandButton value="Agregar"
+                                     icon="pi pi-check"
+                                     action="#{facturaFrm.agregarItem()}"
+                                     update=":frmDetalleFactura:tabFactura:pnlItems :frmDetalleFactura:tabFactura:pnlTotales"
+                                     oncomplete="if (args.validationFailed != true) PF('dlgNuevoItem').hide();"
+                                     styleClass="ui-button-success"
+                                     style="margin-top:10px"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+        <!-- Dialog para seleccionar Producto -->
+        <p:dialog header="Seleccionar Producto"
+                  widgetVar="dlgProducto"
+                  modal="true"
+                  width="600"
+                  height="400">
+            <h:form id="frmSelProducto">
+                <p:dataTable value="#{facturaFrm.buscarProductos('')}" var="p"
+                             rowKey="#{p.id}"
+                             paginator="true" rows="10">
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{p.nombreProducto}"/>
+                    </p:column>
+                    <p:column headerText="Referencia">
+                        <h:outputText value="#{p.referenciaExterna}"/>
+                    </p:column>
+                    <p:column headerText="Activo">
+                        <h:outputText value="#{p.activo ? 'Sí' : 'No'}"/>
+                    </p:column>
+                    <p:column style="width:100px">
+                        <p:commandButton value="Seleccionar"
+                                         action="#{facturaFrm.seleccionarProducto(p)}"
+                                         update="@form :frmNuevoItem:pnlNuevoItem"
+                                         oncomplete="PF('dlgProducto').hide();"
+                                         styleClass="ui-button-success"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>
+

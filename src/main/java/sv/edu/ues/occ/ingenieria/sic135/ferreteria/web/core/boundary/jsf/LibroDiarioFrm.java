@@ -180,4 +180,5 @@ public class LibroDiarioFrm extends DefaultFrm<LibroDiario> implements Serializa
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
     }
+
 }

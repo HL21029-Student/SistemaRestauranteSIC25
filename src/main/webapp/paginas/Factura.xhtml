@@ -26,19 +26,25 @@
                     <h:outputText value="#{f.numeroFactura}"/>
                 </p:column>
                 <p:column headerText="Fecha">
-                    <h:outputText value="#{f.fechaFactura}"/>
+                    <h:outputText value="#{facturaFrm.formatearFecha(f.fechaFactura)}"/>
                 </p:column>
                 <p:column headerText="Subtotal">
-                    <h:outputText value="#{f.subtotal}"/>
+                    <h:outputText value="#{f.subtotal}">
+                        <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                    </h:outputText>
                 </p:column>
                 <p:column headerText="Descuento">
-                    <h:outputText value="#{f.descuento}"/>
+                    <h:outputText value="#{f.descuento}">
+                        <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                    </h:outputText>
                 </p:column>
                 <p:column headerText="IVA">
                     <h:outputText value="#{f.iva ? 'Sí' : 'No'}"/>
                 </p:column>
                 <p:column headerText="Total">
-                    <h:outputText value="#{f.total}"/>
+                    <h:outputText value="#{f.total}">
+                        <f:convertNumber type="currency" currencySymbol="$ " minFractionDigits="2"/>
+                    </h:outputText>
                 </p:column>
                 <p:column headerText="Estado">
                     <h:outputText value="#{f.estado}"/>
@@ -55,7 +61,10 @@
                 <p:inputText id="numero" value="#{facturaFrm.registro.numeroFactura}"/>
 
                 <h:outputLabel value="Fecha" for="fecha"/>
-                <p:calendar id="fecha" value="#{facturaFrm.registro.fechaFactura}" pattern="yyyy-MM-dd"/>
+                <p:calendar id="fecha" value="#{facturaFrm.registro.fechaFactura}"
+                            pattern="yyyy-MM-dd'T'HH:mm"
+                            converter="offsetDateTimeConverter"
+                            showTime="true"/>
 
                 <h:outputLabel value="Subtotal" for="subtotal"/>
                 <p:inputNumber id="subtotal" value="#{facturaFrm.registro.subtotal}"/>
