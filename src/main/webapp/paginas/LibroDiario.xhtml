@@ -148,9 +148,10 @@
                     </h:panelGroup>
 
                     <h:panelGroup id="pnlDetalleAsientosContables">
-                        <p:growl id="growlDetalleAsientosContables" showDetail="true"/>
+                        <!--Agregar autoUpdate para mostrar mensajes -->
+                        <p:growl id="growlDetalleAsientosContables" showDetail="true" autoUpdate="true"/>
                         <p:growl id="growl-stickyTablaAsientosContables" for="sticky-key" showDetail="true"
-                                 sticky="true"/>
+                                 sticky="true" autoUpdate="true"/>
 
                         <h:panelGrid rendered="#{libroDiarioFrm.detalleLibroDiarioFrm.estado !='NADA'}">
                             <h:form id="frmDetalleAsientosContables">
@@ -164,12 +165,13 @@
                                                 value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.fecha}"
                                                 pattern="dd/MM/yyyy"/>
 
-                                    <p:outputLabel for="acCuentaContable" value="Nombre Cuenta:"/>
-                                    <h:panelGroup id="pnlAsientosContables">
-                                        <h:panelGrid>
-                                            <p:inputText id="acCuentaContable"
-                                                         value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.idCuentaContable.nombre}"
-                                                         readonly="true" disabled="true" size="40"/>
+                                    <p:outputLabel for="txtCuentaContableSeleccionada" value="Nombre Cuenta:"/>
+                                    <h:panelGroup>
+                                        <h:panelGrid columns="2">
+                                            <!--Usar outputLabel en lugar de inputText disabled para mejor visualización -->
+                                            <p:outputLabel id="txtCuentaContableSeleccionada"
+                                                           value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.idCuentaContable.nombre}"
+                                                           style="font-weight: bold; padding: 5px; border: 1px solid #ccc; background: #f9f9f9; display: block; min-width: 300px;"/>
                                             <p:commandButton type="button"
                                                              onclick="PF('dlgBuscarCuentaContable').show();"
                                                              value="Buscar Cuenta"
@@ -188,18 +190,17 @@
                                                  value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.concepto}"/>
 
                                     <p:outputLabel for="chkDireccionAsientosContables" value="Direccion de la cuenta:"/>
-                                    <h:panelGrid>
+                                    <h:panelGroup>
                                         <p:selectOneRadio id="chkDireccionAsientosContables"
                                                           value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.debe}">
                                             <f:selectItem itemLabel="Debe" itemValue="#{true}"/>
                                             <f:selectItem itemLabel="Haber" itemValue="#{false}"/>
                                         </p:selectOneRadio>
-                                    </h:panelGrid>
+                                    </h:panelGroup>
 
                                     <p:outputLabel for="txtMontoDetalleAsientosContables" value="Monto Total:"/>
                                     <p:inputText id="txtMontoDetalleAsientosContables"
                                                  value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.monto}"/>
-
 
                                 </h:panelGrid>
 
@@ -213,36 +214,36 @@
                 </h:panelGrid>
             </p:tab>
 
-
         </p:tabView>
     </ui:define>
 
     <ui:define name="extra">
-        <p:dialog id="dlgBuscarCuentaContable" widgetVar="dlgBuscarCuentaContable" modal="true" closable="true">
+        <!--Diálogo simplificado sin PanelGrid problemático -->
+        <p:dialog id="dlgBuscarCuentaContable" widgetVar="dlgBuscarCuentaContable" modal="true" closable="true" header="Buscar Cuenta Contable">
             <h:form id="frmDlgBuscarCuentaContable">
-                <h:panelGrid>
-                    <h:panelGrid columns="2">
-                        <p:outputLabel value="Seleccione la cuenta contable:" for="acCuentaContable"/>
-                        <p:autoComplete id="acCuentaContable"
-                                        completeMethod="#{libroDiarioFrm.detalleLibroDiarioFrm.buscarCuentaContablePorNombre}"
-                                        value="#{libroDiarioFrm.detalleLibroDiarioFrm.registro.idCuentaContable}"
-                                        var="cuenta"
-                                        converter="cuentaContableConverter"
-                                        itemLabel="#{cuenta.nombre}"
-                                        itemValue="#{cuenta}"
-                                        forceSelection="true"
-                                        dropdown="true"
-                                        size="40"
-                                        placeholder="Ingrese el nombre de la cuenta"
-                                        emptyMessage="No se encontraron cuentas contables"
-                        />
-                    </h:panelGrid>
-                    <h:commandButton value="Seleccionar Cuenta" process="@form"
-                                     actionListener="#{libroDiarioFrm.detalleLibroDiarioFrm.btnSeleccionarCuentaContableHandler}"
-                                     update=":tabLibroDiario:frmDetalleAsientosContables"
-                                     oncomplete="PF('dlgBuscarCuentaContable').hide();"/>
-                </h:panelGrid>
+                <p:panelGrid columns="2" style="width: 100%; margin-bottom: 10px;">
+                    <p:outputLabel value="Cuenta contable:" for="acCuentaContableBusqueda"/>
+                    <p:autoComplete id="acCuentaContableBusqueda"
+                                    completeMethod="#{libroDiarioFrm.detalleLibroDiarioFrm.buscarCuentaContablePorNombre}"
+                                    value="#{libroDiarioFrm.detalleLibroDiarioFrm.cuentaContableTemporal}"
+                                    var="cuenta"
+                                    converter="cuentaContableConverter"
+                                    itemLabel="#{cuenta.nombre}"
+                                    itemValue="#{cuenta}"
+                                    forceSelection="true"
+                                    dropdown="true"
+                                    size="40"
+                                    placeholder="Ingrese nombre de cuenta"
+                                    emptyMessage="No se encontraron cuentas"/>
+                </p:panelGrid>
 
+                <p:commandButton value="Seleccionar"
+                                 icon="pi pi-check"
+                                 process="@form"
+                                 action="#{libroDiarioFrm.detalleLibroDiarioFrm.seleccionarCuentaContable}"
+                                 update=":tabLibroDiario:frmDetalleAsientosContables :growlDetalleAsientosContables"
+                                 oncomplete="PF('dlgBuscarCuentaContable').hide();"
+                                 style="width: 100%;"/>
             </h:form>
         </p:dialog>
 
