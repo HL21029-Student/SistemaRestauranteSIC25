@@ -276,4 +276,17 @@ public class LibroDiarioDAO extends InventarioDefaultDataAccess<LibroDiario, Obj
             return 0.0;
         }
     }
+        public List<LibroDiario> findAll() {
+            try {
+                return em.createQuery(
+                        "SELECT l FROM LibroDiario l ORDER BY l.nombre ASC",
+                        LibroDiario.class
+                ).getResultList();
+
+            } catch (Exception ex) {
+                Logger.getLogger(LibroDiarioDAO.class.getName())
+                        .log(Level.SEVERE, ex.getMessage(), ex);
+                return List.of();
+            }
+    }
 }

@@ -92,6 +92,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     @Override
     protected DetalleLibroDiario nuevoRegistro() {
+        System.out.println("para agregar cambios");
         DetalleLibroDiario detalleLibroDiario = new DetalleLibroDiario();
         detalleLibroDiario.setId(UUID.randomUUID());
         detalleLibroDiario.setFecha(new Date());
@@ -171,6 +172,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
         return 0;
     }
 
+
     public List<CuentaContable> buscarCuentaContablePorNombre(final String nombre) {
         try {
             if (nombre != null && !nombre.isBlank()) {
@@ -180,6 +182,7 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
             LOG.log(Level.SEVERE, "Error al buscar cuenta contable: " + e.getMessage(), e);
         }
         return List.of();
+
     }
 
     /**
@@ -307,37 +310,5 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     public void setLibroDiarioFrm(LibroDiarioFrm libroDiarioFrm) {
         this.libroDiarioFrm = libroDiarioFrm;
-    }
-
-    public CuentaContable getCuentaContableTemporal() {
-        return cuentaContableTemporal;
-    }
-
-    public void setCuentaContableTemporal(CuentaContable cuentaContableTemporal) {
-        this.cuentaContableTemporal = cuentaContableTemporal;
-    }
-
-    public List<DetalleLibroDiario> getDetalleLibroDiarios() {
-        return detalleLibroDiarios;
-    }
-
-    public void setDetalleLibroDiarios(List<DetalleLibroDiario> detalleLibroDiarios) {
-        this.detalleLibroDiarios = detalleLibroDiarios;
-    }
-
-    public List<DetalleLibroDiario> getListaDetalleLibroDiarios() {
-        return listaDetalleLibroDiarios;
-    }
-
-    public void setListaDetalleLibroDiarios(List<DetalleLibroDiario> listaDetalleLibroDiarios) {
-        this.listaDetalleLibroDiarios = listaDetalleLibroDiarios;
-    }
-
-    public List<CuentaContable> getCuentaContables() {
-        return cuentaContables;
-    }
-
-    public void setCuentaContables(List<CuentaContable> cuentaContables) {
-        this.cuentaContables = cuentaContables;
     }
 }

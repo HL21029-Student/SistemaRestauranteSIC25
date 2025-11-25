@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<ui:component
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:cc="jakarta.faces.composite"
+        xmlns:h="jakarta.faces.html"
+        xmlns="http://www.w3.org/1999/xhtml"
+>
+    <ui:composition>
+        <cc:interface>
+            <cc:attribute name="pagina"
+                          required="true"
+                          type="java.lang.String"
+                          shortDescription="Nombre de la página actual"/>
+        </cc:interface>
+
+        <cc:implementation>
+            <style>
+                .breadcrumb-nav {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.75rem 0;
+                    font-size: 0.875rem;
+                    color: #718096;
+                    margin-bottom: 1rem;
+                }
+
+                .breadcrumb-nav a {
+                    color: #718096;
+                    text-decoration: none;
+                    transition: color 0.2s;
+                }
+
+                .breadcrumb-nav a:hover {
+                    color: #F39A3C;
+                }
+
+                .breadcrumb-separator {
+                    color: #cbd5e0;
+                }
+
+                .breadcrumb-current {
+                    color: #2d3748;
+                    font-weight: 500;
+                }
+            </style>
+
+            <nav class="breadcrumb-nav">
+                <a href="http://localhost:9082/SistemaFerreteria/">Inicio</a>
+                <span class="breadcrumb-separator">›</span>
+                <span class="breadcrumb-current">#{cc.attrs.pagina}</span>
+            </nav>
+        </cc:implementation>
+
+    </ui:composition>
+</ui:component>
+

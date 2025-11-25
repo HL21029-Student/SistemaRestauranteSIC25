@@ -21,23 +21,85 @@
         </cc:interface>
 
         <cc:implementation>
-            <h:panelGrid columns="3">
+            <style>
+                .botones-crud-container {
+                    display: flex;
+                    gap: 0.75rem;
+                    margin-top: 1.5rem;
+                }
+
+                .btn-guardar {
+                    background: #48bb78 !important;
+                    color: #ffffff !important;
+                    border: none !important;
+                    padding: 0.625rem 1.25rem !important;
+                    border-radius: 8px !important;
+                    font-weight: 500 !important;
+                    transition: all 0.2s !important;
+                }
+
+                .btn-guardar:hover {
+                    background: #38a169 !important;
+                    transform: translateY(-1px) !important;
+                    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3) !important;
+                }
+
+                .btn-modificar {
+                    background: #4299e1 !important;
+                    color: #ffffff !important;
+                    border: none !important;
+                    padding: 0.625rem 1.25rem !important;
+                    border-radius: 8px !important;
+                    font-weight: 500 !important;
+                    transition: all 0.2s !important;
+                }
+
+                .btn-modificar:hover {
+                    background: #3182ce !important;
+                    transform: translateY(-1px) !important;
+                    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3) !important;
+                }
+
+                .btn-eliminar {
+                    background: #f56565 !important;
+                    color: #ffffff !important;
+                    border: none !important;
+                    padding: 0.625rem 1.25rem !important;
+                    border-radius: 8px !important;
+                    font-weight: 500 !important;
+                    transition: all 0.2s !important;
+                }
+
+                .btn-eliminar:hover {
+                    background: #e53e3e !important;
+                    transform: translateY(-1px) !important;
+                    box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3) !important;
+                }
+            </style>
+
+            <div class="botones-crud-container">
                 <p:commandButton value="#{defaultfrm['defaultfrm.create']}"
+                                 icon="pi pi-check"
                                  actionListener="#{cc.attrs.formulario.btnGuardarHandler}"
+                                 styleClass="btn-guardar"
                                  rendered="#{cc.attrs.formulario.estado=='CREAR'}"
                                  update="#{cc.attrs.actualizar}">
                 </p:commandButton>
                 <p:commandButton value="#{defaultfrm['defaultfrm.modify']}"
+                                 icon="pi pi-pencil"
                                  actionListener="#{cc.attrs.formulario.btnModificarHandler}"
+                                 styleClass="btn-modificar"
                                  rendered="#{cc.attrs.formulario.estado=='MODIFICAR'}"
                                  update="#{cc.attrs.actualizar}">
                 </p:commandButton>
                 <p:commandButton value="#{defaultfrm['defaultfrm.delete']}"
+                                 icon="pi pi-trash"
                                  actionListener="#{cc.attrs.formulario.btnEliminarHandler}"
+                                 styleClass="btn-eliminar"
                                  rendered="#{cc.attrs.formulario.estado=='MODIFICAR'}"
                                  update="#{cc.attrs.actualizar}">
                 </p:commandButton>
-            </h:panelGrid>
+            </div>
         </cc:implementation>
 
     </ui:composition>
