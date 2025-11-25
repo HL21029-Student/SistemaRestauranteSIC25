@@ -1,10 +1,10 @@
 package sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.boundary.jsf;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.Dependent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.control.*;
@@ -20,8 +20,8 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Dependent
 @Named
+@ViewScoped
 public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implements Serializable {
 
     private static final Logger LOG = Logger.getLogger(DetalleLibroDiarioFrm.class.getName());
@@ -310,5 +310,13 @@ public class DetalleLibroDiarioFrm extends DefaultFrm<DetalleLibroDiario> implem
 
     public void setLibroDiarioFrm(LibroDiarioFrm libroDiarioFrm) {
         this.libroDiarioFrm = libroDiarioFrm;
+    }
+
+    public CuentaContable getCuentaContableTemporal() {
+        return cuentaContableTemporal;
+    }
+
+    public void setCuentaContableTemporal(CuentaContable cuentaContableTemporal) {
+        this.cuentaContableTemporal = cuentaContableTemporal;
     }
 }

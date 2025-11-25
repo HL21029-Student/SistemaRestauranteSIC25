@@ -67,6 +67,7 @@ public class MenuFrm implements Serializable {
             DefaultSubMenu adminLibros = DefaultSubMenu.builder().label(labelAdminLibros).expanded(false).build();
             adminLibros.getElements().add(crearItem(bundle != null ? bundle.getString("menu.libroDiario") : "Libro Diario", "pi pi-book", "LibroDiario.jsf"));
             adminLibros.getElements().add(crearItem(bundle != null ? bundle.getString("menu.libroMayor") : "Libro Mayor", "pi pi-bookmark", "LibroMayor.jsf"));
+            adminLibros.getElements().add(crearItem(bundle != null ? bundle.getString("menu.balances") : "Balances", "pi pi-chart-bar", "Balances.jsf"));
 
             DefaultSubMenu adminCuentas = DefaultSubMenu.builder().label(labelAdminCuentas).expanded(false).build();
             adminCuentas.getElements().add(crearItem(bundle != null ? bundle.getString("menu.manualCuentas") : "Manual de cuentas", "pi pi-book", "ManualCuentas.jsf"));
