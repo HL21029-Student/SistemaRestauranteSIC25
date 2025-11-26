@@ -18,18 +18,18 @@
             <h:panelGrid columns="3" style="margin-bottom:1rem">
                 <h:outputLabel value="Fecha" for="fecha"/>
                 <p:datePicker id="fecha" value="#{reporteVentasDiariasFrm.fecha}" pattern="yyyy-MM-dd"/>
-                <p:commandButton value="Buscar"
-                                 icon="pi pi-search"
-                                 actionListener="#{reporteVentasDiariasFrm.cargarVentas}"
-                                 update="pnlResumen tblVentas pnlBotones"
-                                 styleClass="ui-button-success"/>
+                <p:commandButton value="#{defaultfrm['boton.buscar']}"
+                                  icon="pi pi-search"
+                                  actionListener="#{reporteVentasDiariasFrm.cargarVentas}"
+                                  update="pnlResumen tblVentas pnlBotones"
+                                  styleClass="ui-button-success"/>
             </h:panelGrid>
 
             <!-- Botones de Exportación -->
             <p:outputPanel id="pnlBotones">
                 <p:panel header="Exportar Reporte" style="margin-bottom:1rem"
                          rendered="#{not empty reporteVentasDiariasFrm.ventas}">
-                <p:commandButton value="Exportar PDF"
+                <p:commandButton value="#{defaultfrm['boton.exportar_pdf']}"
                                  icon="pi pi-file-pdf"
                                  ajax="false"
                                  styleClass="ui-button-danger">
@@ -39,7 +39,7 @@
                                     pageOnly="false"/>
                 </p:commandButton>
 
-                <p:commandButton value="Exportar Excel"
+                <p:commandButton value="#{defaultfrm['boton.exportar_excel']}"
                                  icon="pi pi-file-excel"
                                  ajax="false"
                                  styleClass="ui-button-success"

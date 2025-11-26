@@ -55,7 +55,7 @@
                 <p:inputTextarea id="ejemplo" value="#{manualCuentaCrudFrm.manualSeleccionado.ejemploMovimiento}" rows="3" cols="40"/>
             </h:panelGrid>
 
-            <p:commandButton value="Guardar" actionListener="#{manualCuentaCrudFrm.guardarManual}"
+            <p:commandButton value="#{defaultfrm['boton.guardar']}" actionListener="#{manualCuentaCrudFrm.guardarManual}"
                              update=":pnlTabla :pnlDetalle" rendered="#{manualCuentaCrudFrm.manualSeleccionado != null}"/>
         </h:form>
     </ui:define>

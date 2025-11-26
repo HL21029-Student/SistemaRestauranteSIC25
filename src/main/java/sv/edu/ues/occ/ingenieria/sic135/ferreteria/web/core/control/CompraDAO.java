@@ -12,7 +12,7 @@ import java.io.Serializable;
 @LocalBean
 public class CompraDAO extends InventarioDefaultDataAccess<Compra, Object> implements Serializable {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public CompraDAO() {

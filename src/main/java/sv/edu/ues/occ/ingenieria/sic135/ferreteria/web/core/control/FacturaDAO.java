@@ -14,7 +14,7 @@ import java.util.UUID;
 @LocalBean
 public class FacturaDAO extends InventarioDefaultDataAccess<Factura, Object> implements Serializable {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public FacturaDAO() {

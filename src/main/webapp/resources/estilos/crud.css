@@ -1,676 +1,199 @@
-/* Diseño Moderno para FERRETERIA SIC25 */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* =========================================
+   RESTAURANTE EL BUEN SABOR - DISEÑO FINAL (Image Match)
+   ========================================= */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --brand-red: #C62828;       /* Rojo oscuro elegante */
+    --brand-red-active: #8E0000;/* Rojo más oscuro para el botón activo (Inicio) */
+    --brand-yellow: #FFC107;    /* Amarillo Ámbar */
+    --brand-yellow-hover: #FFD54F;
+    --bg-body: #F5F5F5;         /* Gris muy claro de fondo */
+    --text-white: #FFFFFF;
+    --text-dark: #333333;
+    --topbar-height: 55px;      /* Altura exacta de la barra */
 }
 
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f5f6fa;
-    color: #2d3748;
-    margin: 0;
-    padding: 0;
-    line-height: 1.6;
-}
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; font-family: 'Segoe UI', sans-serif; background-color: var(--bg-body); color: var(--text-dark); }
+a { text-decoration: none; }
 
-/* ========== BREADCRUMBS ========== */
-.breadcrumb {
+/* =====================
+   1. BARRA SUPERIOR (Top Bar)
+   ===================== */
+.top-navbar {
+    background-color: var(--brand-red);
+    height: var(--topbar-height);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 0;
-    font-size: 0.875rem;
-    color: #718096;
+    justify-content: space-between; /* Espacio entre menú e idioma */
+    padding: 0 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: fixed; top: 0; width: 100%; z-index: 1000;
+    border-bottom: 3px solid var(--brand-yellow); /* La línea amarilla delgada abajo */
+}
+
+/* Contenedor de la izquierda (Inicio + Menú) */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Botón INICIO (Estilo "Caja Activa") */
+.home-link {
+    background-color: var(--brand-red-active); /* Fondo más oscuro */
+    color: var(--text-white);
+    font-weight: 700;
+    padding: 0 1.2rem;
+    height: var(--topbar-height); /* Ocupa toda la altura */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    margin-left: -1rem; /* Pegarlo al borde izquierdo */
+    padding-left: 1.5rem;
+}
+.home-link i { font-size: 1.1rem; }
+
+/* =====================
+   2. MENÚ DE NAVEGACIÓN (p:menubar)
+   ===================== */
+/* Quitamos todos los estilos por defecto de PrimeFaces */
+.custom-menubar.ui-menubar {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin-left: 10px !important;
+}
+
+/* Enlaces del menú (Texto Blanco Simple) */
+.custom-menubar > .ui-menu-list > .ui-menuitem > .ui-menuitem-link {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    padding: 0.8rem 1rem !important;
+    border: none !important;
+    border-radius: 4px !important;
+}
+
+/* Hover en el menú */
+.custom-menubar > .ui-menu-list > .ui-menuitem > .ui-menuitem-link:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: var(--text-white) !important;
+}
+
+/* Iconos y flechas ocultos o sutiles */
+.custom-menubar .ui-menuitem-icon { display: none !important; } /* Ocultar iconos en el menú principal */
+.custom-menubar .ui-icon-triangle-1-s { color: rgba(255,255,255,0.5) !important; margin-left: 5px; }
+
+/* --- SUBMENÚS (Desplegables) --- */
+.custom-menubar .ui-menu-child {
+    background: #FFFFFF !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+    border: none !important;
+    border-top: 3px solid var(--brand-red) !important;
+    padding: 5px 0 !important;
+    top: 100% !important;
+    margin-top: 0px !important; /* Ajuste para que no se cierre */
+}
+.custom-menubar .ui-menu-child .ui-menuitem-link {
+    color: var(--text-dark) !important;
+    padding: 10px 20px !important;
+}
+.custom-menubar .ui-menu-child .ui-menuitem-link:hover {
+    background-color: var(--bg-body) !important;
+    color: var(--brand-red) !important;
+}
+
+/* =====================
+   3. CONTENEDOR PRINCIPAL
+   ===================== */
+.main-container {
+    margin-top: calc(var(--topbar-height) + 20px);
+    padding: 1rem 2rem;
+    max-width: 1300px;
+    margin-left: auto; margin-right: auto;
+}
+
+/* BANNER DE TÍTULO (Rojo con borde amarillo) */
+.page-header-banner {
+    background-color: var(--brand-red);
+    color: var(--text-white);
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     margin-bottom: 1.5rem;
+    /* Borde amarillo abajo */
+    border-bottom: 4px solid var(--brand-yellow);
 }
+.page-title { margin: 0; font-size: 1.6rem; font-weight: 600; }
 
-.breadcrumb a {
-    color: #718096;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.breadcrumb a:hover {
-    color: #F39A3C;
-}
-
-.breadcrumb .separator {
-    color: #cbd5e0;
-}
-
-.breadcrumb .current {
-    color: #2d3748;
-    font-weight: 500;
-}
-
-/* ========== CONTENEDOR PRINCIPAL ========== */
-.container,
+/* TARJETA BLANCA (Contenido) */
 .content-card {
-    background: #ffffff;
+    background-color: #FFFFFF;
     padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #E0E0E0;
+    min-height: 300px;
 }
 
-/* ========== TÍTULOS ========== */
-h1, h2, h3 {
-    color: #1a202c;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    padding: 0;
-    background: none;
-    border: none;
-    text-align: left;
-}
-
-h1 {
-    font-size: 1.875rem;
-    color: #1a202c;
-}
-
-h2 {
-    font-size: 1.5rem;
-}
-
-h3 {
-    font-size: 1.25rem;
-}
-
-/* ========== FORMULARIOS ========== */
-form {
-    display: block;
-}
-
-label {
-    font-weight: 500;
-    color: #4a5568;
-    margin-bottom: 0.5rem;
-    display: block;
-    font-size: 0.875rem;
-}
-
-input, select, textarea {
-    padding: 0.625rem 0.875rem;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    outline: none;
-    transition: all 0.2s ease;
-    font-size: 0.875rem;
-    color: #2d3748;
-    width: 100%;
-    font-family: inherit;
-}
-
-input:focus, select:focus, textarea:focus {
-    border-color: #F39A3C;
-    box-shadow: 0 0 0 3px rgba(243, 154, 60, 0.1);
-}
-
-input:hover, select:hover, textarea:hover {
-    border-color: #cbd5e0;
-}
-
-/* ========== BOTONES ========== */
-button,
-.ui-button,
-.btn-nuevo {
-    padding: 0.625rem 1.25rem;
-    background: #F39A3C;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: inherit;
-    text-decoration: none;
-}
-
-button:hover,
-.ui-button:hover,
-.btn-nuevo:hover {
-    background: #e68929;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(243, 154, 60, 0.3);
-}
-
-button:active,
-.ui-button:active {
-    transform: translateY(0);
-}
-
-/* Botón primario grande (Nuevo Registro) */
-.btn-nuevo-registro {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-}
-
-/* Botones secundarios */
-button.secondary,
-.ui-button.secondary {
-    background: #ffffff;
-    color: #4a5568;
-    border: 1px solid #e2e8f0;
-}
-
-button.secondary:hover,
-.ui-button.secondary:hover {
-    background: #f7fafc;
-    border-color: #cbd5e0;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Botón editar */
-button.edit,
-.ui-button.edit {
-    background: #4299e1;
-}
-
-button.edit:hover,
-.ui-button.edit:hover {
-    background: #3182ce;
-}
-
-/* Botón eliminar */
-button.delete,
-.ui-button.delete {
-    background: #f56565;
-}
-
-button.delete:hover,
-.ui-button.delete:hover {
-    background: #e53e3e;
-}
-
-/* Botón icono */
-.btn-icon {
-    padding: 0.5rem;
-    width: 2rem;
-    height: 2rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    color: #718096;
-    border: none;
-}
-
-.btn-icon:hover {
-    background: #f7fafc;
-    color: #F39A3C;
-    transform: none;
-    box-shadow: none;
-}
-
-/* ========== TABLAS ========== */
-.tabla-crud,
-.ui-datatable,
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: #ffffff;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.tabla-crud th,
-.ui-datatable th,
-th {
-    padding: 1rem 1.25rem;
-    background: #f7fafc;
-    color: #2d3748;
-    font-weight: 600;
-    text-align: left;
-    font-size: 0.875rem;
-    border-bottom: 2px solid #e2e8f0;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-}
-
-.tabla-crud td,
-.ui-datatable td,
-td {
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid #f7fafc;
-    text-align: left;
-    color: #4a5568;
-    font-size: 0.875rem;
-}
-
-.tabla-crud tr:hover,
-.ui-datatable tbody tr:hover,
-tr:hover {
-    background: #fffaf5;
-    cursor: pointer;
-}
-
-.tabla-crud tbody tr.ui-state-highlight,
-.ui-datatable tbody tr.ui-state-highlight {
-    background: #fff5ec !important;
-    border-left: 3px solid #F39A3C;
-}
-
-/* Columna de acciones */
-.acciones-columna {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.acciones-columna button {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
-}
-
-/* Paginación */
-.ui-paginator {
-    background: #ffffff;
-    border-top: 1px solid #e2e8f0;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.ui-paginator .ui-paginator-page {
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-    color: #4a5568;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.ui-paginator .ui-paginator-page:hover {
-    border-color: #F39A3C;
-    color: #F39A3C;
-}
-
-.ui-paginator .ui-state-active {
-    background: #F39A3C;
-    color: #ffffff;
-    border-color: #F39A3C;
-}
-
-/* ========== MENSAJES ========== */
-.ui-growl,
-.ui-messages,
-.success,
-.error {
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-}
-
-.success,
-.ui-messages-info {
-    background: #f0fdf4;
-    color: #166534;
-    border: 1px solid #bbf7d0;
-}
-
-.error,
-.ui-messages-error {
-    background: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-}
-
-.ui-messages-warn {
-    background: #fffbeb;
-    color: #92400e;
-    border: 1px solid #fde68a;
-}
-
-/* ========== SIDEBAR STYLES ========== */
-.sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1.5rem 1rem;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-logo-icon {
-    width: 40px;
-    height: 40px;
-    background: #F39A3C;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.sidebar-logo-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-logo-title {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.2;
-}
-
-.sidebar-logo-subtitle {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-/* ========== MENU STYLES ========== */
-.ui-menu {
-    background: transparent !important;
-    border: none !important;
-    padding: 0;
-}
-
-.ui-menu .ui-menuitem-link {
-    padding: 0.75rem 1rem;
-    color: rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-    margin-bottom: 0.25rem;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.875rem;
-    text-decoration: none;
-}
-
-.ui-menu .ui-menuitem-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-}
-
-.ui-menu .ui-menuitem-link.ui-state-active,
-.ui-menu .ui-menuitem-link.active {
-    background: #F39A3C;
-    color: #ffffff;
-    font-weight: 500;
-}
-
-.ui-menu .ui-icon {
-    color: inherit;
-}
-
-/* Home button in sidebar */
-.btn-home {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: rgba(243, 154, 60, 0.1);
-    color: #F39A3C;
-    border: 1px solid rgba(243, 154, 60, 0.3);
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.875rem;
-    margin-bottom: 1.5rem;
-    transition: all 0.2s;
-}
-
-.btn-home:hover {
-    background: #F39A3C;
-    color: #ffffff;
-    border-color: #F39A3C;
-}
-
-/* ========== RESPONSIVE ========== */
-@media (max-width: 768px) {
-    .container,
-    .content-card {
-        padding: 1rem;
-        border-radius: 8px;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-    }
-
-    .tabla-crud th,
-    .tabla-crud td {
-        padding: 0.75rem 0.5rem;
-        font-size: 0.8125rem;
-    }
-
-    button,
-    .ui-button {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .breadcrumb {
-        font-size: 0.8125rem;
-    }
-}
-
-/* ========== PRIMEFACES OVERRIDES ========== */
-/* DataTable */
-.ui-datatable {
-    border: none !important;
-    font-family: inherit !important;
-}
-
-.ui-datatable .ui-datatable-header,
-.ui-datatable .ui-datatable-footer {
-    background: #f7fafc !important;
-    color: #2d3748 !important;
-    border: none !important;
-    padding: 1rem !important;
-    font-weight: 600 !important;
-}
-
-.ui-datatable thead th {
-    background: #f7fafc !important;
-    color: #2d3748 !important;
-    border-color: #e2e8f0 !important;
-    font-weight: 600 !important;
-    padding: 1rem 1.25rem !important;
-    font-size: 0.875rem !important;
-}
-
-.ui-datatable tbody td {
-    border-color: #f7fafc !important;
-    padding: 1rem 1.25rem !important;
-    color: #4a5568 !important;
-    font-size: 0.875rem !important;
-}
-
-.ui-datatable tbody tr {
-    transition: background 0.2s !important;
-}
-
-.ui-datatable tbody tr:hover {
-    background: #fffaf5 !important;
-}
-
-.ui-datatable tbody tr.ui-state-highlight {
-    background: #fff5ec !important;
-    border-left: 3px solid #F39A3C !important;
-    color: #2d3748 !important;
-}
-
-/* Paginator mejoras */
-.ui-paginator {
-    background: transparent !important;
-    border: none !important;
-    padding: 1rem 0 !important;
-}
-
-.ui-paginator .ui-paginator-pages .ui-paginator-page {
-    min-width: 2rem !important;
-    height: 2rem !important;
-    line-height: 2rem !important;
-    border-radius: 6px !important;
-    border: 1px solid #e2e8f0 !important;
-    background: #ffffff !important;
-    color: #4a5568 !important;
-    margin: 0 0.25rem !important;
-    transition: all 0.2s !important;
-}
-
-.ui-paginator .ui-paginator-pages .ui-paginator-page:hover {
-    border-color: #F39A3C !important;
-    color: #F39A3C !important;
-    background: #fffaf5 !important;
-}
-
-.ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
-    background: #F39A3C !important;
-    color: #ffffff !important;
-    border-color: #F39A3C !important;
-}
-
-.ui-paginator .ui-paginator-first,
-.ui-paginator .ui-paginator-prev,
-.ui-paginator .ui-paginator-next,
-.ui-paginator .ui-paginator-last {
-    color: #4a5568 !important;
-    border-radius: 6px !important;
-    transition: all 0.2s !important;
-}
-
-.ui-paginator .ui-paginator-first:hover,
-.ui-paginator .ui-paginator-prev:hover,
-.ui-paginator .ui-paginator-next:hover,
-.ui-paginator .ui-paginator-last:hover {
-    color: #F39A3C !important;
-    background: #fffaf5 !important;
-}
-
-/* Buttons overrides */
+/* =====================
+   4. COMPONENTES (Botones y Tablas)
+   ===================== */
+
+/* BOTÓN AMARILLO (Estilo "NUEVO") */
 .ui-button {
-    font-family: inherit !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    transition: all 0.2s !important;
-}
-
-.ui-button.ui-button-icon-only {
-    width: 2rem !important;
-    height: 2rem !important;
-}
-
-/* Input fields PrimeFaces */
-.ui-inputfield,
-.ui-inputtext,
-.ui-selectonemenu,
-.ui-selectonemenu-label {
-    font-family: inherit !important;
-    border-color: #e2e8f0 !important;
+    background: var(--brand-yellow) !important;
+    color: #000000 !important; /* Texto negro */
+    border: none !important;
     border-radius: 6px !important;
-    padding: 0.625rem 0.875rem !important;
-    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    padding: 0.6rem 1.5rem !important;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    font-size: 0.9rem !important;
+}
+.ui-button:hover {
+    background: var(--brand-yellow-hover) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
 }
 
-.ui-inputfield:focus,
-.ui-inputtext:focus {
-    border-color: #F39A3C !important;
-    box-shadow: 0 0 0 3px rgba(243, 154, 60, 0.1) !important;
+/* TABLA (Estilo limpio) */
+.ui-datatable .ui-datatable-header,
+.ui-datatable .ui-paginator {
+    background: transparent !important; border: none !important;
 }
-
-/* Panel & Dialog */
-.ui-panel,
-.ui-dialog {
-    border-radius: 12px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+.ui-datatable thead th {
+    background-color: #F9FAFB !important; /* Gris muy claro */
+    color: var(--text-dark) !important;
+    font-weight: 700 !important;
+    padding: 1rem !important;
     border: none !important;
+    border-bottom: 1px solid #E0E0E0 !important;
+    text-align: left;
 }
-
-.ui-panel .ui-panel-titlebar,
-.ui-dialog .ui-dialog-titlebar {
-    background: #f7fafc !important;
+.ui-datatable tbody td {
+    padding: 1rem !important;
     border: none !important;
-    border-bottom: 1px solid #e2e8f0 !important;
-    color: #1a202c !important;
-    font-weight: 600 !important;
-    border-radius: 12px 12px 0 0 !important;
+    border-bottom: 1px solid #F0F0F0 !important;
+    color: #555 !important;
 }
 
-/* TabView */
-.ui-tabview .ui-tabview-nav {
-    background: transparent !important;
-    border: none !important;
-    border-bottom: 2px solid #e2e8f0 !important;
+/* FOOTER */
+.main-footer {
+    text-align: center; margin-top: 2rem; padding: 1rem;
+    background: #fff; border-radius: 10px; border: 1px solid #E0E0E0;
+    border-top: 3px solid var(--brand-yellow);
 }
+.footer-text { color: var(--brand-red); font-weight: 700; font-size: 0.9rem; }
+.footer-sub { color: #888; font-size: 0.8rem; display: block; margin-top: 3px; }
 
-.ui-tabview .ui-tabview-nav li {
-    background: transparent !important;
-    border: none !important;
-    margin-right: 0.5rem !important;
+/* Controles derechos (Select e Icono Usuario) */
+.top-controls { display: flex; align-items: center; gap: 10px; }
+.lang-select .ui-selectonemenu-label { color: rgba(255,255,255,0.8) !important; }
+.lang-select { background: rgba(0,0,0,0.2) !important; border: none !important; }
+.user-btn-top.ui-button {
+    background: var(--brand-yellow) !important; width: 32px; height: 32px; padding: 0 !important;
 }
-
-.ui-tabview .ui-tabview-nav li a {
-    padding: 0.75rem 1.5rem !important;
-    color: #718096 !important;
-    border: none !important;
-    background: transparent !important;
-    transition: all 0.2s !important;
-    font-weight: 500 !important;
-}
-
-.ui-tabview .ui-tabview-nav li:not(.ui-state-active) a:hover {
-    color: #F39A3C !important;
-    background: #fffaf5 !important;
-}
-
-.ui-tabview .ui-tabview-nav li.ui-state-active {
-    background: transparent !important;
-    border-bottom: 3px solid #F39A3C !important;
-}
-
-.ui-tabview .ui-tabview-nav li.ui-state-active a {
-    color: #F39A3C !important;
-    background: transparent !important;
-}
-
-.ui-tabview .ui-tabview-panels {
-    background: #ffffff !important;
-    border: none !important;
-    padding: 1.5rem !important;
-}
-
-/* Growl Messages */
-.ui-growl-item {
-    border-radius: 8px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-}
-
-.ui-growl-item-container.ui-state-highlight.ui-growl-message-info {
-    background: #f0fdf4 !important;
-    border: 1px solid #86efac !important;
-}
-
-.ui-growl-item-container.ui-state-highlight.ui-growl-message-error {
-    background: #fef2f2 !important;
-    border: 1px solid #fca5a5 !important;
-}
-
-.ui-growl-item-container.ui-state-highlight.ui-growl-message-warn {
-    background: #fffbeb !important;
-    border: 1px solid #fde68a !important;
-}
-

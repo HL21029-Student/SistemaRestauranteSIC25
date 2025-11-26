@@ -14,7 +14,7 @@ import java.util.List;
 @ViewScoped
 public class ManualCuentaFrm implements Serializable {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     private List<ManualCuenta> lista;

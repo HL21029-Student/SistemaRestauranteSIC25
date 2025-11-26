@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Stateless
 @LocalBean
 public class AlmacenDAO extends InventarioDefaultDataAccess<Almacen, Object> implements Serializable {
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public AlmacenDAO() {
@@ -37,4 +37,3 @@ public class AlmacenDAO extends InventarioDefaultDataAccess<Almacen, Object> imp
 
 
 }
-

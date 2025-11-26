@@ -16,7 +16,7 @@ import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Usuario;
 @LocalBean
 public class UsuarioDAO extends InventarioDefaultDataAccess<Usuario, Object> implements Serializable {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public UsuarioDAO() {

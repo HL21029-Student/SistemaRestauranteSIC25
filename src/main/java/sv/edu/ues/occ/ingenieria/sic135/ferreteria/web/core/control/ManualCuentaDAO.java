@@ -13,7 +13,7 @@ import java.util.List;
 @LocalBean
 public class ManualCuentaDAO extends InventarioDefaultDataAccess<ManualCuenta, Object> implements Serializable {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public ManualCuentaDAO() {

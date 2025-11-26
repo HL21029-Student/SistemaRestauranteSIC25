@@ -14,7 +14,7 @@ import java.util.UUID;
 @Stateless
 @LocalBean
 public class ProductoTipoProductoCaracteristicaDAO extends InventarioDefaultDataAccess<ProductoTipoProductoCaracteristica, Object> implements Serializable {
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public ProductoTipoProductoCaracteristicaDAO() {

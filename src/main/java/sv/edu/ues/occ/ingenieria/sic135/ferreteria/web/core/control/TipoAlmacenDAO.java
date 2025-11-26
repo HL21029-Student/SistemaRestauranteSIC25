@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Stateless
 @LocalBean
 public class TipoAlmacenDAO extends InventarioDefaultDataAccess<TipoAlmacen, Object> implements Serializable {
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public TipoAlmacenDAO() {

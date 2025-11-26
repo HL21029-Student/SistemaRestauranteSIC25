@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<server description="SistemaFerreteria">
+<server description="SistemaRestaurante">
 
     <!-- Enable features -->
     <featureManager>
@@ -30,10 +30,10 @@
                 transactional="true">
 
         <properties serverName="localhost"
-                    databaseName="ferreteria_bd"
+                    databaseName="ferreteria_final"
                     portNumber="5432"
                     user="postgres"
-                    password="postgresmy"/>
+                    password="abc123"/>
     </dataSource>
 
 

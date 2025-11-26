@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 @LocalBean
 public class CuentaContableCrudDAO extends InventarioDefaultDataAccess<CuentaContable, Object> implements Serializable {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     @Inject
