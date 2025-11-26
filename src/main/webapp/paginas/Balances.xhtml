@@ -40,6 +40,10 @@
         <h:form id="frmBalanceInicial">
 
             <p:panel header="Balance Inicial">
+                <h:panelGroup layout="block" style="text-align:center; margin-bottom:15px;">
+                    <h4>BALANCE INICIAL</h4>
+                    <h5>EXPRESADO EN DÓLARES DE LOS ESTADOS UNIDOS DE AMÉRICA</h5>
+                </h:panelGroup>
 
                 <p:splitter layout="horizontal">
 
@@ -209,7 +213,10 @@
             </p:panel>
 
             <p:panel header="Balance de Comprobación">
-
+                <h:panelGroup layout="block" style="text-align:center; margin-bottom:15px;">
+                    <h4>BALANCE DE COMPROBACION</h4>
+                    <h5>EXPRESADO EN DÓLARES DE LOS ESTADOS UNIDOS DE AMÉRICA</h5>
+                </h:panelGroup>
                 <p:dataTable id="tblBalance"
                              value="#{balanceComprobacionFrm.balance}"
                              var="b"
@@ -256,270 +263,314 @@
 
         </h:form>
 
+        <!-- estado de resultado-->
         <h:form id="formER">
-
-            <!-- PANEL DE SELECCIÓN DEL LIBRO MAYOR  -->
-            <p:panel header="Generar Estado de Resultados" style="margin-bottom:20px">
-
-                <h:panelGrid columns="3" columnClasses="label,value,button" style="width:100%">
-
-                    <!-- Selección del libro mayor -->
+            <p:panel header="Generar Estado de Resultados">
+                <h:panelGroup layout="block" style="text-align:center; margin-bottom:15px;">
+                    <h4>ESTADO DE RESULTADOS</h4>
+                    <h5>EXPRESADO EN DÓLARES DE LOS ESTADOS UNIDOS DE AMÉRICA</h5>
+                </h:panelGroup>
+                <h:panelGrid columns="3" columnClasses="label,value,button">
                     <h:outputText value="Seleccione Libro Mayor:" />
-
-                    <p:selectOneMenu id="slm" style="width:100%"
+                    <p:selectOneMenu id="slm"
                                      value="#{estadoResultadoFrm.idLibroMayorSeleccionado}">
+
                         <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+
                         <f:selectItems value="#{estadoResultadoFrm.librosMayor}"
                                        var="lm"
                                        itemValue="#{lm.id}"
                                        itemLabel="Libro Mayor #{lm.id} - #{lm.observacion}" />
+
+                        <!-- para cambiar automáticamente el estado -->
+                        <p:ajax event="change"
+                                listener="#{estadoResultadoFrm.generar}"
+                                update="resultadoPanel" />
                     </p:selectOneMenu>
 
-                    <!-- Botón generar -->
-                    <p:commandButton value="Generar"
-                                     action="#{estadoResultadoFrm.generar}"
-                                     update="resultadoPanel"
-                                     process="@this slm" />
                 </h:panelGrid>
 
-                <!-- Tasa de ISR opcional -->
-                <h:panelGrid columns="2" style="margin-top:10px">
-                    <h:outputText value="Tasa ISR:" />
+                <!-- Tasa ISR -->
+                <h:panelGrid columns="3"
+                             style="width:40%; margin-top:20px; align-items:center;"
+                             columnClasses="label,value">
+
+                    <h:outputText value="Tasa ISR (%):"
+                                  style="font-weight:bold; font-size:14px;"/>
+
                     <p:inputNumber value="#{estadoResultadoFrm.tasaISR}"
-                                   symbol="%"
                                    decimalPlaces="2"
-                                   minValue="0"
-                                   maxValue="1" />
+                                   minValue="0" maxValue="1"
+                                   symbol="%"
+                                   style="width:100%; font-size:14px;"
+                                   inputStyle="width:100%;" />
                 </h:panelGrid>
+
 
             </p:panel>
 
-            <!-- RESULTADO DEL ESTADO DE RESULTADOS-->
+            <!-- resultado del estado-->
             <p:panel id="resultadoPanel" header="Estado de Resultados"
-                     rendered="#{not empty estadoResultadoFrm.estado}"
-                     style="font-size:15px">
+                     rendered="true">
 
-                <h:panelGrid columns="2" columnClasses="label,value" style="width:60%">
+                <h:panelGrid columns="2" columnClasses="label,value">
 
-                    <h:outputText value="Ingresos por ventas:" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.ingresos}" />
+                    <h:outputText value="INGRESOS:" />
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.ingresosAbs}"
+                            style="#{estadoResultadoFrm.estado.ingresosNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
                     <h:outputText value="Costo de ventas:" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.costoVentas}" />
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.costoVentasAbs}"
+                            style="#{estadoResultadoFrm.estado.costoVentasNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
-                    <h:outputText value="Utilidad bruta:" styleClass="bold" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.utilidadBruta}" styleClass="bold" />
+                    <h:outputText value="Utilidad bruta:"/>
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.utilidadBrutaAbs}"
+                            style="#{estadoResultadoFrm.estado.utilidadBrutaNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
                     <h:outputText value="Gastos de venta:" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.gastoVenta}" />
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.gastoVentaAbs}"
+                            style="#{estadoResultadoFrm.estado.gastoVentaNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
                     <h:outputText value="Gastos administrativos:" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.gastoAdministracion}" />
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.gastoAdministracionAbs}"
+                            style="#{estadoResultadoFrm.estado.gastoAdministracionNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
-                    <h:outputText value="Utilidad operativa:" styleClass="bold" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.utilidadOperativa}" styleClass="bold" />
+                    <h:outputText value="Utilidad operativa:"/>
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.utilidadOperativaAbs}"
+                            style="#{estadoResultadoFrm.estado.utilidadOperativaNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
                     <h:outputText value="Gastos financieros:" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.gastoFinanciero}" />
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.gastoFinancieroAbs}"
+                            style="#{estadoResultadoFrm.estado.gastoFinancieroNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
                     <h:outputText value="Otros gastos:" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.otrosGastos}" />
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.otrosGastosAbs}"
+                            style="#{estadoResultadoFrm.estado.otrosGastosNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
-                    <h:outputText value="Utilidad antes de ISR:" styleClass="bold" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.utilidadAntesISR}" styleClass="bold" />
+                    <h:outputText value="Utilidad antes de ISR:"/>
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.utilidadAntesISRAbs}"
+                            style="#{estadoResultadoFrm.estado.utilidadAntesISRNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
-                    <h:outputText value="Impuesto sobre la renta:" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.impuestoRenta}" />
+                    <h:outputText value="Impuesto sobre la renta:"/>
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.impuestoRentaAbs}"
+                            style="#{estadoResultadoFrm.estado.impuestoRentaNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
-                    <h:outputText value="UTILIDAD NETA:" styleClass="bold" />
-                    <h:outputText value="#{estadoResultadoFrm.estado.utilidadNeta}"/>
+                    <h:outputText value="UTILIDAD NETA:"/>
+                    <h:outputText
+                            value="#{estadoResultadoFrm.estado.utilidadNetaAbs}"
+                            style="#{estadoResultadoFrm.estado.utilidadNetaNeg ? 'color:red;font-weight:bold;' : ''}">
+                        <f:convertNumber minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
 
                 </h:panelGrid>
+
+            </p:panel>
+        </h:form>
+
+        <!--balance general-->
+        <h:form id="frmBalanceGeneral">
+
+            <p:panel header="Balance General"
+                     style="margin-top:25px;">
+
+                <h:panelGroup layout="block" style="text-align:center; margin-bottom:15px;">
+                    <h4>BALANCE GENERAL</h4>
+                    <h5>EXPRESADO EN DÓLARES DE LOS ESTADOS UNIDOS DE AMÉRICA</h5>
+                </h:panelGroup>
+
+                <p:splitter layout="horizontal">
+
+                    <!-- LADO IZQUIERDO: ACTIVO -->
+                    <p:splitterPanel size="50">
+
+                        <h3 style="font-weight:bold;">ACTIVO</h3>
+
+                        <!-- ACTIVO CORRIENTE -->
+                        <h4 style="font-weight:bold;">ACTIVO CORRIENTE</h4>
+
+                        <p:dataTable value="#{balanceGeneralFrm.activoCorrienteList}"
+                                     var="ac"
+                                     emptyMessage="No se encontraron registros.">
+                            <p:column headerText="Cuenta">
+                                <h:outputText value="#{ac.nombre}" />
+                            </p:column>
+                            <p:column headerText="Saldo" style="text-align:right;">
+                                <h:outputText value="#{ac.saldo}">
+                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+
+                        <h4>
+                            TOTAL ACTIVO CORRIENTE:
+                            <h:outputText value="$#{balanceGeneralFrm.totalActivoCorriente}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </h4>
+
+                        <!-- ACTIVO NO CORRIENTE -->
+                        <h4 style="font-weight:bold; margin-top:15px;">ACTIVO NO CORRIENTE</h4>
+
+                        <p:dataTable value="#{balanceGeneralFrm.activoNoCorrienteList}"
+                                     var="anc"
+                                     emptyMessage="No se encontraron registros.">
+                            <p:column headerText="Cuenta">
+                                <h:outputText value="#{anc.nombre}" />
+                            </p:column>
+                            <p:column headerText="Saldo" style="text-align:right;">
+                                <h:outputText value="$#{anc.saldo}">
+                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+
+                        <h4>
+                            TOTAL ACTIVO NO CORRIENTE:
+                            <h:outputText value="$#{balanceGeneralFrm.totalActivoNoCorriente}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </h4>
+
+                        <!-- TOTAL ACTIVO -->
+                        <h3 style="font-weight:bold; margin-top:20px; text-align:right;">
+                            TOTAL ACTIVO:
+                            <h:outputText value="$#{balanceGeneralFrm.totalActivo}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </h3>
+
+                    </p:splitterPanel>
+
+                    <!-- LADO DERECHO: PASIVO Y PATRIMONIO -->
+                    <p:splitterPanel size="50">
+
+                        <!-- PASIVO -->
+                        <h3 style="font-weight:bold;">PASIVO</h3>
+
+                        <!-- PASIVO CORRIENTE -->
+                        <h4 style="font-weight:bold;">PASIVO CORRIENTE</h4>
+
+                        <p:dataTable value="#{balanceGeneralFrm.pasivoCorrienteList}"
+                                     var="pc"
+                                     emptyMessage="No se encontraron registros.">
+                            <p:column headerText="Cuenta">
+                                <h:outputText value="#{pc.nombre}" />
+                            </p:column>
+                            <p:column headerText="Saldo" style="text-align:right;">
+                                <h:outputText value="$#{pc.saldo}">
+                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+
+                        <h4>
+                            TOTAL PASIVO CORRIENTE:
+                            <h:outputText value="$#{balanceGeneralFrm.totalPasivoCorriente}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </h4>
+
+                        <!-- PASIVO NO CORRIENTE -->
+                        <h4 style="font-weight:bold; margin-top:15px;">PASIVO NO CORRIENTE</h4>
+
+                        <p:dataTable value="#{balanceGeneralFrm.pasivoNoCorrienteList}"
+                                     var="pnc"
+                                     emptyMessage="No se encontraron registros.">
+                            <p:column headerText="Cuenta">
+                                <h:outputText value="#{pnc.nombre}" />
+                            </p:column>
+                            <p:column headerText="Saldo" style="text-align:right;">
+                                <h:outputText value="$#{pnc.saldo}">
+                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+
+                        <h4>
+                            TOTAL PASIVO NO CORRIENTE:
+                            <h:outputText value="$#{balanceGeneralFrm.totalPasivoNoCorriente}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </h4>
+
+                        <!-- TOTAL PASIVO -->
+                        <h3 style="font-weight:bold; text-align:right; margin-top:10px;">
+                            TOTAL PASIVO:
+                            <h:outputText value="$#{balanceGeneralFrm.totalPasivo}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </h3>
+
+                        <!-- PATRIMONIO -->
+                        <h3 style="font-weight:bold; margin-top:25px;">PATRIMONIO</h3>
+
+                        <p:dataTable value="#{balanceGeneralFrm.patrimonioList}"
+                                     var="pt"
+                                     emptyMessage="No se encontraron registros.">
+                            <p:column headerText="Cuenta">
+                                <h:outputText value="#{pt.nombre}" />
+                            </p:column>
+                            <p:column headerText="Saldo" style="text-align:right;">
+                                <h:outputText value="#{pt.saldo}">
+                                    <f:convertNumber type="currency" currencySymbol="$"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+
+                        <h4>
+                            TOTAL PATRIMONIO:
+                            <h:outputText value="$#{balanceGeneralFrm.totalPatrimonio}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </h4>
+
+                        <!-- PASIVO + PATRIMONIO -->
+                        <h3 style="font-weight:bold; text-align:right; margin-top:10px; color:#1a237e;">
+                            PASIVO MÁS PATRIMONIO:
+                            <h:outputText value="$#{balanceGeneralFrm.totalPasivoPatrimonio}">
+                                <f:convertNumber type="currency" currencySymbol="$"/>
+                            </h:outputText>
+                        </h3>
+
+                    </p:splitterPanel>
+
+                </p:splitter>
 
             </p:panel>
 
         </h:form>
 
 
-
     </ui:define>
-
-
-    <!-- ======================================= -->
-    <!--           BALANCE GENERAL               -->
-    <!-- ======================================= -->
-    <h:form id="frmBalanceGeneral">
-
-        <p:panel header="Balance General"
-                 style="margin-top:25px;">
-
-            <!-- Puedes poner aquí los títulos centrados como en el Excel -->
-            <h:panelGroup layout="block" style="text-align:center; margin-bottom:15px;">
-                <h4>BALANCE GENERAL</h4>
-                <h5>EXPRESADO EN DÓLARES DE LOS ESTADOS UNIDOS DE AMÉRICA</h5>
-            </h:panelGroup>
-
-            <p:splitter layout="horizontal">
-
-                <!-- LADO IZQUIERDO: ACTIVO -->
-                <p:splitterPanel size="50">
-
-                    <h3 style="font-weight:bold;">ACTIVO</h3>
-
-                    <!-- ACTIVO CORRIENTE -->
-                    <h4 style="font-weight:bold;">ACTIVO CORRIENTE</h4>
-
-                    <p:dataTable value="#{balanceGeneralFrm.activoCorrienteList}"
-                                 var="ac"
-                                 emptyMessage="No se encontraron registros.">
-                        <p:column headerText="Cuenta">
-                            <h:outputText value="#{ac.nombre}" />
-                        </p:column>
-                        <p:column headerText="Saldo" style="text-align:right;">
-                            <h:outputText value="#{ac.saldo}">
-                                <f:convertNumber type="currency" currencySymbol="$"/>
-                            </h:outputText>
-                        </p:column>
-                    </p:dataTable>
-
-                    <h4>
-                        TOTAL ACTIVO CORRIENTE:
-                        <h:outputText value="#{balanceGeneralFrm.totalActivoCorriente}">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
-                        </h:outputText>
-                    </h4>
-
-                    <!-- ACTIVO NO CORRIENTE -->
-                    <h4 style="font-weight:bold; margin-top:15px;">ACTIVO NO CORRIENTE</h4>
-
-                    <p:dataTable value="#{balanceGeneralFrm.activoNoCorrienteList}"
-                                 var="anc"
-                                 emptyMessage="No se encontraron registros.">
-                        <p:column headerText="Cuenta">
-                            <h:outputText value="#{anc.nombre}" />
-                        </p:column>
-                        <p:column headerText="Saldo" style="text-align:right;">
-                            <h:outputText value="#{anc.saldo}">
-                                <f:convertNumber type="currency" currencySymbol="$"/>
-                            </h:outputText>
-                        </p:column>
-                    </p:dataTable>
-
-                    <h4>
-                        TOTAL ACTIVO NO CORRIENTE:
-                        <h:outputText value="#{balanceGeneralFrm.totalActivoNoCorriente}">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
-                        </h:outputText>
-                    </h4>
-
-                    <!-- TOTAL ACTIVO -->
-                    <h3 style="font-weight:bold; margin-top:20px; text-align:right;">
-                        TOTAL ACTIVO:
-                        <h:outputText value="#{balanceGeneralFrm.totalActivo}">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
-                        </h:outputText>
-                    </h3>
-
-                </p:splitterPanel>
-
-                <!-- LADO DERECHO: PASIVO Y PATRIMONIO -->
-                <p:splitterPanel size="50">
-
-                    <!-- PASIVO -->
-                    <h3 style="font-weight:bold;">PASIVO</h3>
-
-                    <!-- PASIVO CORRIENTE -->
-                    <h4 style="font-weight:bold;">PASIVO CORRIENTE</h4>
-
-                    <p:dataTable value="#{balanceGeneralFrm.pasivoCorrienteList}"
-                                 var="pc"
-                                 emptyMessage="No se encontraron registros.">
-                        <p:column headerText="Cuenta">
-                            <h:outputText value="#{pc.nombre}" />
-                        </p:column>
-                        <p:column headerText="Saldo" style="text-align:right;">
-                            <h:outputText value="#{pc.saldo}">
-                                <f:convertNumber type="currency" currencySymbol="$"/>
-                            </h:outputText>
-                        </p:column>
-                    </p:dataTable>
-
-                    <h4>
-                        TOTAL PASIVO CORRIENTE:
-                        <h:outputText value="#{balanceGeneralFrm.totalPasivoCorriente}">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
-                        </h:outputText>
-                    </h4>
-
-                    <!-- PASIVO NO CORRIENTE -->
-                    <h4 style="font-weight:bold; margin-top:15px;">PASIVO NO CORRIENTE</h4>
-
-                    <p:dataTable value="#{balanceGeneralFrm.pasivoNoCorrienteList}"
-                                 var="pnc"
-                                 emptyMessage="No se encontraron registros.">
-                        <p:column headerText="Cuenta">
-                            <h:outputText value="#{pnc.nombre}" />
-                        </p:column>
-                        <p:column headerText="Saldo" style="text-align:right;">
-                            <h:outputText value="#{pnc.saldo}">
-                                <f:convertNumber type="currency" currencySymbol="$"/>
-                            </h:outputText>
-                        </p:column>
-                    </p:dataTable>
-
-                    <h4>
-                        TOTAL PASIVO NO CORRIENTE:
-                        <h:outputText value="#{balanceGeneralFrm.totalPasivoNoCorriente}">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
-                        </h:outputText>
-                    </h4>
-
-                    <!-- TOTAL PASIVO -->
-                    <h3 style="font-weight:bold; text-align:right; margin-top:10px;">
-                        TOTAL PASIVO:
-                        <h:outputText value="#{balanceGeneralFrm.totalPasivo}">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
-                        </h:outputText>
-                    </h3>
-
-                    <!-- PATRIMONIO -->
-                    <h3 style="font-weight:bold; margin-top:25px;">PATRIMONIO</h3>
-
-                    <p:dataTable value="#{balanceGeneralFrm.patrimonioList}"
-                                 var="pt"
-                                 emptyMessage="No se encontraron registros.">
-                        <p:column headerText="Cuenta">
-                            <h:outputText value="#{pt.nombre}" />
-                        </p:column>
-                        <p:column headerText="Saldo" style="text-align:right;">
-                            <h:outputText value="#{pt.saldo}">
-                                <f:convertNumber type="currency" currencySymbol="$"/>
-                            </h:outputText>
-                        </p:column>
-                    </p:dataTable>
-
-                    <h4>
-                        TOTAL PATRIMONIO:
-                        <h:outputText value="#{balanceGeneralFrm.totalPatrimonio}">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
-                        </h:outputText>
-                    </h4>
-
-                    <!-- PASIVO + PATRIMONIO -->
-                    <h3 style="font-weight:bold; text-align:right; margin-top:10px; color:#1a237e;">
-                        PASIVO MÁS PATRIMONIO:
-                        <h:outputText value="#{balanceGeneralFrm.totalPasivoPatrimonio}">
-                            <f:convertNumber type="currency" currencySymbol="$"/>
-                        </h:outputText>
-                    </h3>
-
-                </p:splitterPanel>
-
-            </p:splitter>
-
-        </p:panel>
-
-    </h:form>
-
 
 </ui:composition>

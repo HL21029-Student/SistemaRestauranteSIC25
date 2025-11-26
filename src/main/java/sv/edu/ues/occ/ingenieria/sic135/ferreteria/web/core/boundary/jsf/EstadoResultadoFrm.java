@@ -27,21 +27,17 @@ public class EstadoResultadoFrm implements Serializable {
     private Long idLibroMayorSeleccionado;
     private EstadoResultadoDTO estado;
 
-    // Tasa ISR por defecto (25%)
+    // Tasa ISR (25%)
     private BigDecimal tasaISR;
 
-    // -----------------------------------------------------------
-    // INIT: valores iniciales
-    // -----------------------------------------------------------
     @PostConstruct
     public void init() {
         estado = null;
         tasaISR = new BigDecimal("0.25");
     }
 
-    // -----------------------------------------------------------
-    // GENERAR ESTADO DE RESULTADOS
-    // -----------------------------------------------------------
+
+    // generar estado de resultado
     public void generar() {
         if (idLibroMayorSeleccionado == null) {
             estado = null;
@@ -51,22 +47,19 @@ public class EstadoResultadoFrm implements Serializable {
         estado = estadoDAO.generarPorLibroMayor(idLibroMayorSeleccionado, tasaISR);
     }
 
-    // -----------------------------------------------------------
-    // LISTA DE LIBROS MAYOR PARA EL <selectOneMenu>
-    // -----------------------------------------------------------
+    //lista de libros mayor para el select
+
     public List<LibroMayor> getLibrosMayor() {
         return libroMayorDAO.findAll();
     }
 
-    // -----------------------------------------------------------
-    // GETTERS & SETTERS
-    // -----------------------------------------------------------
     public Long getIdLibroMayorSeleccionado() {
         return idLibroMayorSeleccionado;
     }
 
-    public void setIdLibroMayorSeleccionado(Long idLibroMayorSeleccionado) {
-        this.idLibroMayorSeleccionado = idLibroMayorSeleccionado;
+    public void setIdLibroMayorSeleccionado(Long id) {
+        this.idLibroMayorSeleccionado = id;
+        generar();  // calcula el Estado de Resultados
     }
 
     public EstadoResultadoDTO getEstado() {
@@ -84,4 +77,5 @@ public class EstadoResultadoFrm implements Serializable {
     public void setTasaISR(BigDecimal tasaISR) {
         this.tasaISR = tasaISR;
     }
+
 }

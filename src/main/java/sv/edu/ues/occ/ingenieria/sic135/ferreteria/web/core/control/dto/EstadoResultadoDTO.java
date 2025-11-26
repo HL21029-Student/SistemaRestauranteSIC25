@@ -51,4 +51,57 @@ public class EstadoResultadoDTO {
 
     public BigDecimal getUtilidadNeta() { return utilidadNeta; }
     public void setUtilidadNeta(BigDecimal utilidadNeta) { this.utilidadNeta = utilidadNeta; }
+
+    // ---- Métodos auxiliares ----
+    private BigDecimal abs(BigDecimal val) {
+        return val == null ? BigDecimal.ZERO : val.abs();
+    }
+
+    private boolean isNeg(BigDecimal val) {
+        return val != null && val.compareTo(BigDecimal.ZERO) < 0;
+    }
+
+    // ---- Ingresos ----
+    public BigDecimal getIngresosAbs() { return abs(ingresos); }
+    public boolean isIngresosNeg() { return isNeg(ingresos); }
+
+    // ---- Costo Ventas ----
+    public BigDecimal getCostoVentasAbs() { return abs(costoVentas); }
+    public boolean isCostoVentasNeg() { return isNeg(costoVentas); }
+
+    // ---- Utilidad Bruta ----
+    public BigDecimal getUtilidadBrutaAbs() { return abs(utilidadBruta); }
+    public boolean isUtilidadBrutaNeg() { return isNeg(utilidadBruta); }
+
+    // ---- Gastos de Venta ----
+    public BigDecimal getGastoVentaAbs() { return abs(gastoVenta); }
+    public boolean isGastoVentaNeg() { return isNeg(gastoVenta); }
+
+    // ---- Gastos de Administración ----
+    public BigDecimal getGastoAdministracionAbs() { return abs(gastoAdministracion); }
+    public boolean isGastoAdministracionNeg() { return isNeg(gastoAdministracion); }
+
+    // ---- Utilidad Operativa ----
+    public BigDecimal getUtilidadOperativaAbs() { return abs(utilidadOperativa); }
+    public boolean isUtilidadOperativaNeg() { return isNeg(utilidadOperativa); }
+
+    // ---- Gasto Financiero ----
+    public BigDecimal getGastoFinancieroAbs() { return abs(gastoFinanciero); }
+    public boolean isGastoFinancieroNeg() { return isNeg(gastoFinanciero); }
+
+    // ---- Otros Gastos ----
+    public BigDecimal getOtrosGastosAbs() { return abs(otrosGastos); }
+    public boolean isOtrosGastosNeg() { return isNeg(otrosGastos); }
+
+    // ---- Utilidad Antes ISR ----
+    public BigDecimal getUtilidadAntesISRAbs() { return abs(utilidadAntesISR); }
+    public boolean isUtilidadAntesISRNeg() { return isNeg(utilidadAntesISR); }
+
+    // ---- Impuesto Renta ----
+    public BigDecimal getImpuestoRentaAbs() { return abs(impuestoRenta); }
+    public boolean isImpuestoRentaNeg() { return isNeg(impuestoRenta); }
+
+    // ---- Utilidad Neta ----
+    public BigDecimal getUtilidadNetaAbs() { return abs(utilidadNeta); }
+    public boolean isUtilidadNetaNeg() { return isNeg(utilidadNeta); }
 }
