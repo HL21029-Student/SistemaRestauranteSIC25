@@ -215,10 +215,10 @@
                                         placeholder="Escribe el nombre de la característica"
                                         emptyMessage="No se encontraron características activas con ese nombre"/>
                     </h:panelGrid>
-                    <h:commandButton value="Seleccionar" procces="@from"
-                                     actionListener="#{tipoProductoFrm.tipoProductoCaracteristicaFrm.btnSeleccionarCaracteristicaHandler}"
-                                     update=":tabTipoProducto:frmDetalleCaracteristica:pnlCaracteristica"
-                                     oncomplete="PF('dlgCaracteristica').hide();"/>
+                    <h:commandButton value="#{defaultfrm['boton.seleccionar']}" procces="@from"
+                                     actionListener="#{productoFrm.productoTipoProductoFrm.btnSeleccionarTipoProductoHandler}"
+                                     update=":tabProducto:frmDetalleTipoProducto:pnlTipoProducto"
+                                     oncomplete="PF('dlgTipoProducto').hide();"/>
                 </h:panelGrid>
             </h:form>
         </p:dialog>

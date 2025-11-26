@@ -155,7 +155,7 @@
                                                     </h:selectOneListbox>
                                                 </h:panelGrid>
                                                 <h:panelGrid>
-                                                    <p:commandButton value="Agregar"
+                                                    <p:commandButton value="#{defaultfrm['boton.agregar']}"
                                                                      actionListener="#{productoFrm.productoTipoProductoFrm.btnAgregarPosibleCaracteristicaHandler}"
                                                                      update=":tabProducto:pnlTipoProducto :tabProducto:pnlDetalleProducto"
                                                                      process="lstDisponibles">
@@ -163,7 +163,7 @@
                                                                      value="#{productoFrm.productoTipoProductoFrm.seleccionPosibleCaracteristica}"/>
                                                     </p:commandButton>
 
-                                                    <p:commandButton value="Eliminar"
+                                                    <p:commandButton value="#{defaultfrm['defaultfrm.delete']}"
                                                                      actionListener="#{productoFrm.productoTipoProductoFrm.btnEliminarCaracteristicaAsignadaHandler}"
                                                                      update=":tabProducto:pnlTipoProducto :tabProducto:pnlDetalleProducto"
                                                                      process="lstAsignadas">
@@ -250,7 +250,7 @@
     <ui:define name="extra">
         <p:dialog id="dlgTipoProducto" widgetVar="dlgTipoProducto" modal="true" closable="true">
             <h:form id="frmDlgTipoProducto">
-                <h:panelGrid>
+                <h:panelGrid columns="1" style="width:100%">
                     <h:panelGrid columns="2">
                         <p:outputLabel value="Seleccione el Tipo de Producto:" for="txtTipoProducto"/>
                         <p:autoComplete id="txtTipoProducto"
@@ -266,7 +266,7 @@
                                         placeholder="Escribe el nombre del tipo de producto"
                                         emptyMessage="No se encontraron tipos de producto activos con ese nombre"/>
                     </h:panelGrid>
-                    <h:commandButton value="Seleccionar" procces="@from"
+                    <p:commandButton value="#{defaultfrm['boton.seleccionar']}" process="@form"
                                      actionListener="#{productoFrm.productoTipoProductoFrm.btnSeleccionarTipoProductoHandler}"
                                      update=":tabProducto:frmDetalleTipoProducto:pnlTipoProducto"
                                      oncomplete="PF('dlgTipoProducto').hide();"/>

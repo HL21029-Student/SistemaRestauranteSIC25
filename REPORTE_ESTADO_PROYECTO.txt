@@ -10,7 +10,7 @@ Universidad de El Salvador
 1. INFORMACIÓN GENERAL DEL PROYECTO
 ================================================================================
 
-Nombre: Sistema Ferretería
+Nombre: Sistema Restaurante
 Tipo: Aplicación Web Java EE
 Empaquetado: WAR (Web Application Archive)
 Servidor: Open Liberty (Jakarta EE 10)
@@ -18,7 +18,7 @@ Base de Datos: PostgreSQL
 Framework Frontend: PrimeFaces 15.0.8 (Jakarta)
 Java Version: 21
 
-Ubicación: C:\Users\esrev\OneDrive\Escritorio\SistemaFerreteria2
+Ubicación: C:\Users\esrev\OneDrive\Escritorio\SistemaRestaurante2
 
 ================================================================================
 2. ARQUITECTURA Y TECNOLOGÍAS
@@ -421,7 +421,7 @@ Selector de Idioma:
 11. CONFIGURACIÓN DE BASE DE DATOS
 ================================================================================
 
-Persistence Unit: FerreteriaPU
+Persistence Unit: SistemaRestaurantePU
 Tipo de Transacción: JTA (Java Transaction API)
 DataSource: jdbc/pgdb
 Proveedor: PostgreSQL
@@ -476,7 +476,7 @@ Estado Actual: ✅ COMPILADO EXITOSAMENTE
   • printStackTrace() en MenuFrm (catch de fallback)
 
 Archivo WAR Generado:
-✓ target/SistemaFerreteria-1.0-SNAPSHOT.war
+✓ target/SistemaRestaurante-1.0-SNAPSHOT.war
 ✓ Tamaño: Varios MB
 ✓ Listo para deployment
 
@@ -636,12 +636,12 @@ Configuración:
 ✓ PrimeFaces JAR incluido
 ✓ DataSource jdbc/pgdb configurado
 
-Puerto por Defecto: 9080 (HTTP)
-Contexto: /SistemaFerreteria-1.0-SNAPSHOT
+Puerto por Defecto: 9082 (HTTP)
+Contexto: /SistemaRestaurante-1.0-SNAPSHOT
 
 URLs de Acceso:
-- Aplicación: http://localhost:9080/SistemaFerreteria-1.0-SNAPSHOT/
-- Inicio: http://localhost:9080/SistemaFerreteria-1.0-SNAPSHOT/index.jsp
+- Aplicación: http://localhost:9082/SistemaRestaurante-1.0-SNAPSHOT/
+- Inicio: http://localhost:9082/SistemaRestaurante-1.0-SNAPSHOT/index.jsp
 
 Estado del Servidor:
 ⚠ REVISAR: Puede estar corriendo o detenido
@@ -893,4 +893,3 @@ Responsable: Sistema Automático de Análisis
 Proyecto: Sistema Ferretería v1.0-SNAPSHOT
 Universidad de El Salvador
 ================================================================================
-

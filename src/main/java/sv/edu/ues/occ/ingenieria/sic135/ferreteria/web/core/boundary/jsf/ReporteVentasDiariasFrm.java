@@ -34,7 +34,7 @@ public class ReporteVentasDiariasFrm implements Serializable {
     @Inject
     private VentaDetalleDAO ventaDetalleDAO;
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     private LocalDate fecha;
@@ -220,4 +220,3 @@ public class ReporteVentasDiariasFrm implements Serializable {
         return resultado;
     }
 }
-

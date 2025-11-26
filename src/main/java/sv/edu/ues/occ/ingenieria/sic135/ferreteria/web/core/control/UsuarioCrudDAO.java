@@ -17,7 +17,7 @@ public class UsuarioCrudDAO extends InventarioDefaultDataAccess<Usuario, Object>
 
     private static final Logger LOGGER = Logger.getLogger(UsuarioCrudDAO.class.getName());
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public UsuarioCrudDAO() {

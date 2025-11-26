@@ -28,7 +28,7 @@ public class AsientoContableService implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(AsientoContableService.class.getName());
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     @Inject
@@ -270,4 +270,3 @@ public class AsientoContableService implements Serializable {
     }
     */
 }
-

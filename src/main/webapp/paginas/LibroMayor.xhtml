@@ -139,36 +139,36 @@
                         <!-- BOTONES CRUD MEJOR ALINEADOS -->
                         <h:panelGrid columns="3" style="margin-top: 20px; text-align: center; width: 100%;">
                             <!-- En modo CREAR: Botón normal de crear -->
-                            <p:commandButton value="Crear"
-                                             action="#{libroMayorFrm.crearLibroMayor}"
-                                             icon="pi pi-save"
-                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
-                                             process="@form"
-                                             rendered="#{libroMayorFrm.estado == 'CREAR'}"
-                                             styleClass="ui-button-primary"
-                                             oncomplete="if(!args.validationFailed) {
-                                                 // Forzar actualización del tabView para habilitar el tab 2
-                                                 PF('tabLibroMayor').loadTabs();
-                                             }"/>
+                            <p:commandButton value="#{defaultfrm['defaultfrm.create']}"
+                                              action="#{libroMayorFrm.crearLibroMayor}"
+                                               icon="pi pi-save"
+                                               update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                              process="@form"
+                                              rendered="#{libroMayorFrm.estado == 'CREAR'}"
+                                              styleClass="ui-button-primary"
+                                              oncomplete="if(!args.validationFailed) {
+                                                  // Forzar actualización del tabView para habilitar el tab 2
+                                                  PF('tabLibroMayor').loadTabs();
+                                              }"/>
 
                             <!-- En modo MODIFICAR: Botón guardar -->
-                            <p:commandButton value="Guardar"
-                                             action="#{libroMayorFrm.guardarCambios}"
-                                             icon="pi pi-check"
-                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
-                                             process="@form"
-                                             rendered="#{libroMayorFrm.estado == 'MODIFICAR'}"
-                                             styleClass="ui-button-success"/>
+                            <p:commandButton value="#{defaultfrm['boton.guardar']}"
+                                              action="#{libroMayorFrm.guardarCambios}"
+                                               icon="pi pi-check"
+                                               update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                              process="@form"
+                                              rendered="#{libroMayorFrm.estado == 'MODIFICAR'}"
+                                              styleClass="ui-button-success"/>
 
                             <!-- Botón eliminar (solo en modificación) -->
-                            <p:commandButton value="Eliminar"
-                                             action="#{libroMayorFrm.eliminarLibroMayor}"
-                                             icon="pi pi-trash"
-                                             update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
-                                             process="@this"
-                                             rendered="#{libroMayorFrm.estado == 'MODIFICAR' and libroMayorFrm.registro.id != null}"
-                                             styleClass="ui-button-danger"
-                                             onclick="return confirm('¿Está seguro de que desea eliminar este Libro Mayor?')"/>
+                            <p:commandButton value="#{defaultfrm['defaultfrm.delete']}"
+                                              action="#{libroMayorFrm.eliminarLibroMayor}"
+                                               icon="pi pi-trash"
+                                               update=":libroMayorDetalle :pnlTabla :frmTop:tabla-top :messagesTop"
+                                               process="@this"
+                                              rendered="#{libroMayorFrm.estado == 'MODIFICAR' and libroMayorFrm.registro.id != null}"
+                                               styleClass="ui-button-danger"
+                                               onclick="return confirm('¿Está seguro de que desea eliminar este Libro Mayor?')"/>
                         </h:panelGrid>
 
                     </h:form>
@@ -182,7 +182,7 @@
 
                             <!-- BOTONES SUPERIORES PARA DETALLES -->
                             <h:panelGrid columns="2" style="margin-bottom: 20px; width: 100%;">
-                                <p:commandButton value="Buscar Cuenta para Mayorizar"
+                                <p:commandButton value="#{defaultfrm['boton.buscar']}"
                                                  action="#{libroMayorFrm.prepararNuevoDetalle}"
                                                  icon="pi pi-search"
                                                  update="@form"
@@ -266,7 +266,7 @@
                                         update="tblCuentas"
                                         delay="500"/>
                             </p:inputText>
-                            <p:commandButton value="Buscar"
+                            <p:commandButton value="#{defaultfrm['boton.buscar']}"
                                              action="#{libroMayorFrm.buscarCuentas}"
                                              update="tblCuentas"
                                              styleClass="ui-button-primary"/>
@@ -299,7 +299,7 @@
                             </p:column>
 
                             <p:column headerText="Seleccionar" width="100">
-                                <p:commandButton value="Seleccionar"
+                                <p:commandButton value="#{defaultfrm['boton.seleccionar']}"
                                                  action="#{libroMayorFrm.prepararDetallesCuenta}"
                                                  update=":frmDialogo:pnlCuentaSeleccionada :frmDialogo:pnlDetallesCuenta :frmDialogo:pnlCrearMayorizacion"
                                                  process="@this"
@@ -376,7 +376,7 @@
                                                style="font-weight: bold; color: #2E86AB; text-align: right; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                                     <f:convertNumber type="currency" currencySymbol="$" minFractionDigits="2"/>
                                 </p:outputLabel>
-                                <p:commandButton value="Crear Mayorización"
+                                <p:commandButton value="#{defaultfrm['boton.crear'] != null ? defaultfrm['boton.crear'] : 'Crear'}"
                                                  action="#{libroMayorFrm.crearMayorizacion}"
                                                  icon="pi pi-check"
                                                  update=":frmMayorizacion:tblDetalles :messagesTop"

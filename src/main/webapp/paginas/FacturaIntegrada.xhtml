@@ -80,12 +80,12 @@
                                 <p:inputText id="cliente"
                                              value="#{facturaFrm.clienteSeleccionado != null ? facturaFrm.clienteSeleccionado.nombre : 'Sin cliente'}"
                                              readonly="true" style="width:250px"/>
-                                <p:commandButton value="Seleccionar"
+                                <p:commandButton value="#{defaultfrm['boton.seleccionar']}"
                                                  icon="pi pi-search"
                                                  onclick="PF('dlgCliente').show();"
                                                  type="button"
                                                  styleClass="ui-button-info"/>
-                                <p:commandButton value="Limpiar"
+                                <p:commandButton value="#{defaultfrm['boton.limpiar']}"
                                                  icon="pi pi-times"
                                                  action="#{facturaFrm.setClienteSeleccionado(null)}"
                                                  update="pnlCliente"
@@ -124,7 +124,7 @@
                     <h:panelGroup id="pnlItems">
 
                         <!-- Botón para agregar nuevo item -->
-                        <p:commandButton value="Agregar Producto"
+                        <p:commandButton value="#{defaultfrm['boton.agregar']}"
                                          icon="pi pi-plus"
                                          action="#{facturaFrm.nuevoItem()}"
                                          update=":frmNuevoItem:pnlNuevoItem"
@@ -168,8 +168,8 @@
                         </p:dataTable>
 
                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                            <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
-                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+                            <p:commandButton value="#{defaultfrm['boton.si']}" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                            <p:commandButton value="#{defaultfrm['boton.no']}" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
                         </p:confirmDialog>
                     </h:panelGroup>
                 </p:tab>
@@ -264,7 +264,7 @@
                         <h:outputText value="#{c.nit}"/>
                     </p:column>
                     <p:column style="width:100px">
-                        <p:commandButton value="Seleccionar"
+                        <p:commandButton value="#{defaultfrm['boton.seleccionar']}"
                                          action="#{facturaFrm.seleccionarCliente(c)}"
                                          update=":frmDetalleFactura:tabFactura:pnlCliente"
                                          oncomplete="PF('dlgCliente').hide();"
@@ -289,7 +289,7 @@
                                 <p:inputText id="producto"
                                              value="#{facturaFrm.itemActual.producto != null ? facturaFrm.itemActual.producto.nombreProducto : ''}"
                                              readonly="true" style="width:300px"/>
-                                <p:commandButton value="Buscar"
+                                <p:commandButton value="#{defaultfrm['boton.buscar']}"
                                                  icon="pi pi-search"
                                                  onclick="PF('dlgProducto').show();"
                                                  type="button"/>
@@ -320,7 +320,8 @@
                                          rows="3" cols="40"/>
                     </h:panelGrid>
 
-                    <p:commandButton value="Agregar"
+                    <p:commandButton value="# {defaultfrm['boton.agregar']}"
+                                     value="#{defaultfrm['boton.agregar']}"
                                      icon="pi pi-check"
                                      action="#{facturaFrm.agregarItem()}"
                                      update=":frmDetalleFactura:tabFactura:pnlItems :frmDetalleFactura:tabFactura:pnlTotales"
@@ -351,7 +352,7 @@
                         <h:outputText value="#{p.activo ? 'Sí' : 'No'}"/>
                     </p:column>
                     <p:column style="width:100px">
-                        <p:commandButton value="Seleccionar"
+                        <p:commandButton value="#{defaultfrm['boton.seleccionar']}"
                                          action="#{facturaFrm.seleccionarProducto(p)}"
                                          update="@form :frmNuevoItem:pnlNuevoItem"
                                          oncomplete="PF('dlgProducto').hide();"
@@ -364,4 +365,3 @@
     </ui:define>
 
 </ui:composition>
-

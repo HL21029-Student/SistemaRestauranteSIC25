@@ -21,7 +21,7 @@ import java.util.List;
 @Stateless
 public class BalanceDAO {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     EntityManager em;
 
     public List<BalanceDTO> obtenerBalance() {

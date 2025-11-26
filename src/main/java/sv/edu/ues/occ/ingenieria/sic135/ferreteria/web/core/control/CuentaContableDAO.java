@@ -23,7 +23,7 @@ import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.ManualCuenta;
 @LocalBean
 public class CuentaContableDAO extends InventarioDefaultDataAccess<CuentaContable, Object> implements Serializable {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public CuentaContableDAO() {

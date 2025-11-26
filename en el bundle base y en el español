@@ -1,0 +1,21 @@
+[35msrc/main/resources/Traducciones.properties[m[36m:[m[32m1[m[36m:[m[1;31mdefaultfrm.[mcancel=Cancel
+[35msrc/main/resources/Traducciones.properties[m[36m:[m[32m2[m[36m:[m[1;31mdefaultfrm.[mnew=New
+[35msrc/main/resources/Traducciones.properties[m[36m:[m[32m3[m[36m:[m[1;31mdefaultfrm.[mcreate=Create
+[35msrc/main/resources/Traducciones.properties[m[36m:[m[32m4[m[36m:[m[1;31mdefaultfrm.[mdelete=Delete
+[35msrc/main/resources/Traducciones.properties[m[36m:[m[32m5[m[36m:[m[1;31mdefaultfrm.[mmodify=Modify
+[35msrc/main/resources/Traducciones_en.properties[m[36m:[m[32m1[m[36m:[m[1;31mdefaultfrm.[mcancel=Cancelar
+[35msrc/main/resources/Traducciones_en.properties[m[36m:[m[32m3[m[36m:[m[1;31mdefaultfrm.[mdelete=Eliminar
+[35msrc/main/resources/Traducciones_en.properties[m[36m:[m[32m4[m[36m:[m[1;31mdefaultfrm.[mmodify=Modificar
+[35msrc/main/resources/Traducciones_es.properties[m[36m:[m[32m3[m[36m:[m[1;31mdefaultfrm.[mcancel=Cancelar
+[35msrc/main/resources/Traducciones_es.properties[m[36m:[m[32m4[m[36m:[m[1;31mdefaultfrm.[mnew=Nuevo
+[35msrc/main/resources/Traducciones_es.properties[m[36m:[m[32m5[m[36m:[m[1;31mdefaultfrm.[mcreate=Crear
+[35msrc/main/resources/Traducciones_es.properties[m[36m:[m[32m6[m[36m:[m[1;31mdefaultfrm.[mdelete=Eliminar
+[35msrc/main/resources/Traducciones_es.properties[m[36m:[m[32m7[m[36m:[m[1;31mdefaultfrm.[mmodify=Modificar
+[35msrc/main/webapp/paginas/CuentaContable.xhtml[m[36m:[m[32m81[m[36m:[m            <p:commandButton id="btnEliminarLocal" value="#{defaultfrm['[1;31mdefaultfrm.[mdelete']}"
+[35msrc/main/webapp/paginas/CuentaContable.xhtml[m[36m:[m[32m85[m[36m:[m            <p:confirmDialog widgetVar="confirmDlgCuenta" header="#{defaultfrm['[1;31mdefaultfrm.[mdelete']}" message="#{msgs['confirm.eliminar.cuenta']}" modal="true" appendTo="@(body)">
+[35msrc/main/webapp/paginas/CuentaContable.xhtml[m[36m:[m[32m86[m[36m:[m                <p:commandButton value="#{defaultfrm['[1;31mdefaultfrm.[mdelete']}" process="@this" onstart="this.disabled=true;" oncomplete="PF('confirmDlgCuenta').hide();"
+[35msrc/main/webapp/paginas/CuentaContable.xhtml[m[36m:[m[32m88[m[36m:[m                <p:commandButton value="#{defaultfrm['[1;31mdefaultfrm.[mcancel']}" onclick="PF('confirmDlgCuenta').hide();" type="button"/>
+[35msrc/main/webapp/resources/ues/botones-crud.xhtml[m[36m:[m[32m81[m[36m:[m                <p:commandButton value="#{defaultfrm['[1;31mdefaultfrm.[mcreate']}"
+[35msrc/main/webapp/resources/ues/botones-crud.xhtml[m[36m:[m[32m88[m[36m:[m                <p:commandButton value="#{defaultfrm['[1;31mdefaultfrm.[mmodify']}"
+[35msrc/main/webapp/resources/ues/botones-crud.xhtml[m[36m:[m[32m95[m[36m:[m                <p:commandButton value="#{defaultfrm['[1;31mdefaultfrm.[mdelete']}"
+[35msrc/main/webapp/resources/ues/botones-top.xhtml[m[36m:[m[32m79[m[36m:[m                                 value="#{defaultfrm['[1;31mdefaultfrm.[mcancel']}"

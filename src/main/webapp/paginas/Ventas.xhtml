@@ -271,18 +271,18 @@
                                         emptyMessage="No se encontraron clientes activos con ese nombre"/>
 
                     </h:panelGrid>
-                    <h:commandButton value="Seleccionar" process="@from"
+                    </h:panelGrid>
+                    <p:commandButton value="#{defaultfrm['boton.seleccionar']}" process="@form"
                                      actionListener="#{ventaFrm.btnSeleccionarClienteHandler}"
                                      update=":tabVenta:frmCrear:pnlCliente"
                                      oncomplete="PF('dlgClienteSelect').hide();"/>
-                </h:panelGrid>
-            </h:form>
-        </p:dialog>
+                 </h:form>
+            </p:dialog>
 
         <p:dialog id="dlgProductSelect" widgetVar="dlgProductSelect" modal="true" closable="true">
-            <h:form id="frmDlgProductSelect">
-                <h:panelGrid>
-                    <h:panelGrid columns="2">
+             <h:form id="frmDlgProductSelect">
+                 <h:panelGrid>
+                     <h:panelGrid columns="2">
                         <p:outputLabel value="Seleccione el Producto:" for="txtProductSelect"/>
                         <p:autoComplete id="txtProductSelect"
                                         completeMethod="#{ventaFrm.ventaDetalleFrm.buscarProductosPorNombre}"
@@ -297,13 +297,13 @@
                                         placeholder="Escribe el nombre del producto"
                                         emptyMessage="No se encontraron productos activos con ese nombre"/>
                     </h:panelGrid>
-                    <h:commandButton value="Seleccionar" process="@from"
+                    </h:panelGrid>
+                    <p:commandButton value="#{defaultfrm['boton.seleccionar']}" process="@form"
                                      actionListener="#{ventaFrm.ventaDetalleFrm.btnSeleccionarProductoHandler}"
                                      update=":tabVenta:pnlDetalleVenta:pnlProducto"
                                      oncomplete="PF('dlgProductSelect').hide();"/>
-                </h:panelGrid>
-            </h:form>
-        </p:dialog>
+                 </h:form>
+            </p:dialog>
     </ui:define>
 
 </ui:composition>

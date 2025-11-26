@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>sv.edu.ues.occ.ingenieria.sic135.ferreteria.web</groupId>
-    <artifactId>SistemaFerreteria</artifactId>
+    <artifactId>SistemaRestaurante</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>SistemaFerreteria</name>
+    <name>SistemaRestaurante</name>
     <packaging>war</packaging>
 
     <properties>
@@ -107,6 +107,7 @@
     </dependencies>
 
     <build>
+        <finalName>SistemaRestaurante</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

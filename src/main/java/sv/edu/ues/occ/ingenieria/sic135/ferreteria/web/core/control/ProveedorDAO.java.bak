@@ -4,18 +4,19 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.CompraDetalle;
+import sv.edu.ues.occ.ingenieria.sic135.ferreteria.web.core.entity.Proveedor;
 
 import java.io.Serializable;
 
 @Stateless
 @LocalBean
-public class CompraDetalleDAO extends InventarioDefaultDataAccess<CompraDetalle, Object> implements Serializable {
-    @PersistenceContext(unitName="SistemaRestaurantePU")
+public class ProveedorDAO extends InventarioDefaultDataAccess<Proveedor, Object> implements Serializable {
+
+    @PersistenceContext(unitName = "FerreteriaPU")
     private EntityManager em;
 
-    public CompraDetalleDAO() {
-        super(CompraDetalle.class);
+    public ProveedorDAO() {
+        super(Proveedor.class);
     }
 
     @Override
@@ -24,7 +25,8 @@ public class CompraDetalleDAO extends InventarioDefaultDataAccess<CompraDetalle,
     }
 
     @Override
-    protected Class<CompraDetalle> getEntityClass() {
-        return CompraDetalle.class;
+    protected Class<Proveedor> getEntityClass() {
+        return Proveedor.class;
     }
+
 }

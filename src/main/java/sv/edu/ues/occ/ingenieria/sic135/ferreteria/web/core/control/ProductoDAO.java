@@ -13,7 +13,7 @@ import java.util.List;
 @Stateless
 @LocalBean
 public class ProductoDAO extends InventarioDefaultDataAccess<Producto, Object> implements Serializable {
-    @PersistenceContext(unitName="FerreteriaPU")
+    @PersistenceContext(unitName="SistemaRestaurantePU")
     private EntityManager em;
     public ProductoDAO() {
         super(Producto.class);

@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 @LocalBean
 public class BalanceInicialDAO implements Serializable {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     //la partida 1 del libro diario elegido
@@ -48,4 +48,3 @@ public class BalanceInicialDAO implements Serializable {
         }
     }
 }
-

@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Stateless
 @LocalBean
 public class AsientoKardexDAO extends InventarioDefaultDataAccess<AsientoKardex, Object> implements Serializable {
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     public AsientoKardexDAO() {

@@ -10,7 +10,7 @@ import java.util.List;
 @LocalBean
 public class BalanceComprobacionDAO {
 
-    @PersistenceContext(unitName = "FerreteriaPU")
+    @PersistenceContext(unitName = "SistemaRestaurantePU")
     private EntityManager em;
 
     // Obtiene las cuentas mayorizadas agrupadas por nombre de cuenta sumando el saldo total final (necesario para el balance de comprobacion)
